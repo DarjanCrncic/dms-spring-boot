@@ -22,7 +22,16 @@ public class UserServiceImpl extends EntityCrudServiceImpl<User> implements User
 		if(foundUser.isPresent()) {
 			return foundUser.get();
 		}
-		throw new UserNotFoundException("User with username " + username + " is not found.");
+		throw new UserNotFoundException("User with username: '" + username + "' is not found.");
+	}
+
+	@Override
+	public User findByEmail(String email) {
+		Optional<User> foundUser = userRepository.findByEmail(email);
+		if(foundUser.isPresent()) {
+			return foundUser.get();
+		}
+		throw new UserNotFoundException("User with email: '" + email + "' is not found.");
 	}
 	
 }
