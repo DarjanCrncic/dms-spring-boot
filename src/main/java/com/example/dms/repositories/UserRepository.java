@@ -10,4 +10,6 @@ import com.example.dms.domain.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID>{
 
+	User findByUsername(String username);
+
 }
