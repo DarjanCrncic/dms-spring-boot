@@ -18,6 +18,7 @@ import lombok.Getter;
 @Getter
 @MappedSuperclass
 @EqualsAndHashCode
+
 public class BaseEntity {
 
 	@Id

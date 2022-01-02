@@ -16,9 +16,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<Document> impleme
 	
 	@Override
 	public Document createNewDocument(NewDocumentDTO newDocumentDTO) {
-		Document newDocumentObject = new Document();
-		newDocumentObject.setCreator(userService.findByUsername("dcrncic"));
-		newDocumentObject.setObjectName(newDocumentDTO.getObjectName());
+		Document newDocumentObject = new Document(userService.findByUsername("dcrncic"), newDocumentDTO.getObjectName());
 		return this.save(newDocumentObject);
 	}
 

@@ -8,14 +8,14 @@ import org.mapstruct.factory.Mappers;
 import com.example.dms.api.dtos.document.DocumentDTO;
 import com.example.dms.domain.Document;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface DocumentMapper {
 
 	DocumentMapper INSTANCE = Mappers.getMapper(DocumentMapper.class);
 	
-	Document documentDTOToDocument(DocumentDTO faceFriendReq);
+	Document documentDTOToDocument(DocumentDTO documentDTO);
 	
-	DocumentDTO documentToDocumentDTO(Document faceFriendReqDTO);
+	DocumentDTO documentToDocumentDTO(Document document);
 	
 	List<DocumentDTO> documentListToDocumentDTOList(List<Document> list);
 }

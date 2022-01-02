@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.example.dms.utils.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -33,7 +34,8 @@ public class Document extends BaseEntity{
 	private User creator;
 	
 	@NotBlank
-	@Length(min = 5, max = 32)
+	@Length(min = Constants.MINLENGTH, max = 32, message = "Ivalid object name length, document name must have atleast " 
+			+ Constants.MINLENGTH + " characters.")
 	@NonNull
 	private String objectName;
 	
