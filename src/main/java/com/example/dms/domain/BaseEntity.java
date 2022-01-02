@@ -14,11 +14,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @MappedSuperclass
 @EqualsAndHashCode
-
+@Setter
 public class BaseEntity {
 
 	@Id

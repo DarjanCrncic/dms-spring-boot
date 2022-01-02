@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.dms.domain.User;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.UserService;
+import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 import com.example.dms.utils.exceptions.UserNotFoundException;
 
 @Service
@@ -32,6 +33,17 @@ public class UserServiceImpl extends EntityCrudServiceImpl<User> implements User
 			return foundUser.get();
 		}
 		throw new UserNotFoundException("User with email: '" + email + "' is not found.");
+	}
+
+	@Override
+	public User save(User user) {
+		if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+			throw new UniqueConstraintViolatedException("Following field is not unique: email, value: " + user.getEmail());
+		}
+		if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+			throw new UniqueConstraintViolatedException("Following field is not unique: username, value: " + user.getUsername());
+		}
+		return userRepository.save(user);
 	}
 	
 }
