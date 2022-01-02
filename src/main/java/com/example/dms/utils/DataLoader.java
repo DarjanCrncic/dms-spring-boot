@@ -30,5 +30,7 @@ public class DataLoader implements ApplicationRunner {
     	
     	documentService.save(doc1);
     	documentService.save(doc2);
+    	
+    	System.out.println(documentService.findById(doc1.getId()).toString());
     }
 }

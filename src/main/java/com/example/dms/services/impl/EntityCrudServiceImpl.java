@@ -1,16 +1,17 @@
 package com.example.dms.services.impl;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.dms.services.CrudService;
 
-public class EntityCrudServiceImpl<T> implements CrudService<T, Long>{
+public class EntityCrudServiceImpl<T> implements CrudService<T, UUID>{
 
 	@Autowired
-	JpaRepository<T, Long> repository;
+	JpaRepository<T, UUID> repository;
 	
 	@Override
 	public List<T> findAll() {
@@ -18,7 +19,7 @@ public class EntityCrudServiceImpl<T> implements CrudService<T, Long>{
 	}
 
 	@Override
-	public T findById(Long id) {
+	public T findById(UUID id) {
 		return repository.findById(id).orElse(null);
 	}
 
@@ -33,9 +34,8 @@ public class EntityCrudServiceImpl<T> implements CrudService<T, Long>{
 	}
 
 	@Override
-	public void deleteById(Long id) {
+	public void deleteById(UUID id) {
 		repository.deleteById(id);
 	}
 
-	
 }
