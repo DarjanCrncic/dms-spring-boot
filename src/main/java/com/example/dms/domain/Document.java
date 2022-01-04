@@ -1,9 +1,8 @@
 package com.example.dms.domain;
 
-import java.sql.Blob;
-
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 
@@ -39,6 +38,11 @@ public class Document extends BaseEntity{
 	@NonNull
 	private String objectName;
 	
-	private Blob content = null;
-	
+	private String description = null; 
+
+	@Lob
+	private byte[] content = null;
+	private Long contentSize = 0l;
+	private String contentType = null;
+	private String originalFileName = null;
 }

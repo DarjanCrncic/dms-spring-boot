@@ -9,7 +9,7 @@ import com.example.dms.domain.User;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
-import com.example.dms.utils.exceptions.UserNotFoundException;
+import com.example.dms.utils.exceptions.NotFoundException;
 
 @Service
 public class UserServiceImpl extends EntityCrudServiceImpl<User> implements UserService{
@@ -23,7 +23,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<User> implements User
 		if(foundUser.isPresent()) {
 			return foundUser.get();
 		}
-		throw new UserNotFoundException("User with username: '" + username + "' is not found.");
+		throw new NotFoundException("User with username: '" + username + "' is not found.");
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<User> implements User
 		if(foundUser.isPresent()) {
 			return foundUser.get();
 		}
-		throw new UserNotFoundException("User with email: '" + email + "' is not found.");
+		throw new NotFoundException("User with email: '" + email + "' is not found.");
 	}
 
 	@Override

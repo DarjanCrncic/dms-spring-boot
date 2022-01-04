@@ -11,17 +11,19 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class UserNotFoundException extends RuntimeException{
-	
-	public UserNotFoundException(@NonNull String message) {
+@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+public class InternalException extends RuntimeException{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6470159231985984338L;
+
+	public InternalException(@NonNull String message) {
 		super();
 		this.message = message;
 	}
 
-	private static final long serialVersionUID = -7305813945482066539L;
-	
 	@NonNull
-	private String message = "User could not be found.";
-	
+	private String message = "Internal server error.";
 }

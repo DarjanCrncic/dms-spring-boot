@@ -1,12 +1,14 @@
 package com.example.dms.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.dms.services.CrudService;
+import com.example.dms.utils.exceptions.NotFoundException;
 
 public class EntityCrudServiceImpl<T> implements CrudService<T, UUID>{
 
@@ -20,7 +22,10 @@ public class EntityCrudServiceImpl<T> implements CrudService<T, UUID>{
 
 	@Override
 	public T findById(UUID id) {
-		return repository.findById(id).orElse(null);
+		Optional<T> entity = repository.findById(id);
+		if (!entity.isPresent())
+			throw new NotFoundException("The entity with requested id: '" + id + "' does not exist.");
+		return entity.get();
 	}
 
 	@Override

@@ -23,7 +23,7 @@ import com.example.dms.api.mappers.UserMapper;
 import com.example.dms.domain.User;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
-import com.example.dms.utils.exceptions.UserNotFoundException;
+import com.example.dms.utils.exceptions.NotFoundException;
 
 @WebMvcTest(UserController.class)
 class UserControllerTest {
@@ -65,7 +65,7 @@ class UserControllerTest {
 
 	@Test
 	void testGetUserByIdNotFound() throws Exception {
-		BDDMockito.given(userService.findById(Mockito.any())).willThrow(UserNotFoundException.class);
+		BDDMockito.given(userService.findById(Mockito.any())).willThrow(NotFoundException.class);
 
 		mockMvc.perform(get("/api/v1/users/{id}", UUID.randomUUID())).andExpect(status().isNotFound()).andReturn();
 	}
