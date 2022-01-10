@@ -12,6 +12,7 @@ import com.example.dms.utils.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper=true)
+@Builder
 @Entity
 public class Document extends BaseEntity{
 
@@ -38,11 +40,16 @@ public class Document extends BaseEntity{
 	@NonNull
 	private String objectName;
 	
+	@Builder.Default
 	private String description = null; 
 
 	@Lob
+	@Builder.Default
 	private byte[] content = null;
+	@Builder.Default
 	private Long contentSize = 0l;
+	@Builder.Default
 	private String contentType = null;
+	@Builder.Default
 	private String originalFileName = null;
 }

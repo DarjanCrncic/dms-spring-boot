@@ -22,8 +22,8 @@ import com.example.dms.api.dtos.user.UserDTO;
 import com.example.dms.api.mappers.UserMapper;
 import com.example.dms.domain.User;
 import com.example.dms.services.UserService;
-import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 import com.example.dms.utils.exceptions.NotFoundException;
+import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @WebMvcTest(UserController.class)
 class UserControllerTest {
@@ -43,7 +43,7 @@ class UserControllerTest {
 
 	@BeforeEach
 	void setUp() {
-		validUser = new User("dcrncic", "12345", "Darjan", "Crnčić", "darjan.crncic@gmail.com");
+		validUser = new User("dcrncic", "12345", "Darjan", "Crnčić", "darjan.crncic@gmail.com", null);
 		validUser.setId(UUID.randomUUID());
 
 		validUserDTO = new UserDTO(validUser.getId(), "dcrncic", "Darjan", "Crnčić", "darjan.crncic@gmail.com");

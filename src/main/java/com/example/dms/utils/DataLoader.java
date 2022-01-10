@@ -22,7 +22,7 @@ public class DataLoader implements ApplicationRunner {
     @Override
 	public void run(ApplicationArguments args) {
     	System.out.println("hello world");
-    	User user = new User("dcrncic", "12345", "Darjan", "Crnčić","darjan.crncic@gmail.com");	
+    	User user = new User("dcrncic", "12345", "Darjan", "Crnčić","darjan.crncic@gmail.com", null);	
     	userService.save(user);
     	
     	Document doc1 = new Document(user, "test1");
