@@ -22,6 +22,8 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<Document> impleme
 	
 	@Override
 	public Document createNewDocument(NewDocumentDTO newDocumentDTO) {
+		// TODO: Refactor to use mapper instead of creating a new instance.
+		// TODO: Remove hardcoded user.
 		Document newDocumentObject = new Document(userService.findByUsername("dcrncic"), newDocumentDTO.getObjectName());
 		return save(newDocumentObject);
 	}

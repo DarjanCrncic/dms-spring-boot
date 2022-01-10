@@ -1,5 +1,6 @@
 package com.example.dms.api.dtos.user;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -16,4 +17,7 @@ public class UserDTO {
 	private String firstName;
 	private String lastName;
 	private String email;
+	
+	private LocalDateTime creationDate;
+	private LocalDateTime modifyDate;
 }

@@ -7,12 +7,14 @@ import org.mapstruct.factory.Mappers;
 
 import com.example.dms.api.dtos.document.DocumentDTO;
 import com.example.dms.domain.Document;
+import org.mapstruct.Mapping;
 
-@Mapper
+@Mapper(uses = UserMapper.class)
 public interface DocumentMapper {
 
 	DocumentMapper INSTANCE = Mappers.getMapper(DocumentMapper.class);
 	
+	@Mapping(target = "content", ignore = true)
 	Document documentDTOToDocument(DocumentDTO documentDTO);
 	
 	DocumentDTO documentToDocumentDTO(Document document);

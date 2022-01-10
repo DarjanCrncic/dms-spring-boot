@@ -1,6 +1,7 @@
-package com.example.dms.api.controllers;
+package com.example.dms.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,9 @@ import com.example.dms.api.dtos.document.DocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.domain.Document;
 import com.example.dms.domain.User;
-import com.example.dms.services.DocumentService;
-import com.example.dms.services.UserService;
 
 @SpringBootTest
-class DocumentControllerTest {
+class DocumentServiceIntegrationTest {
 
 	@Autowired
 	DocumentMapper documentMapper;
@@ -31,10 +30,11 @@ class DocumentControllerTest {
 	void testDocumentToDocumentDTOMapping() {
 		User user = userService.save(new User("testuser", "12345", "Darjan", "Crnčić", "test.user@gmail.com"));
 		
-		Document doc1 = new Document(user, "test1");
-		DocumentDTO docDTO = documentMapper.documentToDocumentDTO(doc1);
+		Document newDocument = new Document(user, "test1");
+		DocumentDTO docDTO = documentMapper.documentToDocumentDTO(newDocument);
 
-		assertEquals(doc1.getObjectName(), docDTO.getObjectName());
+		assertEquals(newDocument.getObjectName(), docDTO.getObjectName());
+		assertEquals(newDocument.getCreator().getId(), docDTO.getCreator().getId());
 	}
 
 	@Test
@@ -47,7 +47,8 @@ class DocumentControllerTest {
 		Document foundDocument = documentService.findById(newDocument.getId());
 
 		assertEquals(newDocument.getObjectName(), foundDocument.getObjectName());
-		assertEquals(foundDocument.getId(), newDocument.getId());
+		assertEquals(newDocument.getId(), foundDocument.getId());
+		assertSame(newDocument.getCreator(), foundDocument.getCreator());
 		
 	}
 }

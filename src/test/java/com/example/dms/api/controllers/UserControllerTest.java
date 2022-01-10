@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UserDTO;
 import com.example.dms.api.mappers.UserMapper;
 import com.example.dms.domain.User;
@@ -43,10 +45,10 @@ class UserControllerTest {
 
 	@BeforeEach
 	void setUp() {
-		validUser = new User("dcrncic", "12345", "Darjan", "Crnčić", "darjan.crncic@gmail.com", null);
+		validUser = new User("dcrncic", "12345", "Darjan", "Crnčić", "darjan.crncic@gmail.com");
 		validUser.setId(UUID.randomUUID());
 
-		validUserDTO = new UserDTO(validUser.getId(), "dcrncic", "Darjan", "Crnčić", "darjan.crncic@gmail.com");
+		validUserDTO = new UserDTO(validUser.getId(), "dcrncic", "Darjan", "Crnčić", "darjan.crncic@gmail.com", LocalDateTime.now(), LocalDateTime.now());
 
 		validUserJSON = "{\n    \"password\": \"12345\",\n    \"username\": \"dcrncic\",\n    \"first_name\": \"Darjan\",\n    \"last_name\": \"Crn\u010di\u0107\",\n    \"email\": \"darjan.crncic@gmail.com\"\n}";
 	}
@@ -89,7 +91,7 @@ class UserControllerTest {
 
 	@Test
 	void testCreateNewUser() throws Exception {
-		BDDMockito.given(userService.save(Mockito.any(User.class))).willReturn(validUser);
+		BDDMockito.given(userService.saveNewUser(Mockito.any(NewUserDTO.class))).willReturn(validUser);
 		BDDMockito.given(userMapper.userToUserDTO(Mockito.any(User.class))).willReturn(validUserDTO);
 
 		mockMvc.perform(post("/api/v1/users").content(validUserJSON).contentType(MediaType.APPLICATION_JSON))
@@ -98,7 +100,7 @@ class UserControllerTest {
 	
 	@Test
 	void testCreateNewUserUnique() throws Exception {
-		BDDMockito.given(userService.save(Mockito.any(User.class))).willThrow(UniqueConstraintViolatedException.class);
+		BDDMockito.given(userService.saveNewUser(Mockito.any(NewUserDTO.class))).willThrow(UniqueConstraintViolatedException.class);
 
 		mockMvc.perform(post("/api/v1/users").content(validUserJSON).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest()).andReturn();
