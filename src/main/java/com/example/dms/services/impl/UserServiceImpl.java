@@ -3,7 +3,6 @@ package com.example.dms.services.impl;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.dms.api.dtos.user.NewUserDTO;
@@ -18,12 +17,15 @@ import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 @Service
 public class UserServiceImpl extends EntityCrudServiceImpl<User> implements UserService{
 
-	@Autowired
 	UserRepository userRepository;
-	
-	@Autowired
 	UserMapper userMapper;
 	
+	public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+		super();
+		this.userRepository = userRepository;
+		this.userMapper = userMapper;
+	}
+
 	@Override
 	public User findByUsername(String username) {
 		Optional<User> foundUser = userRepository.findByUsername(username);

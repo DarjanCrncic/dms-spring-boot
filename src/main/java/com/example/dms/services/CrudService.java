@@ -2,7 +2,9 @@ package com.example.dms.services;
 
 import java.util.List;
 
-public interface CrudService<T, ID> {
+import com.example.dms.domain.BaseEntity;
+
+public interface CrudService<T extends BaseEntity, ID> {
 	List<T> findAll();
 	
 	T findById(ID id);

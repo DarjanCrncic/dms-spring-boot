@@ -14,4 +14,6 @@ public class NewDocumentDTO {
 	@NotBlank
 	@Length(min = Constants.MINLENGTH, max = 32, message = "Ivalid object name length, document name must have atleast " + Constants.MINLENGTH + " characters.")
 	private String objectName;
+	
+	private String description;
 }

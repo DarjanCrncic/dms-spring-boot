@@ -7,10 +7,11 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.example.dms.domain.BaseEntity;
 import com.example.dms.services.CrudService;
 import com.example.dms.utils.exceptions.NotFoundException;
 
-public class EntityCrudServiceImpl<T> implements CrudService<T, UUID>{
+public abstract class EntityCrudServiceImpl<T extends BaseEntity> implements CrudService<T, UUID>{
 
 	@Autowired
 	JpaRepository<T, UUID> repository;

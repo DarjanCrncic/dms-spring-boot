@@ -3,7 +3,6 @@ package com.example.dms.services.impl;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,9 +16,13 @@ import com.example.dms.utils.exceptions.InternalException;
 @Service
 public class DocumentServiceImpl extends EntityCrudServiceImpl<Document> implements DocumentService{
 
-	@Autowired
 	UserService userService;
-	
+
+	public DocumentServiceImpl(UserService userService) {
+		super();
+		this.userService = userService;
+	}
+
 	@Override
 	public Document createNewDocument(NewDocumentDTO newDocumentDTO) {
 		// TODO: Refactor to use mapper instead of creating a new instance.
