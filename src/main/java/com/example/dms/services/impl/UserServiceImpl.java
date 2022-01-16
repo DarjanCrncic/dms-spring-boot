@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.api.mappers.UserMapper;
-import com.example.dms.domain.User;
+import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.NotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @Service
-public class UserServiceImpl extends EntityCrudServiceImpl<User> implements UserService{
+public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser> implements UserService{
 
 	UserRepository userRepository;
 	UserMapper userMapper;
@@ -27,8 +27,8 @@ public class UserServiceImpl extends EntityCrudServiceImpl<User> implements User
 	}
 
 	@Override
-	public User findByUsername(String username) {
-		Optional<User> foundUser = userRepository.findByUsername(username);
+	public DmsUser findByUsername(String username) {
+		Optional<DmsUser> foundUser = userRepository.findByUsername(username);
 		if(foundUser.isPresent()) {
 			return foundUser.get();
 		}
@@ -36,8 +36,8 @@ public class UserServiceImpl extends EntityCrudServiceImpl<User> implements User
 	}
 
 	@Override
-	public User findByEmail(String email) {
-		Optional<User> foundUser = userRepository.findByEmail(email);
+	public DmsUser findByEmail(String email) {
+		Optional<DmsUser> foundUser = userRepository.findByEmail(email);
 		if(foundUser.isPresent()) {
 			return foundUser.get();
 		}
@@ -45,8 +45,8 @@ public class UserServiceImpl extends EntityCrudServiceImpl<User> implements User
 	}
 
 	@Override
-	public User saveNewUser(NewUserDTO userDTO) {
-		User user = userMapper.newUserDTOToUser(userDTO);
+	public DmsUser saveNewUser(NewUserDTO userDTO) {
+		DmsUser user = userMapper.newUserDTOToUser(userDTO);
 		if (userRepository.findByEmail(user.getEmail()).isPresent()) {
 			throw new UniqueConstraintViolatedException("Following field is not unique: email, value: " + user.getEmail());
 		}
@@ -57,8 +57,8 @@ public class UserServiceImpl extends EntityCrudServiceImpl<User> implements User
 	}
 
 	@Override
-	public User updateUser(UpdateUserDTO userDTO, UUID id) {
-		User user = this.findById(id);
+	public DmsUser updateUser(UpdateUserDTO userDTO, UUID id) {
+		DmsUser user = this.findById(id);
 		user.setEmail(userDTO.getEmail());
 		user.setFirstName(userDTO.getFirstName());
 		user.setLastName(userDTO.getLastName());

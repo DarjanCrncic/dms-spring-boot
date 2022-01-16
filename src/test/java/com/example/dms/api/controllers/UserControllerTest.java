@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UserDTO;
 import com.example.dms.api.mappers.UserMapper;
-import com.example.dms.domain.User;
+import com.example.dms.domain.DmsUser;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.NotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
@@ -39,13 +39,13 @@ class UserControllerTest {
 	@Autowired
 	MockMvc mockMvc;
 
-	User validUser;
+	DmsUser validUser;
 	UserDTO validUserDTO;
 	String validUserJSON;
 
 	@BeforeEach
 	void setUp() {
-		validUser = new User("dcrncic", "12345", "Darjan", "Crnčić", "darjan.crncic@gmail.com");
+		validUser = new DmsUser("dcrncic", "12345", "Darjan", "Crnčić", "darjan.crncic@gmail.com");
 		validUser.setId(UUID.randomUUID());
 
 		validUserDTO = new UserDTO(validUser.getId(), "dcrncic", "Darjan", "Crnčić", "darjan.crncic@gmail.com", LocalDateTime.now(), LocalDateTime.now());
@@ -57,7 +57,7 @@ class UserControllerTest {
 	void testGetUserById() throws Exception {
 
 		BDDMockito.given(userService.findById(Mockito.any())).willReturn(validUser);
-		BDDMockito.given(userMapper.userToUserDTO(Mockito.any(User.class))).willReturn(validUserDTO);
+		BDDMockito.given(userMapper.userToUserDTO(Mockito.any(DmsUser.class))).willReturn(validUserDTO);
 
 		mockMvc.perform(get("/api/v1/users/{id}", validUser.getId())).andExpect(status().isOk())
 				.andExpect(jsonPath("$.id", is(validUser.getId().toString())))
@@ -75,7 +75,7 @@ class UserControllerTest {
 	@Test
 	void testGetUserByUsername() throws Exception {
 		BDDMockito.given(userService.findByUsername(Mockito.any(String.class))).willReturn(validUser);
-		BDDMockito.given(userMapper.userToUserDTO(Mockito.any(User.class))).willReturn(validUserDTO);
+		BDDMockito.given(userMapper.userToUserDTO(Mockito.any(DmsUser.class))).willReturn(validUserDTO);
 
 		mockMvc.perform(get("/api/v1/users").param("username", validUser.getUsername())).andExpect(status().isOk())
 				.andExpect(jsonPath("$.id", is(validUser.getId().toString())))
@@ -92,7 +92,7 @@ class UserControllerTest {
 	@Test
 	void testCreateNewUser() throws Exception {
 		BDDMockito.given(userService.saveNewUser(Mockito.any(NewUserDTO.class))).willReturn(validUser);
-		BDDMockito.given(userMapper.userToUserDTO(Mockito.any(User.class))).willReturn(validUserDTO);
+		BDDMockito.given(userMapper.userToUserDTO(Mockito.any(DmsUser.class))).willReturn(validUserDTO);
 
 		mockMvc.perform(post("/api/v1/users").content(validUserJSON).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()).andReturn();

@@ -24,7 +24,7 @@ import com.example.dms.api.dtos.document.DocumentDTO;
 import com.example.dms.api.dtos.document.DocumentFileDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
-import com.example.dms.domain.Document;
+import com.example.dms.domain.DmsDocument;
 import com.example.dms.services.DocumentService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
@@ -41,7 +41,7 @@ public class DocumentController {
 	@PostMapping("/")
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public DocumentDTO createNewDocument(@Valid @RequestBody NewDocumentDTO newDocumentDTO) {
-		Document newDocument = documentService.createNewDocument(newDocumentDTO);
+		DmsDocument newDocument = documentService.createNewDocument(newDocumentDTO);
 		return documentMapper.documentToDocumentDTO(newDocument);
 	}
 
@@ -62,7 +62,7 @@ public class DocumentController {
 
 	@GetMapping("/{id}/download")
 	public ResponseEntity<byte[]> downloadDocumentContent(@PathVariable UUID id) {
-		Document document = documentService.findById(id);
+		DmsDocument document = documentService.findById(id);
 		documentService.checkIsDocumentValidForDownload(document);
 		return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getOriginalFileName() + "\"")

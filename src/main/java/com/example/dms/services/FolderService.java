@@ -2,12 +2,12 @@ package com.example.dms.services;
 
 import java.util.UUID;
 
-import com.example.dms.domain.DMSFolder;
+import com.example.dms.domain.DmsFolder;
 
-public interface FolderService extends CrudService<DMSFolder, UUID>{
+public interface FolderService extends CrudService<DmsFolder, UUID>{
 	
-	DMSFolder findByPath(String path);
+	DmsFolder findByPath(String path);
 
-	DMSFolder createNewFolder(String path);
+	DmsFolder createNewFolder(String path);
 	
 }

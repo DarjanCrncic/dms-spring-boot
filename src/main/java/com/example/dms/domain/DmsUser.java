@@ -30,7 +30,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Entity
-public class User extends BaseEntity {
+public class DmsUser extends BaseEntity {
 
 	@NotBlank
 	@NonNull
@@ -64,5 +64,5 @@ public class User extends BaseEntity {
 	@ToString.Exclude
 	@JsonIgnore // TODO: change this to use JsonView
 	@Builder.Default
-	private Set<DMSGroup> groups = new HashSet<>();
+	private Set<DmsGroup> groups = new HashSet<>();
 }

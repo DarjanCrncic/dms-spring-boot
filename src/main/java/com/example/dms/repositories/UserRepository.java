@@ -6,13 +6,13 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.dms.domain.User;
+import com.example.dms.domain.DmsUser;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID>{
+public interface UserRepository extends JpaRepository<DmsUser, UUID>{
 
-	Optional<User> findByUsername(String username);
+	Optional<DmsUser> findByUsername(String username);
 
-	Optional<User> findByEmail(String email);
+	Optional<DmsUser> findByEmail(String email);
 
 }

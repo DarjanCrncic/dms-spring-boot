@@ -8,7 +8,7 @@ import org.mapstruct.factory.Mappers;
 
 import com.example.dms.api.dtos.document.DocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
-import com.example.dms.domain.Document;
+import com.example.dms.domain.DmsDocument;
 
 @Mapper(uses = UserMapper.class)
 public interface DocumentMapper {
@@ -16,16 +16,16 @@ public interface DocumentMapper {
 	DocumentMapper INSTANCE = Mappers.getMapper(DocumentMapper.class);
 	
 	@Mapping(target = "content", ignore = true)
-	Document documentDTOToDocument(DocumentDTO documentDTO);
+	DmsDocument documentDTOToDocument(DocumentDTO documentDTO);
 	
-	DocumentDTO documentToDocumentDTO(Document document);
+	DocumentDTO documentToDocumentDTO(DmsDocument document);
 	
 	@Mapping(target = "creator", ignore = true)
 	@Mapping(target = "content", ignore = true)
 	@Mapping(target = "contentSize", ignore = true)
 	@Mapping(target = "contentType", ignore = true)
 	@Mapping(target = "originalFileName", ignore = true)
-	Document newDocumentDTOToDocument(NewDocumentDTO documentDTO);
+	DmsDocument newDocumentDTOToDocument(NewDocumentDTO documentDTO);
 	
-	List<DocumentDTO> documentListToDocumentDTOList(List<Document> list);
+	List<DocumentDTO> documentListToDocumentDTOList(List<DmsDocument> list);
 }

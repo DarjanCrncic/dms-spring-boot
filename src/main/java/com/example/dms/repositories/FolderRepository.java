@@ -5,10 +5,10 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.dms.domain.DMSFolder;
+import com.example.dms.domain.DmsFolder;
 
-public interface FolderRepository extends JpaRepository<DMSFolder, UUID>{
+public interface FolderRepository extends JpaRepository<DmsFolder, UUID>{
 	
-	Optional<DMSFolder> findByPath(String path);
+	Optional<DmsFolder> findByPath(String path);
 
 }

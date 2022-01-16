@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper=true)
 @Builder
 @Entity
-public class DMSGroup extends BaseEntity {
+public class DmsGroup extends BaseEntity {
 
 	@NotEmpty
 	@Length(min = 5, max = 32)
@@ -39,5 +39,5 @@ public class DMSGroup extends BaseEntity {
 	@JoinTable(name = "user_groups", joinColumns = { @JoinColumn(name = "group_id") }, 
 			inverseJoinColumns = { @JoinColumn(name = "user_id") })
 	@Default
-	private Set<User> members = new HashSet<>();
+	private Set<DmsUser> members = new HashSet<>();
 }

@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper=true)
 @Builder
 @Entity
-public class DMSType extends BaseEntity{
+public class DmsType extends BaseEntity{
 	
 	@NotEmpty
 	@Length(min = 5, max = 32)

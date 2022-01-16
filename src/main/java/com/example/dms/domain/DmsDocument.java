@@ -1,5 +1,6 @@
 package com.example.dms.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
@@ -26,13 +27,13 @@ import lombok.RequiredArgsConstructor;
 @EqualsAndHashCode(callSuper=true)
 @Builder
 @Entity
-public class Document extends BaseEntity{
+public class DmsDocument extends BaseEntity{
 
 	@ManyToOne
 	@JoinColumn(name = "creator_id")
 	@NonNull
 	@JsonIgnore
-	private User creator;
+	private DmsUser creator;
 	
 	@NotBlank
 	@Length(min = Constants.MINLENGTH, max = 32, message = "Ivalid object name length, document name must have atleast " 
@@ -52,4 +53,10 @@ public class Document extends BaseEntity{
 	private String contentType = null;
 	@Builder.Default
 	private String originalFileName = null;
+	
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "parent_folder_id")
+	@Builder.Default
+	private DmsFolder parentFolder = null;
+	
 }

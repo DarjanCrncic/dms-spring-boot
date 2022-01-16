@@ -1,4 +1,4 @@
-package com.example.dms.services;
+package com.example.dms.services.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -12,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.api.mappers.UserMapper;
-import com.example.dms.domain.User;
+import com.example.dms.domain.DmsUser;
+import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.NotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
@@ -25,7 +26,7 @@ class UserServiceIntegrationTest {
 	@Autowired
 	UserService userService;
 	
-	User user;
+	DmsUser user;
 	
 	@BeforeEach
 	void setUp() {
@@ -46,7 +47,7 @@ class UserServiceIntegrationTest {
 	@Transactional
 	void userUpdateTest() {
 		
-		User updatedUser = userService.updateUser(new UpdateUserDTO("testuser2", "Darjana", "Crnčića", "test.user@gmaila.com"), user.getId());
+		DmsUser updatedUser = userService.updateUser(new UpdateUserDTO("testuser2", "Darjana", "Crnčića", "test.user@gmaila.com"), user.getId());
 
 		assertEquals(user.getId(), updatedUser.getId());
 		assertEquals(user.getPassword(), updatedUser.getPassword());

@@ -21,7 +21,7 @@ import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.api.dtos.user.UserDTO;
 import com.example.dms.api.mappers.UserMapper;
-import com.example.dms.domain.User;
+import com.example.dms.domain.DmsUser;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
@@ -37,7 +37,7 @@ public class UserController {
 
 	@GetMapping
 	public UserDTO findUserUnique(@RequestParam Optional<String> username, @RequestParam Optional<String> email) {
-		User user = null;
+		DmsUser user = null;
 		if (username.isPresent())
 			user = userService.findByUsername(username.get());
 		else if (email.isPresent())

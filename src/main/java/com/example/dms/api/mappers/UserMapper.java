@@ -8,7 +8,7 @@ import org.mapstruct.factory.Mappers;
 
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UserDTO;
-import com.example.dms.domain.User;
+import com.example.dms.domain.DmsUser;
 
 @Mapper
 public interface UserMapper {
@@ -17,12 +17,12 @@ public interface UserMapper {
 	
 	@Mapping(target = "groups", ignore = true)
 	@Mapping(target = "password", ignore = true)
-	User userDTOToUser(UserDTO userDTO);
+	DmsUser userDTOToUser(UserDTO userDTO);
 	
-	UserDTO userToUserDTO(User user);
+	UserDTO userToUserDTO(DmsUser user);
 	
-	List<UserDTO> userListToUserDTOList(List<User> list);
+	List<UserDTO> userListToUserDTOList(List<DmsUser> list);
 	
 	@Mapping(target = "groups", ignore = true)
-	User newUserDTOToUser(NewUserDTO newUserDTO);
+	DmsUser newUserDTOToUser(NewUserDTO newUserDTO);
 }
