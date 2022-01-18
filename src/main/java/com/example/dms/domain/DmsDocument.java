@@ -54,7 +54,7 @@ public class DmsDocument extends BaseEntity{
 	@Builder.Default
 	private String originalFileName = null;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.REFRESH)
 	@JoinColumn(name = "parent_folder_id")
 	@Builder.Default
 	private DmsFolder parentFolder = null;

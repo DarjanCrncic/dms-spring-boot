@@ -30,14 +30,14 @@ import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 @WebMvcTest(UserController.class)
 class UserControllerTest {
 
+	@Autowired
+	MockMvc mockMvc;
+
 	@MockBean
 	UserService userService;
 
 	@MockBean
 	UserMapper userMapper;
-
-	@Autowired
-	MockMvc mockMvc;
 
 	DmsUser validUser;
 	UserDTO validUserDTO;

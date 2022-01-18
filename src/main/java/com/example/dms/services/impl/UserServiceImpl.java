@@ -53,6 +53,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser> implements U
 		if (userRepository.findByUsername(user.getUsername()).isPresent()) {
 			throw new UniqueConstraintViolatedException("Following field is not unique: username, value: " + user.getUsername());
 		}
+		//TODO: Add automatic "home" folder creation for users
 		return userRepository.save(user);
 	}
 

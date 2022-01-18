@@ -9,5 +9,7 @@ public interface FolderService extends CrudService<DmsFolder, UUID>{
 	DmsFolder findByPath(String path);
 
 	DmsFolder createNewFolder(String path);
+
+	DmsFolder updateFolder(UUID id, String path);
 	
 }

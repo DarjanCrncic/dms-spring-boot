@@ -1,6 +1,7 @@
 package com.example.dms.services.impl;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,6 +14,7 @@ import com.example.dms.services.FolderService;
 import com.example.dms.utils.Constants;
 import com.example.dms.utils.exceptions.BadRequestException;
 import com.example.dms.utils.exceptions.NotFoundException;
+import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @Service
 public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder> implements FolderService {
@@ -35,12 +37,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder> implemen
 	@Override
 	@Transactional
 	public DmsFolder createNewFolder(String path) {
-		if (!validateFolderPath(path)) {
-			throw new BadRequestException("Folder path: '" + path + "' does not match required parameters.");
-		}
-		if (folderRepository.findByPath(path).isPresent()) {
-			throw new BadRequestException("Folder with path: '" + path + "' already exists.");
-		}
+		checkPath(path);
 		DmsFolder parentFolder = findByPath(getParentFolderPath(path));
 		
 		DmsFolder newFolder = DmsFolder.builder().path(path).build();
@@ -48,6 +45,23 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder> implemen
 		newFolder = folderRepository.save(newFolder);
 		
 		return newFolder;
+	}
+	
+	@Override
+	public DmsFolder updateFolder(UUID id, String path) {
+		checkPath(path);
+		DmsFolder oldFolder = findById(id);
+		oldFolder.setPath(path);
+		return save(oldFolder);
+	}
+	
+	private void checkPath(String path) {
+		if (!validateFolderPath(path)) {
+			throw new BadRequestException("Folder path: '" + path + "' does not match required parameters.");
+		}
+		if (folderRepository.findByPath(path).isPresent()) {
+			throw new UniqueConstraintViolatedException("Folder with path: '" + path + "' already exists.");
+		}
 	}
 	
 	public static boolean validateFolderPath(String path) {
@@ -60,5 +74,6 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder> implemen
 		int i = path.lastIndexOf("/");
 		return i==0 ? "/" : path.substring(0, i);
 	}
+
 
 }

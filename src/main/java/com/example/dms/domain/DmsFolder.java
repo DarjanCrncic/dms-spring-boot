@@ -37,18 +37,18 @@ public class DmsFolder extends BaseEntity {
 	@Pattern(regexp = Constants.FOLDER_PATH_REGEX)
 	private String path;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "parent_folder_id")
 	@Builder.Default
 	@JsonBackReference("subfolders")
 	private DmsFolder parentFolder = null;
 
-	@OneToMany(mappedBy = "parentFolder")
+	@OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	@JsonManagedReference("subfolders")
 	private List<DmsFolder> subfolders = new ArrayList<>();
 	
-	@OneToMany(mappedBy = "parentFolder")
+	@OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	@JsonManagedReference("documents")
 	private List<DmsDocument> documents = new ArrayList<>();
