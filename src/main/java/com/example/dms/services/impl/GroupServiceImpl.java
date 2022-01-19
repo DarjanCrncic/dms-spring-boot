@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.domain.DmsGroup;
 import com.example.dms.domain.DmsUser;
@@ -27,7 +26,6 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup> implements
 	}
 
 	@Override
-	@Transactional
 	public DmsGroup addUserToGroup(UUID groupId, UUID userId) {
 		DmsGroup group = findById(groupId);
 		DmsUser user = null;
@@ -37,7 +35,6 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup> implements
 	}
 	
 	@Override
-	@Transactional
 	public DmsGroup addUsersToGroup(UUID groupId, List<UUID> userIdList) {
 		DmsGroup group = findById(groupId);
 		DmsUser user = null;
