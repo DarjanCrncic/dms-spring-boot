@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -30,6 +31,7 @@ public class DmsGroup extends BaseEntity {
 
 	@NotEmpty
 	@Length(min = 5, max = 32)
+	@Column(unique = true)
 	private String groupName;
 	
 	@Default

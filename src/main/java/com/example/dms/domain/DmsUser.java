@@ -3,6 +3,7 @@ package com.example.dms.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -60,7 +61,7 @@ public class DmsUser extends BaseEntity {
 	@Column(unique = true)
 	private String email;
 
-	@ManyToMany(mappedBy = "members")
+	@ManyToMany(mappedBy = "members", cascade = CascadeType.PERSIST)
 	@ToString.Exclude
 	@JsonIgnore // TODO: change this to use JsonView
 	@Builder.Default
