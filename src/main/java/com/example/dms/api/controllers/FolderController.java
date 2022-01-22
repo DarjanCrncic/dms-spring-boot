@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,12 +55,12 @@ public class FolderController {
 	
 	@PostMapping("/")
 	@ResponseStatus(HttpStatus.CREATED)
-	public DmsFolder createNewFolder(@RequestBody NewFolderDTO newFolderDTO) {
+	public DmsFolder createNewFolder(@RequestBody @Valid NewFolderDTO newFolderDTO) {
 		return folderService.createNewFolder(newFolderDTO.getPath());
 	}
 	
 	@PutMapping("/{id}")
-	public DmsFolder updateFolder(@PathVariable UUID id, @RequestBody NewFolderDTO newFolderDTO) {
+	public DmsFolder updateFolder(@PathVariable UUID id, @RequestBody @Valid NewFolderDTO newFolderDTO) {
 		return folderService.updateFolder(id, newFolderDTO.getPath()); 
 	}
 	

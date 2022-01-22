@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,13 +55,13 @@ public class GroupController {
 	
 	@PostMapping("/") 
 	@ResponseStatus(HttpStatus.CREATED)
-	public DmsGroup createNewGroup(@RequestBody NewGroupDTO groupDTO){
+	public DmsGroup createNewGroup(@RequestBody @Valid NewGroupDTO groupDTO){
 		return groupService.createNewGroup(groupMapper.newGroupDtoToGroup(groupDTO));
 	}
 	
 
 	@PutMapping("/{id}")
-	public DmsGroup updateGroup(@PathVariable UUID id, @RequestBody NewGroupDTO groupDTO) {
+	public DmsGroup updateGroup(@PathVariable UUID id, @RequestBody @Valid NewGroupDTO groupDTO) {
 		return groupService.updateGroup(id, groupDTO); 
 	}
 	
