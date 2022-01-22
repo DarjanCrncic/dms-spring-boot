@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.example.dms.api.dtos.group.NewGroupDTO;
 import com.example.dms.domain.DmsGroup;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.GroupRepository;
@@ -61,5 +62,13 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup> implements
 			throw new UniqueConstraintViolatedException("Following field is not unique: groupName, value: '" + dmsGroup.getGroupName() + "'");
 		}
 		return groupRepository.save(dmsGroup);
+	}
+
+	@Override
+	public DmsGroup updateGroup(UUID id, NewGroupDTO groupDTO) {
+		DmsGroup existingGroup = findById(id);
+		existingGroup.setDescription(groupDTO.getDescription());
+		existingGroup.setGroupName(groupDTO.getGroupName());
+		return groupRepository.save(existingGroup);
 	}
 }

@@ -5,6 +5,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -93,7 +94,7 @@ public class FolderControllerTest {
 	void testUpdateFolder() throws Exception {
 		BDDMockito.given(folderService.updateFolder(Mockito.any(UUID.class), Mockito.anyString())).willReturn(validFolder);
 
-		mockMvc.perform(post("/api/v1/folders/{id}", UUID.randomUUID()).content("\"path\":\"/test\"").contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put("/api/v1/folders/{id}", UUID.randomUUID()).content("\"path\":\"/test\"").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.path", is(validFolder.getPath())));
 
 	}
