@@ -23,9 +23,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.example.dms.api.dtos.folder.NewFolderDTO;
 import com.example.dms.domain.DmsFolder;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.services.FolderService;
+import com.example.dms.utils.Utils;
 
 @WebMvcTest(FolderController.class)
 public class FolderControllerTest {
@@ -43,7 +45,7 @@ public class FolderControllerTest {
 
 	@BeforeEach
 	void setUp() {
-		validUser = new DmsUser("dcrncic", "12345", "Darjan", "Crnčić", "darjan.crncic@gmail.com");
+		validUser = DmsUser.builder().username("dcrncic").password("12345").firstName("Darjan").lastName("Crnčić").email("darjan.crncic@gmail.com").build();
 		validUser.setId(UUID.randomUUID());
 
 		rootFolder = DmsFolder.builder().path("/").build();
@@ -84,8 +86,7 @@ public class FolderControllerTest {
 	@Test
 	void testSaveNewFolder() throws Exception {
 		BDDMockito.given(folderService.createNewFolder(Mockito.anyString())).willReturn(validFolder);
-
-		mockMvc.perform(post("/api/v1/folders/").content("\"path\":\"/test\"").contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(post("/api/v1/folders/").content(Utils.stringify(new NewFolderDTO("/test"))).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()).andExpect(jsonPath("$.path", is(validFolder.getPath())));
 
 	}
@@ -94,7 +95,7 @@ public class FolderControllerTest {
 	void testUpdateFolder() throws Exception {
 		BDDMockito.given(folderService.updateFolder(Mockito.any(UUID.class), Mockito.anyString())).willReturn(validFolder);
 
-		mockMvc.perform(put("/api/v1/folders/{id}", UUID.randomUUID()).content("\"path\":\"/test\"").contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put("/api/v1/folders/{id}", UUID.randomUUID()).content(Utils.stringify(new NewFolderDTO("/test"))).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.path", is(validFolder.getPath())));
 
 	}
@@ -105,4 +106,5 @@ public class FolderControllerTest {
 
 		mockMvc.perform(delete("/api/v1/folders/{id}", UUID.randomUUID())).andExpect(status().isOk());
 	}
+
 }

@@ -6,9 +6,11 @@ import org.hibernate.validator.constraints.Length;
 
 import com.example.dms.utils.Constants;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class NewDocumentDTO {
 
 	@NotBlank

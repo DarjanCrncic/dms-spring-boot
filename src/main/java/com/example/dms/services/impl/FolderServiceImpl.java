@@ -17,6 +17,7 @@ import com.example.dms.utils.exceptions.NotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @Service
+@Transactional
 public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder> implements FolderService {
 
 	FolderRepository folderRepository;
@@ -35,7 +36,6 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder> implemen
 	}
 
 	@Override
-	@Transactional
 	public DmsFolder createNewFolder(String path) {
 		checkPath(path);
 		DmsFolder parentFolder = findByPath(getParentFolderPath(path));

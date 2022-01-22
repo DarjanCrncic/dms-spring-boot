@@ -1,5 +1,7 @@
 package com.example.dms.domain;
 
+import java.util.UUID;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -14,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -31,8 +34,8 @@ public class DmsDocument extends BaseEntity{
 
 	@ManyToOne
 	@JoinColumn(name = "creator_id")
-	@NonNull
 	@JsonIgnore
+	@NonNull
 	private DmsUser creator;
 	
 	@NotBlank
@@ -45,18 +48,26 @@ public class DmsDocument extends BaseEntity{
 	private String description = null; 
 
 	@Lob
-	@Builder.Default
+	@Default
 	private byte[] content = null;
-	@Builder.Default
+	@Default
 	private Long contentSize = 0l;
-	@Builder.Default
+	@Default
 	private String contentType = null;
-	@Builder.Default
+	@Default
 	private String originalFileName = null;
 	
 	@ManyToOne(cascade = CascadeType.REFRESH)
 	@JoinColumn(name = "parent_folder_id")
-	@Builder.Default
+	@Default
 	private DmsFolder parentFolder = null;
 	
+	@Default
+	private UUID rootId = null;
+	@Default
+	private UUID predecessorId = null;
+	@Default
+	private boolean imutable = false;
+	@Default 
+	private int version = 1;
 }

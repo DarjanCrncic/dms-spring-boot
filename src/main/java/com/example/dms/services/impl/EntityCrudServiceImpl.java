@@ -6,11 +6,12 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.domain.BaseEntity;
 import com.example.dms.services.CrudService;
 import com.example.dms.utils.exceptions.NotFoundException;
-
+@Transactional
 public abstract class EntityCrudServiceImpl<T extends BaseEntity> implements CrudService<T, UUID>{
 
 	@Autowired
@@ -44,4 +45,9 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity> implements Cru
 		repository.deleteById(id);
 	}
 
+	@Override
+	public T refresh(T object) {
+		//TODO: maybe use entity manager
+		return findById(object.getId());
+	}
 }

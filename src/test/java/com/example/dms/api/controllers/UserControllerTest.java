@@ -45,7 +45,7 @@ class UserControllerTest {
 
 	@BeforeEach
 	void setUp() {
-		validUser = new DmsUser("dcrncic", "12345", "Darjan", "Crnčić", "darjan.crncic@gmail.com");
+		validUser = DmsUser.builder().username("dcrncic").password("12345").firstName("Darjan").lastName("Crnčić").email("darjan.crncic@gmail.com").build();
 		validUser.setId(UUID.randomUUID());
 
 		validUserDTO = new UserDTO(validUser.getId(), "dcrncic", "Darjan", "Crnčić", "darjan.crncic@gmail.com", LocalDateTime.now(), LocalDateTime.now());

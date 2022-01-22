@@ -15,4 +15,5 @@ public interface CrudService<T extends BaseEntity, ID> {
 	
 	void deleteById(ID id);
 
+	T refresh(T object);
 }

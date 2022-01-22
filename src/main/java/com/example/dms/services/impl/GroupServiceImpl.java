@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.api.dtos.group.NewGroupDTO;
 import com.example.dms.domain.DmsGroup;
@@ -15,6 +16,7 @@ import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @Service
+@Transactional
 public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup> implements GroupService{
 
 	GroupRepository groupRepository;
