@@ -11,8 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -22,6 +24,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.dms.api.dtos.document.DocumentDTO;
 import com.example.dms.api.dtos.document.DocumentFileDTO;
+import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.domain.DmsDocument;
@@ -68,5 +71,15 @@ public class DocumentController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getOriginalFileName() + "\"")
                 .contentType(MediaType.valueOf(document.getContentType()))
                 .body(document.getContent());
+	}
+	
+	@PutMapping("/{id}")
+	public DmsDocument updateDocumentPut(@PathVariable UUID id, @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
+		return documentService.updateDocument(id, modifyDocumentDTO, false);
+	}
+	
+	@PatchMapping("/{id}")
+	public DmsDocument updateDocumentPatch(@PathVariable UUID id, @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
+		return documentService.updateDocument(id, modifyDocumentDTO, true);
 	}
 }
