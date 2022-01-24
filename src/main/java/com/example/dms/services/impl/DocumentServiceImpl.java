@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
+import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.domain.DmsDocument;
 import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.services.DocumentService;
@@ -23,28 +25,47 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument> impl
 
 	UserService userService;
 	DocumentRepository documentRepository;
+	DocumentMapper documentMapper;
 
-	public DocumentServiceImpl(UserService userService, DocumentRepository documentRepository) {
+	public DocumentServiceImpl(UserService userService, DocumentRepository documentRepository,
+			DocumentMapper documentMapper) {
 		super();
 		this.userService = userService;
 		this.documentRepository = documentRepository;
+		this.documentMapper = documentMapper;
 	}
 
 	@Override
 	public DmsDocument createNewDocument(NewDocumentDTO newDocumentDTO) {
-		// TODO: Refactor to use mapper instead of creating a new instance.
 		// TODO: Remove hardcoded user.
-		DmsDocument newDocumentObject = DmsDocument.builder().creator(userService.findByUsername("dcrncic"))
-				.objectName(newDocumentDTO.getObjectName()).build();
+		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
+		newDocumentObject.setCreator(userService.findByUsername("dcrncic"));
 		DmsDocument savedDocumentObject = save(newDocumentObject);
 		savedDocumentObject.setRootId(savedDocumentObject.getId());
 		savedDocumentObject.setPredecessorId(savedDocumentObject.getId());
 		return save(savedDocumentObject);
 	}
+	
+	@Override
+	public DmsDocument updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
+		DmsDocument doc = findById(id);
+		if (doc.isImutable()) {
+			throw new BadRequestException("This version of the document is immutable and cannot be modified.");
+		}
+		if (patch) {
+			documentMapper.updateDocumentPatch(modifyDocumentDTO, doc);
+		} else {
+			documentMapper.updateDocumentPut(modifyDocumentDTO, doc);
+		}
+		return save(doc);
+	}
 
 	@Override
 	public void uploadFile(UUID id, MultipartFile file) {
 		DmsDocument doc = findById(id);
+		if (doc.isImutable()) {
+			throw new BadRequestException("Object is immutable and you cannot add content to it.");
+		}
 		
 		String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
 		try {

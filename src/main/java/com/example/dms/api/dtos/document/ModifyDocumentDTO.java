@@ -8,12 +8,16 @@ import org.hibernate.validator.constraints.Length;
 
 import com.example.dms.utils.Constants;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Builder
-public class NewDocumentDTO {
+@AllArgsConstructor
+public class ModifyDocumentDTO {
 
 	@NotBlank
 	@Length(min = Constants.MINLENGTH, max = 32, message = "Ivalid object name length, document name must have atleast " + Constants.MINLENGTH + " characters.")

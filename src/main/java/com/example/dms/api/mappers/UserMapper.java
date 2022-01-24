@@ -15,6 +15,7 @@ public interface UserMapper {
 
 	UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 	
+	@Mapping(target = "documents", ignore = true)
 	@Mapping(target = "groups", ignore = true)
 	@Mapping(target = "password", ignore = true)
 	DmsUser userDTOToUser(UserDTO userDTO);
@@ -23,6 +24,7 @@ public interface UserMapper {
 	
 	List<UserDTO> userListToUserDTOList(List<DmsUser> list);
 	
+	@Mapping(target = "documents", ignore = true)
 	@Mapping(target = "groups", ignore = true)
 	DmsUser newUserDTOToUser(NewUserDTO newUserDTO);
 }

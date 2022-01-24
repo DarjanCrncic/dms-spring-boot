@@ -1,14 +1,21 @@
 package com.example.dms.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Length;
 
 import com.example.dms.utils.Constants;
@@ -20,13 +27,11 @@ import lombok.Builder.Default;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@RequiredArgsConstructor
 @EqualsAndHashCode(callSuper=true)
 @Builder
 @Entity
@@ -35,18 +40,27 @@ public class DmsDocument extends BaseEntity{
 	@ManyToOne
 	@JoinColumn(name = "creator_id")
 	@JsonIgnore
-	@NonNull
-	private DmsUser creator;
+	@NotNull
+	@Default
+	private DmsUser creator = null;
 	
 	@NotBlank
 	@Length(min = Constants.MINLENGTH, max = 32, message = "Ivalid object name length, document name must have atleast " 
 			+ Constants.MINLENGTH + " characters.")
-	@NonNull
+	@NotEmpty
 	private String objectName;
 	
-	@Builder.Default
+	@Default
 	private String description = null; 
+	
+	@Default
+	@ElementCollection
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "dms_document_id")
+	@ToString.Exclude
+	private List<String> keywords = new ArrayList<>();
 
+	// internal attributes
 	@Lob
 	@Default
 	private byte[] content = null;
