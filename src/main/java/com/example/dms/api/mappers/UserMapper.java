@@ -11,7 +11,7 @@ import com.example.dms.api.dtos.user.UserDTO;
 import com.example.dms.domain.DmsUser;
 
 @Mapper
-public interface UserMapper {
+public interface UserMapper extends MapperInterface<DmsUser, UserDTO>{
 
 	UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 	
@@ -20,9 +20,11 @@ public interface UserMapper {
 	@Mapping(target = "password", ignore = true)
 	DmsUser userDTOToUser(UserDTO userDTO);
 	
-	UserDTO userToUserDTO(DmsUser user);
+	@Override
+	UserDTO entityToDto(DmsUser user);
 	
-	List<UserDTO> userListToUserDTOList(List<DmsUser> list);
+	@Override
+	List<UserDTO> entityListToDtoList(List<DmsUser> list);
 	
 	@Mapping(target = "documents", ignore = true)
 	@Mapping(target = "groups", ignore = true)

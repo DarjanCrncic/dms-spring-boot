@@ -19,9 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.dms.api.dtos.group.DmsGroupDTO;
 import com.example.dms.api.dtos.group.NewGroupDTO;
-import com.example.dms.api.mappers.GroupMapper;
-import com.example.dms.domain.DmsGroup;
 import com.example.dms.services.GroupService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
@@ -32,16 +31,13 @@ public class GroupController {
 	@Autowired
 	GroupService groupService;
 	
-	@Autowired
-	GroupMapper groupMapper;
-	
 	@GetMapping("/")
-	public List<DmsGroup> getAllGroups() {
+	public List<DmsGroupDTO> getAllGroups() {
 		return groupService.findAll();
 	}
 	
 	@GetMapping("/search") 
-	public DmsGroup getGroupByReqParam(@RequestParam Optional<String> name) {
+	public DmsGroupDTO getGroupByReqParam(@RequestParam Optional<String> name) {
 		if (name.isPresent()) {
 			return groupService.findGroupByGroupName(name.get());
 		}
@@ -49,19 +45,19 @@ public class GroupController {
 	}
 	
 	@GetMapping("/{id}")
-	public DmsGroup getGroupById(@PathVariable UUID id) {
+	public DmsGroupDTO getGroupById(@PathVariable UUID id) {
 		return groupService.findById(id);
 	}
 	
 	@PostMapping("/") 
 	@ResponseStatus(HttpStatus.CREATED)
-	public DmsGroup createNewGroup(@RequestBody @Valid NewGroupDTO groupDTO){
-		return groupService.createNewGroup(groupMapper.newGroupDtoToGroup(groupDTO));
+	public DmsGroupDTO createNewGroup(@RequestBody @Valid NewGroupDTO groupDTO){
+		return groupService.createNewGroup(groupDTO);
 	}
 	
 
 	@PutMapping("/{id}")
-	public DmsGroup updateGroup(@PathVariable UUID id, @RequestBody @Valid NewGroupDTO groupDTO) {
+	public DmsGroupDTO updateGroup(@PathVariable UUID id, @RequestBody @Valid NewGroupDTO groupDTO) {
 		return groupService.updateGroup(id, groupDTO); 
 	}
 	
@@ -71,7 +67,7 @@ public class GroupController {
 	}
 	
 	@PostMapping("/users/{id}")
-	public DmsGroup addUsersToGroup(@PathVariable UUID id, @RequestBody List<UUID> idList) {
+	public DmsGroupDTO addUsersToGroup(@PathVariable UUID id, @RequestBody List<UUID> idList) {
 		return groupService.addUsersToGroup(id, idList);
 	}
 }

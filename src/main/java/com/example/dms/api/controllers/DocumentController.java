@@ -6,9 +6,7 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,7 +25,6 @@ import com.example.dms.api.dtos.document.DocumentFileDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
-import com.example.dms.domain.DmsDocument;
 import com.example.dms.services.DocumentService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
@@ -44,13 +41,12 @@ public class DocumentController {
 	@PostMapping("/")
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public DocumentDTO createNewDocument(@Valid @RequestBody NewDocumentDTO newDocumentDTO) {
-		DmsDocument newDocument = documentService.createNewDocument(newDocumentDTO);
-		return documentMapper.documentToDocumentDTO(newDocument);
+		return documentService.createNewDocument(newDocumentDTO);
 	}
 
 	@GetMapping("/")
 	public List<DocumentDTO> getAllDocuments() {
-		return documentMapper.documentListToDocumentDTOList(documentService.findAll());
+		return documentService.getAllDocuments();
 	}
 
 	@PostMapping("/{id}/upload")
@@ -65,21 +61,16 @@ public class DocumentController {
 
 	@GetMapping("/{id}/download")
 	public ResponseEntity<byte[]> downloadDocumentContent(@PathVariable UUID id) {
-		DmsDocument document = documentService.findById(id);
-		documentService.checkIsDocumentValidForDownload(document);
-		return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getOriginalFileName() + "\"")
-                .contentType(MediaType.valueOf(document.getContentType()))
-                .body(document.getContent());
+		return documentService.downloadContent(id);
 	}
 	
 	@PutMapping("/{id}")
-	public DmsDocument updateDocumentPut(@PathVariable UUID id, @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
+	public DocumentDTO updateDocumentPut(@PathVariable UUID id, @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
 		return documentService.updateDocument(id, modifyDocumentDTO, false);
 	}
 	
 	@PatchMapping("/{id}")
-	public DmsDocument updateDocumentPatch(@PathVariable UUID id, @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
+	public DocumentDTO updateDocumentPatch(@PathVariable UUID id, @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
 		return documentService.updateDocument(id, modifyDocumentDTO, true);
 	}
 }

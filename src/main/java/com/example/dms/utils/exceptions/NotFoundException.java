@@ -22,6 +22,6 @@ public class NotFoundException extends RuntimeException{
 	private static final long serialVersionUID = -7305813945482066539L;
 	
 	@NonNull
-	private String message = "User could not be found.";
+	private String message = "Entity with specified id could not be found.";
 	
 }

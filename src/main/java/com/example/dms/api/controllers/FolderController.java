@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.dtos.folder.NewFolderDTO;
-import com.example.dms.domain.DmsFolder;
 import com.example.dms.services.FolderService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
@@ -35,32 +35,30 @@ public class FolderController {
 	};
 	
 	@GetMapping("/")
-	public List<DmsFolder> getAllFoldersOrSubfolders(@RequestParam Optional<String> path) {
-		if (path.isPresent())
-			return folderService.findByPath(path.get()).getSubfolders();
+	public List<DmsFolderDTO> getAllFolders() {
 		return folderService.findAll();
 	}
 
 	@GetMapping("/search")
-	public DmsFolder getFolderBySearch(@RequestParam Optional<String> path) {
+	public DmsFolderDTO getFolderBySearch(@RequestParam Optional<String> path) {
 		if (path.isPresent())
 			return folderService.findByPath(path.get());
 		throw new BadRequestException("Request prameters for search are invalid.");
 	}
 	
 	@GetMapping("/{id}")
-	public DmsFolder getFolderById(@PathVariable UUID id) {
+	public DmsFolderDTO getFolderById(@PathVariable UUID id) {
 		return folderService.findById(id);
 	}
 	
 	@PostMapping("/")
 	@ResponseStatus(HttpStatus.CREATED)
-	public DmsFolder createNewFolder(@RequestBody @Valid NewFolderDTO newFolderDTO) {
+	public DmsFolderDTO createNewFolder(@RequestBody @Valid NewFolderDTO newFolderDTO) {
 		return folderService.createNewFolder(newFolderDTO.getPath());
 	}
 	
 	@PutMapping("/{id}")
-	public DmsFolder updateFolder(@PathVariable UUID id, @RequestBody @Valid NewFolderDTO newFolderDTO) {
+	public DmsFolderDTO updateFolder(@PathVariable UUID id, @RequestBody @Valid NewFolderDTO newFolderDTO) {
 		return folderService.updateFolder(id, newFolderDTO.getPath()); 
 	}
 	

@@ -3,19 +3,22 @@ package com.example.dms.services;
 import java.util.List;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
+import com.example.dms.api.dtos.group.DmsGroupDTO;
 import com.example.dms.api.dtos.group.NewGroupDTO;
 import com.example.dms.domain.DmsGroup;
 
-public interface GroupService extends CrudService<DmsGroup, UUID>{
+public interface GroupService extends CrudService<DmsGroup, DmsGroupDTO, UUID>{
 
-	DmsGroup createNewGroup(DmsGroup dmsGroup);
+	DmsGroupDTO createNewGroup(@Valid NewGroupDTO groupDTO);
 
-	DmsGroup findGroupByGroupName(String groupName);
+	DmsGroupDTO findGroupByGroupName(String groupName);
 
-	DmsGroup addUserToGroup(UUID groupId, UUID userId);
+	DmsGroupDTO addUserToGroup(UUID groupId, UUID userId);
 
-	DmsGroup addUsersToGroup(UUID groupId, List<UUID> userList);
+	DmsGroupDTO addUsersToGroup(UUID groupId, List<UUID> userList);
 
-	DmsGroup updateGroup(UUID id, NewGroupDTO groupDTO);
+	DmsGroupDTO updateGroup(UUID id, NewGroupDTO groupDTO);
 
 }

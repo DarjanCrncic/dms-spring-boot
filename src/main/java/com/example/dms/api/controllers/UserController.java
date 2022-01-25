@@ -1,5 +1,6 @@
 package com.example.dms.api.controllers;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,8 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.api.dtos.user.UserDTO;
-import com.example.dms.api.mappers.UserMapper;
-import com.example.dms.domain.DmsUser;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
@@ -30,36 +29,38 @@ import com.example.dms.utils.exceptions.BadRequestException;
 public class UserController {
 
 	@Autowired
-	UserMapper userMapper;
-
-	@Autowired
 	UserService userService;
-
+	
 	@GetMapping
+	public List<UserDTO> getAllUsers() {
+		return userService.findAll();
+	}
+
+	@GetMapping("/search")
 	public UserDTO findUserUnique(@RequestParam Optional<String> username, @RequestParam Optional<String> email) {
-		DmsUser user = null;
+		UserDTO user = null;
 		if (username.isPresent())
 			user = userService.findByUsername(username.get());
 		else if (email.isPresent())
 			user = userService.findByEmail(email.get());
 		else
 			throw new BadRequestException("Request has no username, id or email parameter.");
-		return userMapper.userToUserDTO(user);
+		return user;
 	}
 
 	@GetMapping("/{id}")
 	public UserDTO findUserById(@PathVariable UUID id) {
-		return userMapper.userToUserDTO(userService.findById(id));
+		return userService.findById(id);
 	}
 
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public UserDTO createNewUser(@Valid @RequestBody NewUserDTO userDTO) {
-		return userMapper.userToUserDTO(userService.saveNewUser(userDTO));
+		return userService.saveNewUser(userDTO);
 	}
 
 	@PutMapping("/{id}")
 	public UserDTO updateExistingUser(@RequestBody UpdateUserDTO userDTO, @PathVariable UUID id) {
-		return userMapper.userToUserDTO(userService.updateUser(userDTO, id));
+		return userService.updateUser(userDTO, id);
 	}
 }

@@ -20,6 +20,7 @@ import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.domain.DmsDocument;
+import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.services.DocumentService;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.BadRequestException;
@@ -35,10 +36,13 @@ class DocumentServiceIntegrationTest {
 
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	DocumentRepository documentRepository;
 
-	DmsDocument newDocument;
-	DmsDocument newVersion;
-	DmsDocument updatedDocument;
+	DocumentDTO newDocument;
+	DocumentDTO newVersion;
+	DocumentDTO updatedDocument;
 
 	@BeforeEach
 	void setUp() {
@@ -48,27 +52,17 @@ class DocumentServiceIntegrationTest {
 
 	@AfterEach
 	void cleanUp() {
-		if (newDocument != null)
-			documentService.delete(newDocument);
-		if (newVersion != null)
-			documentService.delete(newVersion);
-		if (updatedDocument != null) 
-			documentService.delete(updatedDocument);
-	}
-
-	@Test
-	void testDocumentToDocumentDTOMapping() {
-		DocumentDTO docDTO = documentMapper.documentToDocumentDTO(newDocument);
-
-		assertEquals(newDocument.getObjectName(), docDTO.getObjectName());
-		assertEquals(newDocument.getCreator().getId(), docDTO.getCreator().getId());
-
-		documentService.delete(newDocument);
+		if (newDocument != null && documentRepository.findById(newDocument.getId()).isPresent())
+			documentService.deleteById(newDocument.getId());
+		if (newVersion != null && documentRepository.findById(newVersion.getId()).isPresent())
+			documentService.deleteById(newVersion.getId());
+		if (updatedDocument != null && documentRepository.findById(updatedDocument.getId()).isPresent()) 
+			documentService.deleteById(updatedDocument.getId());
 	}
 
 	@Test
 	void saveNewDocumentTest() {
-		DmsDocument foundDocument = documentService.findById(newDocument.getId());
+		DmsDocument foundDocument = documentRepository.findById(newDocument.getId()).orElse(null);
 
 		assertEquals(newDocument.getObjectName(), foundDocument.getObjectName());
 		assertEquals(newDocument.getId(), foundDocument.getId());
@@ -78,7 +72,7 @@ class DocumentServiceIntegrationTest {
 	@Test
 	void testVersioning() {
 		newVersion = documentService.createNewVersion(newDocument.getId());
-		newDocument = documentService.refresh(newDocument);
+		newDocument = documentService.findById(newDocument.getId());
 
 		assertEquals(2, newVersion.getVersion());
 		assertEquals(newDocument.getObjectName(), newVersion.getObjectName());

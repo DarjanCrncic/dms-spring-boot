@@ -19,6 +19,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Length;
 
 import com.example.dms.utils.Constants;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -59,6 +60,17 @@ public class DmsDocument extends BaseEntity{
 	@JoinColumn(name = "dms_document_id")
 	@ToString.Exclude
 	private List<String> keywords = new ArrayList<>();
+	
+	@ManyToOne
+	@JoinColumn(name="type_id")
+	@Default
+	@JsonBackReference
+	private DmsType type = null;
+	
+	@ManyToOne(cascade = CascadeType.REFRESH)
+	@JoinColumn(name = "parent_folder_id")
+	@Default
+	private DmsFolder parentFolder = null;
 
 	// internal attributes
 	@Lob
@@ -70,11 +82,6 @@ public class DmsDocument extends BaseEntity{
 	private String contentType = null;
 	@Default
 	private String originalFileName = null;
-	
-	@ManyToOne(cascade = CascadeType.REFRESH)
-	@JoinColumn(name = "parent_folder_id")
-	@Default
-	private DmsFolder parentFolder = null;
 	
 	@Default
 	private UUID rootId = null;

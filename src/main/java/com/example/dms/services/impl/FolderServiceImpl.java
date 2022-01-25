@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.dms.api.dtos.folder.DmsFolderDTO;
+import com.example.dms.api.mappers.FolderMapper;
 import com.example.dms.domain.DmsFolder;
 import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.FolderService;
@@ -18,39 +20,40 @@ import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @Service
 @Transactional
-public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder> implements FolderService {
+public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolderDTO> implements FolderService {
 
 	FolderRepository folderRepository;
+	FolderMapper folderMapper;
 
-	public FolderServiceImpl(FolderRepository folderRepository) {
+	public FolderServiceImpl(FolderRepository folderRepository, FolderMapper folderMapper) {
+		super(folderRepository, folderMapper);
 		this.folderRepository = folderRepository;
 	}
 
 	@Override
-	public DmsFolder findByPath(String path) {
+	public DmsFolderDTO findByPath(String path) {
 		Optional<DmsFolder> folder = folderRepository.findByPath(path);
 		if (folder.isEmpty()) {
 			throw new NotFoundException("Folder with specified path: '" + path + "' was not found.");
 		}
-		return folder.get();
+		return folderMapper.entityToDto(folder.get());
 	}
 
 	@Override
-	public DmsFolder createNewFolder(String path) {
+	public DmsFolderDTO createNewFolder(String path) {
 		checkPath(path);
-		DmsFolder parentFolder = findByPath(getParentFolderPath(path));
+		DmsFolder parentFolder = folderRepository.findByPath(getParentFolderPath(path)).orElseThrow(NotFoundException::new);
 		
 		DmsFolder newFolder = DmsFolder.builder().path(path).build();
 		newFolder.setParentFolder(parentFolder);
-		newFolder = folderRepository.save(newFolder);
 		
-		return newFolder;
+		return this.save(newFolder);
 	}
 	
 	@Override
-	public DmsFolder updateFolder(UUID id, String path) {
+	public DmsFolderDTO updateFolder(UUID id, String path) {
 		checkPath(path);
-		DmsFolder oldFolder = findById(id);
+		DmsFolder oldFolder = folderRepository.findById(id).orElseThrow(NotFoundException::new);
 		oldFolder.setPath(path);
 		return save(oldFolder);
 	}

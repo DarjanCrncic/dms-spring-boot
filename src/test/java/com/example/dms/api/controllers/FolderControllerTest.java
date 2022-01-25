@@ -23,6 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.dtos.folder.NewFolderDTO;
 import com.example.dms.domain.DmsFolder;
 import com.example.dms.domain.DmsUser;
@@ -30,7 +31,7 @@ import com.example.dms.services.FolderService;
 import com.example.dms.utils.Utils;
 
 @WebMvcTest(FolderController.class)
-public class FolderControllerTest {
+class FolderControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
@@ -39,20 +40,20 @@ public class FolderControllerTest {
 	FolderService folderService;
 
 	DmsUser validUser;
-	DmsFolder rootFolder;
-	DmsFolder validFolder;
-	List<DmsFolder> folderList;
+	DmsFolderDTO rootFolder;
+	DmsFolderDTO validFolder;
+	List<DmsFolderDTO> folderList;
 
 	@BeforeEach
 	void setUp() {
 		validUser = DmsUser.builder().username("dcrncic").password("12345").firstName("Darjan").lastName("Crnčić").email("darjan.crncic@gmail.com").build();
 		validUser.setId(UUID.randomUUID());
 
-		rootFolder = DmsFolder.builder().path("/").build();
-		validFolder = DmsFolder.builder().path("/test").parentFolder(rootFolder).build();
-		rootFolder.getSubfolders().add(validFolder);
+		rootFolder = DmsFolderDTO.builder().path("/").build();
+		validFolder = DmsFolderDTO.builder().path("/test").parentFolder(DmsFolder.builder().path("/").build()).build();
+		rootFolder.getSubfolders().add(DmsFolder.builder().path("/test").parentFolder(DmsFolder.builder().path("/").build()).build());
 
-		folderList = new ArrayList<DmsFolder>();
+		folderList = new ArrayList<DmsFolderDTO>();
 		folderList.add(rootFolder);
 		folderList.add(validFolder);
 	}

@@ -15,7 +15,7 @@ import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.domain.DmsDocument;
 
 @Mapper(uses = UserMapper.class)
-public interface DocumentMapper {
+public interface DocumentMapper extends MapperInterface<DmsDocument, DocumentDTO> {
 
 	DocumentMapper INSTANCE = Mappers.getMapper(DocumentMapper.class);
 	
@@ -28,7 +28,8 @@ public interface DocumentMapper {
 	@Mapping(target = "content", ignore = true)
 	DmsDocument documentDTOToDocument(DocumentDTO documentDTO);
 	
-	DocumentDTO documentToDocumentDTO(DmsDocument document);
+	@Override
+	DocumentDTO entityToDto(DmsDocument document);
 	
 	@Mapping(target = "imutable", ignore = true)
 	@Mapping(target = "parentFolder", ignore = true)
@@ -42,7 +43,8 @@ public interface DocumentMapper {
 	@Mapping(target = "originalFileName", ignore = true)
 	DmsDocument newDocumentDTOToDocument(NewDocumentDTO documentDTO);
 	
-	List<DocumentDTO> documentListToDocumentDTOList(List<DmsDocument> list);
+	@Override
+	List<DocumentDTO> entityListToDtoList(List<DmsDocument> list);
 	
 	@Mapping(target = "creationDate", ignore = true)
 	@Mapping(target = "id", ignore = true)

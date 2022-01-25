@@ -2,14 +2,15 @@ package com.example.dms.services;
 
 import java.util.UUID;
 
+import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.domain.DmsFolder;
 
-public interface FolderService extends CrudService<DmsFolder, UUID>{
+public interface FolderService extends CrudService<DmsFolder, DmsFolderDTO, UUID>{
 	
-	DmsFolder findByPath(String path);
+	DmsFolderDTO findByPath(String path);
 
-	DmsFolder createNewFolder(String path);
+	DmsFolderDTO createNewFolder(String path);
 
-	DmsFolder updateFolder(UUID id, String path);
+	DmsFolderDTO updateFolder(UUID id, String path);
 	
 }

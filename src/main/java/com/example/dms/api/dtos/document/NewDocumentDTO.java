@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.example.dms.domain.DmsType;
 import com.example.dms.utils.Constants;
 
 import lombok.Builder;
@@ -22,4 +23,6 @@ public class NewDocumentDTO {
 	private String description;
 	
 	private List<String> keywords;
+	
+	private DmsType type;
 }

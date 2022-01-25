@@ -4,16 +4,15 @@ import java.util.List;
 
 import com.example.dms.domain.BaseEntity;
 
-public interface CrudService<T extends BaseEntity, ID> {
-	List<T> findAll();
+public interface CrudService<T extends BaseEntity, D, ID> {
+	List<D> findAll();
 	
-	T findById(ID id);
+	D findById(ID id);
 	
-	T save(T object);
+	D save(T object);
 	
 	void delete(T object);
 	
 	void deleteById(ID id);
 
-	T refresh(T object);
 }

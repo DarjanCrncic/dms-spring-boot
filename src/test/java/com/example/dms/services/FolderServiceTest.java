@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.dms.api.mappers.FolderMapper;
 import com.example.dms.domain.DmsFolder;
 import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.impl.FolderServiceImpl;
@@ -27,6 +28,9 @@ class FolderServiceTest {
 	@Mock
 	FolderRepository folderRepository;
 
+	@Mock
+	FolderMapper folderMapper;
+	
 	FolderService folderService;
 
 	Optional<DmsFolder> emptyFolder = Optional.empty();
@@ -36,7 +40,7 @@ class FolderServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		folderService = new FolderServiceImpl(folderRepository);
+		folderService = new FolderServiceImpl(folderRepository,folderMapper);
 	}
 
 	@Test

@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
+import com.example.dms.api.dtos.user.UserDTO;
 import com.example.dms.api.mappers.UserMapper;
-import com.example.dms.domain.DmsUser;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.NotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
@@ -26,7 +26,7 @@ class UserServiceIntegrationTest {
 	@Autowired
 	UserService userService;
 	
-	DmsUser user;
+	UserDTO user;
 	
 	@BeforeEach
 	void setUp() {
@@ -47,10 +47,9 @@ class UserServiceIntegrationTest {
 	@Transactional
 	void userUpdateTest() {
 		
-		DmsUser updatedUser = userService.updateUser(new UpdateUserDTO("testuser2", "Darjana", "Crnčića", "test.user@gmaila.com"), user.getId());
+		UserDTO updatedUser = userService.updateUser(new UpdateUserDTO("testuser2", "Darjana", "Crnčića", "test.user@gmaila.com"), user.getId());
 
 		assertEquals(user.getId(), updatedUser.getId());
-		assertEquals(user.getPassword(), updatedUser.getPassword());
 		assertEquals("test.user@gmaila.com", updatedUser.getEmail());
 		assertEquals("Darjana", updatedUser.getFirstName());
 		assertEquals("Crnčića", updatedUser.getLastName());

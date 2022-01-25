@@ -4,16 +4,17 @@ import java.util.UUID;
 
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
+import com.example.dms.api.dtos.user.UserDTO;
 import com.example.dms.domain.DmsUser;
 
-public interface UserService extends CrudService<DmsUser, UUID>{
+public interface UserService extends CrudService<DmsUser, UserDTO, UUID>{
 
-	DmsUser findByUsername(String username);
+	UserDTO findByUsername(String username);
 
-	DmsUser findByEmail(String email);
+	UserDTO findByEmail(String email);
 
-	DmsUser updateUser(UpdateUserDTO userDTO, UUID id);
+	UserDTO updateUser(UpdateUserDTO userDTO, UUID id);
 
-	DmsUser saveNewUser(NewUserDTO userDTO);
+	UserDTO saveNewUser(NewUserDTO userDTO);
 
 }
