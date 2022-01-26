@@ -50,7 +50,8 @@ class FolderServiceTest {
 	@Test
 	void folderFindByPathTest() {
 		BDDMockito.given(folderRepository.findByPath(Mockito.anyString())).willReturn(emptyFolder);
-		assertThrows(NotFoundException.class, () -> folderService.findByPath(Mockito.anyString()));
+		String path = Mockito.anyString();
+		assertThrows(NotFoundException.class, () -> folderService.findByPath(path));
 	}
 
 	@Test

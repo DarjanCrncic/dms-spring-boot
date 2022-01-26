@@ -62,7 +62,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, UserDTO> imp
 
 	@Override
 	public UserDTO updateUser(UpdateUserDTO userDTO, UUID id) {
-		DmsUser user = userRepository.findById(id).orElseThrow(()-> new NotFoundException());
+		DmsUser user = userRepository.findById(id).orElseThrow(NotFoundException::new);
 		user.setEmail(userDTO.getEmail());
 		user.setFirstName(userDTO.getFirstName());
 		user.setLastName(userDTO.getLastName());

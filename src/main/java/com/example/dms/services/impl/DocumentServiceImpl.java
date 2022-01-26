@@ -72,8 +72,12 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, Docu
 		if (doc.isImutable()) {
 			throw new BadRequestException("Object is immutable and you cannot add content to it.");
 		}
+		String path = file.getOriginalFilename();
+		if (path == null) {
+			throw new BadRequestException("Original filename is null.");
+		}
 
-		String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+		String originalFileName = StringUtils.cleanPath(path);
 		try {
 			doc.setContent(file.getBytes());
 		} catch (IOException e) {

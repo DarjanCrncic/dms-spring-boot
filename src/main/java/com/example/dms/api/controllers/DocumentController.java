@@ -69,4 +69,6 @@ public class DocumentController {
 	public DocumentDTO updateDocumentPatch(@PathVariable UUID id, @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
 		return documentService.updateDocument(id, modifyDocumentDTO, true);
 	}
+	
+	// TODO: DELETE MAPPINGS
 }

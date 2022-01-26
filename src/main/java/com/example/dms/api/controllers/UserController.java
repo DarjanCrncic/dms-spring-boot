@@ -44,7 +44,7 @@ public class UserController {
 		else if (email.isPresent())
 			user = userService.findByEmail(email.get());
 		else
-			throw new BadRequestException("Request has no username, id or email parameter.");
+			throw new BadRequestException("Request has no username or email parameter.");
 		return user;
 	}
 

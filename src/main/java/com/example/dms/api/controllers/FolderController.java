@@ -32,7 +32,7 @@ public class FolderController {
 	public FolderController(FolderService folderService) {
 		super();
 		this.folderService = folderService;
-	};
+	}
 	
 	@GetMapping("/")
 	public List<DmsFolderDTO> getAllFolders() {

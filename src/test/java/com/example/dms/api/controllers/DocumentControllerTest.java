@@ -59,7 +59,7 @@ class DocumentControllerTest {
 	}
 
 	@Test
-	public void createNewDocumentTest() throws Exception {
+	void createNewDocumentTest() throws Exception {
 		BDDMockito.given(documentService.createNewDocument(Mockito.any(NewDocumentDTO.class))).willReturn(validDocumentDTO);
 
 		mockMvc.perform(post("/api/v1/documents/").content(Utils.stringify(newDocumentDTO)).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated())

@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -79,8 +81,12 @@ class FolderServiceIntegrationTest {
 		assertEquals(folder.getId(), newDocument.getParentFolder().getId());
 
 		folderService.deleteById(folder.getId());
-		assertThrows(NotFoundException.class, () -> folderService.findById(subFolder.getId()));
-		assertThrows(NotFoundException.class, () -> documentService.findById(newDocument.getId()));
+		
+		UUID subFolderId = subFolder.getId();
+		UUID newDocumentId = newDocument.getId();
+		
+		assertThrows(NotFoundException.class, () -> folderService.findById(subFolderId));
+		assertThrows(NotFoundException.class, () -> documentService.findById(newDocumentId));
 	}
 
 	@Test
