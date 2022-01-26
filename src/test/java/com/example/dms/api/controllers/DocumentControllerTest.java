@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.dms.api.dtos.document.DocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
-import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsType;
 import com.example.dms.domain.DmsUser;
@@ -31,9 +31,6 @@ class DocumentControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
-
-	@MockBean
-	DocumentMapper documentMapper;
 
 	@MockBean
 	DocumentService documentService;
@@ -63,10 +60,11 @@ class DocumentControllerTest {
 
 	@Test
 	public void createNewDocumentTest() throws Exception {
-		BDDMockito.given(documentService.createNewDocument(newDocumentDTO)).willReturn(validDocumentDTO);
+		BDDMockito.given(documentService.createNewDocument(Mockito.any(NewDocumentDTO.class))).willReturn(validDocumentDTO);
 
 		mockMvc.perform(post("/api/v1/documents/").content(Utils.stringify(newDocumentDTO)).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated())
 				.andExpect(jsonPath("$.object_name", is(validDocument.getObjectName())))
-				.andExpect(jsonPath("$.description", is(validDocument.getDescription())));
+				.andExpect(jsonPath("$.description", is(validDocument.getDescription())))
+				.andExpect(jsonPath("$.keywords").isArray());
 	}
 }

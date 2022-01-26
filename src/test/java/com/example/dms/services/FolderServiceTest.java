@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
 
@@ -15,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.dms.api.dtos.folder.NewFolderDTO;
 import com.example.dms.api.mappers.FolderMapper;
 import com.example.dms.domain.DmsFolder;
 import com.example.dms.repositories.FolderRepository;
@@ -37,6 +40,7 @@ class FolderServiceTest {
 	Optional<DmsFolder> rootFolder = Optional.of(DmsFolder.builder().path("/").build());
 
 	DmsFolder validFolder = DmsFolder.builder().path("/test").parentFolder(rootFolder.get()).build();
+	NewFolderDTO folderDTO = NewFolderDTO.builder().path("/test").build();
 
 	@BeforeEach
 	void setUp() {
@@ -75,8 +79,8 @@ class FolderServiceTest {
 	void testCreateFolder() {
 		BDDMockito.when(folderRepository.findByPath(Mockito.anyString())).thenReturn(emptyFolder)
 				.thenReturn(rootFolder);
-		BDDMockito.given(folderRepository.save(Mockito.any(DmsFolder.class))).willReturn(validFolder);
+		folderService.createNewFolder("/test");
 
-		assertEquals(validFolder, folderService.createNewFolder("/test"));
+		verify(folderRepository, times(2)).findByPath(Mockito.anyString());
 	}
 }

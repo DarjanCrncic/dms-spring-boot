@@ -24,7 +24,6 @@ import com.example.dms.api.dtos.document.DocumentDTO;
 import com.example.dms.api.dtos.document.DocumentFileDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
-import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.services.DocumentService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
@@ -32,9 +31,6 @@ import com.example.dms.utils.exceptions.BadRequestException;
 @RequestMapping("/api/v1/documents")
 public class DocumentController {
 
-	@Autowired
-	DocumentMapper documentMapper;
-	
 	@Autowired
 	DocumentService documentService;
 

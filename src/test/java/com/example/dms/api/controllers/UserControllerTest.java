@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UserDTO;
-import com.example.dms.api.mappers.UserMapper;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.NotFoundException;
@@ -35,9 +34,6 @@ class UserControllerTest {
 
 	@MockBean
 	UserService userService;
-
-	@MockBean
-	UserMapper userMapper;
 
 	DmsUser validUser;
 	UserDTO validUserDTO;
@@ -77,7 +73,7 @@ class UserControllerTest {
 	void testGetUserByUsername() throws Exception {
 		BDDMockito.given(userService.findByUsername(Mockito.any(String.class))).willReturn(validUserDTO);
 
-		mockMvc.perform(get("/api/v1/users").param("username", validUser.getUsername())).andExpect(status().isOk())
+		mockMvc.perform(get("/api/v1/users/search").param("username", validUser.getUsername())).andExpect(status().isOk())
 				.andExpect(jsonPath("$.id", is(validUser.getId().toString())))
 				.andExpect(jsonPath("$.username", is(validUser.getUsername())))
 				.andExpect(jsonPath("$.email", is(validUser.getEmail()))).andReturn();
@@ -85,7 +81,7 @@ class UserControllerTest {
 
 	@Test
 	void testGetUserWithInvalidParam() throws Exception {
-		mockMvc.perform(get("/api/v1/users").param("username2", validUser.getUsername()))
+		mockMvc.perform(get("/api/v1/users/search").param("username2", validUser.getUsername()))
 				.andExpect(status().isBadRequest()).andReturn();
 	}
 

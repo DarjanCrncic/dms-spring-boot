@@ -51,6 +51,7 @@ class FolderControllerTest {
 
 		rootFolder = DmsFolderDTO.builder().path("/").build();
 		validFolder = DmsFolderDTO.builder().path("/test").parentFolder(DmsFolder.builder().path("/").build()).build();
+		rootFolder.setSubfolders(new ArrayList<>());
 		rootFolder.getSubfolders().add(DmsFolder.builder().path("/test").parentFolder(DmsFolder.builder().path("/").build()).build());
 
 		folderList = new ArrayList<DmsFolderDTO>();
@@ -76,11 +77,11 @@ class FolderControllerTest {
 	}
 
 	@Test
-	void testFindSubfoldersByPath() throws Exception {
+	void testFolderSearchByPath() throws Exception {
 		BDDMockito.given(folderService.findByPath(Mockito.anyString())).willReturn(rootFolder);
 
-		mockMvc.perform(get("/api/v1/folders/").param("path", Mockito.anyString())).andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray());
+		mockMvc.perform(get("/api/v1/folders/search").param("path", Mockito.anyString())).andExpect(status().isOk())
+				.andExpect(jsonPath("$.subfolders").isArray());
 
 	}
 

@@ -6,12 +6,14 @@ import javax.validation.constraints.Pattern;
 import com.example.dms.utils.Constants;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class NewFolderDTO {
 
 	@NotEmpty

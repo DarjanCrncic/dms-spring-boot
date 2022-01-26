@@ -60,7 +60,7 @@ class UserServiceIntegrationTest {
 	@Transactional
 	void findUserByUsername() {
 		
-		assertEquals(user, userService.findByUsername(user.getUsername()));
+		assertEquals(user.getId(), userService.findByUsername(user.getUsername()).getId());
 		
 		assertThrows(NotFoundException.class, () -> userService.findByUsername("test"));
 	}
@@ -69,7 +69,7 @@ class UserServiceIntegrationTest {
 	@Transactional
 	void findUserByEmail() {
 		
-		assertEquals(user, userService.findByEmail(user.getEmail()));
+		assertEquals(user.getId(), userService.findByEmail(user.getEmail()).getId());
 		
 		assertThrows(NotFoundException.class, () -> userService.findByEmail("test"));
 	}
