@@ -40,8 +40,8 @@ class FolderControllerTest {
 	FolderService folderService;
 
 	DmsUser validUser;
-	DmsFolderDTO rootFolder;
-	DmsFolderDTO validFolder;
+	DmsFolderDTO rootFolderDTO;
+	DmsFolderDTO validFolderDTO;
 	List<DmsFolderDTO> folderList;
 
 	@BeforeEach
@@ -49,14 +49,12 @@ class FolderControllerTest {
 		validUser = DmsUser.builder().username("dcrncic").password("12345").firstName("Darjan").lastName("Crnčić").email("darjan.crncic@gmail.com").build();
 		validUser.setId(UUID.randomUUID());
 
-		rootFolder = DmsFolderDTO.builder().path("/").build();
-		validFolder = DmsFolderDTO.builder().path("/test").parentFolder(DmsFolder.builder().path("/").build()).build();
-		rootFolder.setSubfolders(new ArrayList<>());
-		rootFolder.getSubfolders().add(DmsFolder.builder().path("/test").parentFolder(DmsFolder.builder().path("/").build()).build());
+		rootFolderDTO = DmsFolderDTO.builder().path("/").build();
+		validFolderDTO = DmsFolderDTO.builder().path("/test").parentFolder(DmsFolder.builder().path("/").build()).build();
 
 		folderList = new ArrayList<DmsFolderDTO>();
-		folderList.add(rootFolder);
-		folderList.add(validFolder);
+		folderList.add(rootFolderDTO);
+		folderList.add(validFolderDTO);
 	}
 
 	@Test
@@ -68,38 +66,45 @@ class FolderControllerTest {
 
 	@Test
 	void testFindById() throws Exception {
-		BDDMockito.given(folderService.findById(Mockito.any(UUID.class))).willReturn(rootFolder);
+		BDDMockito.given(folderService.findById(Mockito.any(UUID.class))).willReturn(rootFolderDTO);
 
-		mockMvc.perform(get("/api/v1/folders/{id}", UUID.randomUUID())).andExpect(status().isOk())
-				.andExpect(jsonPath("$.path", is(rootFolder.getPath())))
-				.andExpect(jsonPath("$.subfolders[0].path", is(validFolder.getPath())));
+		mockMvc.perform(get("/api/v1/folders/{id}", UUID.randomUUID()))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.path", is(rootFolderDTO.getPath())))
+				.andExpect(jsonPath("$.subfolders").isArray())
+				.andExpect(jsonPath("$.documents").isArray());
 
 	}
 
 	@Test
 	void testFolderSearchByPath() throws Exception {
-		BDDMockito.given(folderService.findByPath(Mockito.anyString())).willReturn(rootFolder);
+		BDDMockito.given(folderService.findByPath(Mockito.anyString())).willReturn(rootFolderDTO);
 
-		mockMvc.perform(get("/api/v1/folders/search").param("path", Mockito.anyString())).andExpect(status().isOk())
-				.andExpect(jsonPath("$.subfolders").isArray());
-
+		mockMvc.perform(get("/api/v1/folders/search").param("path", Mockito.anyString()))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.subfolders").isArray())
+				.andExpect(jsonPath("$.documents").isArray());
 	}
 
 	@Test
 	void testSaveNewFolder() throws Exception {
-		BDDMockito.given(folderService.createNewFolder(Mockito.anyString())).willReturn(validFolder);
+		BDDMockito.given(folderService.createNewFolder(Mockito.anyString())).willReturn(validFolderDTO);
 		mockMvc.perform(post("/api/v1/folders/").content(Utils.stringify(new NewFolderDTO("/test"))).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated()).andExpect(jsonPath("$.path", is(validFolder.getPath())));
-
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.path", is(validFolderDTO.getPath())))
+				.andExpect(jsonPath("$.subfolders").isArray())
+				.andExpect(jsonPath("$.documents").isArray());;
 	}
 	
 	@Test
 	void testUpdateFolder() throws Exception {
-		BDDMockito.given(folderService.updateFolder(Mockito.any(UUID.class), Mockito.anyString())).willReturn(validFolder);
+		BDDMockito.given(folderService.updateFolder(Mockito.any(UUID.class), Mockito.anyString())).willReturn(validFolderDTO);
 
 		mockMvc.perform(put("/api/v1/folders/{id}", UUID.randomUUID()).content(Utils.stringify(new NewFolderDTO("/test"))).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.path", is(validFolder.getPath())));
-
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.path", is(validFolderDTO.getPath())))
+				.andExpect(jsonPath("$.subfolders").isArray())
+				.andExpect(jsonPath("$.documents").isArray());;
 	}
 
 	@Test

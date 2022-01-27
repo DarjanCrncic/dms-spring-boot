@@ -8,7 +8,7 @@ import org.mapstruct.factory.Mappers;
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.domain.DmsFolder;
 
-@Mapper
+@Mapper(uses = DocumentMapper.class)
 public interface FolderMapper extends MapperInterface<DmsFolder, DmsFolderDTO>  {
 
 	FolderMapper INSTANCE = Mappers.getMapper(FolderMapper.class);

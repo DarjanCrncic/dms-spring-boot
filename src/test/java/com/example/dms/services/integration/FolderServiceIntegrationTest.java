@@ -70,6 +70,7 @@ class FolderServiceIntegrationTest {
 	@Transactional
 	void createNewFolderTest() {
 		assertEquals(0, folder.getSubfolders().size());
+		assertEquals(0, folder.getDocuments().size());
 	}
 
 	@Test
