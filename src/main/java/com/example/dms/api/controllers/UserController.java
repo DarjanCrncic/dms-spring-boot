@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
-import com.example.dms.api.dtos.user.UserDTO;
+import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
@@ -32,13 +32,13 @@ public class UserController {
 	UserService userService;
 	
 	@GetMapping
-	public List<UserDTO> getAllUsers() {
+	public List<DmsUserDTO> getAllUsers() {
 		return userService.findAll();
 	}
 
 	@GetMapping("/search")
-	public UserDTO findUserUnique(@RequestParam Optional<String> username, @RequestParam Optional<String> email) {
-		UserDTO user = null;
+	public DmsUserDTO findUserUnique(@RequestParam Optional<String> username, @RequestParam Optional<String> email) {
+		DmsUserDTO user = null;
 		if (username.isPresent())
 			user = userService.findByUsername(username.get());
 		else if (email.isPresent())
@@ -49,18 +49,18 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
-	public UserDTO findUserById(@PathVariable UUID id) {
+	public DmsUserDTO findUserById(@PathVariable UUID id) {
 		return userService.findById(id);
 	}
 
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
-	public UserDTO createNewUser(@Valid @RequestBody NewUserDTO userDTO) {
+	public DmsUserDTO createNewUser(@Valid @RequestBody NewUserDTO userDTO) {
 		return userService.saveNewUser(userDTO);
 	}
 
 	@PutMapping("/{id}")
-	public UserDTO updateExistingUser(@RequestBody UpdateUserDTO userDTO, @PathVariable UUID id) {
+	public DmsUserDTO updateExistingUser(@RequestBody UpdateUserDTO userDTO, @PathVariable UUID id) {
 		return userService.updateUser(userDTO, id);
 	}
 }

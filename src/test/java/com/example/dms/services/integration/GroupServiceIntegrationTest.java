@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.dms.api.dtos.group.DmsGroupDTO;
 import com.example.dms.api.dtos.group.NewGroupDTO;
 import com.example.dms.api.dtos.user.NewUserDTO;
-import com.example.dms.api.dtos.user.UserDTO;
+import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.repositories.GroupRepository;
 import com.example.dms.services.GroupService;
 import com.example.dms.services.UserService;
@@ -33,7 +33,7 @@ class GroupServiceIntegrationTest {
 	@Autowired
 	GroupService groupService;
 	
-	UserDTO user1, user2;
+	DmsUserDTO user1, user2;
 	DmsGroupDTO savedGroup;
 	NewGroupDTO newGroupDTO;
 	

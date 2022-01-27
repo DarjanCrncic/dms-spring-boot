@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.example.dms.api.dtos.document.DocumentDTO;
+import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.domain.DmsFolder;
 
 import lombok.AllArgsConstructor;
@@ -28,5 +28,5 @@ public class DmsFolderDTO {
 	@Default
 	private List<DmsFolderDTO> subfolders = new ArrayList<>();
 	@Default
-	private List<DocumentDTO> documents  = new ArrayList<>();;
+	private List<DmsDocumentDTO> documents  = new ArrayList<>();;
 }

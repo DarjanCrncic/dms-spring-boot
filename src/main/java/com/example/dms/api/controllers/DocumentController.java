@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.example.dms.api.dtos.document.DocumentDTO;
+import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.DocumentFileDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
@@ -36,12 +36,12 @@ public class DocumentController {
 
 	@PostMapping("/")
 	@ResponseStatus(value = HttpStatus.CREATED)
-	public DocumentDTO createNewDocument(@Valid @RequestBody NewDocumentDTO newDocumentDTO) {
+	public DmsDocumentDTO createNewDocument(@Valid @RequestBody NewDocumentDTO newDocumentDTO) {
 		return documentService.createNewDocument(newDocumentDTO);
 	}
 
 	@GetMapping("/")
-	public List<DocumentDTO> getAllDocuments() {
+	public List<DmsDocumentDTO> getAllDocuments() {
 		return documentService.getAllDocuments();
 	}
 
@@ -61,12 +61,12 @@ public class DocumentController {
 	}
 	
 	@PutMapping("/{id}")
-	public DocumentDTO updateDocumentPut(@PathVariable UUID id, @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
+	public DmsDocumentDTO updateDocumentPut(@PathVariable UUID id, @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
 		return documentService.updateDocument(id, modifyDocumentDTO, false);
 	}
 	
 	@PatchMapping("/{id}")
-	public DocumentDTO updateDocumentPatch(@PathVariable UUID id, @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
+	public DmsDocumentDTO updateDocumentPatch(@PathVariable UUID id, @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
 		return documentService.updateDocument(id, modifyDocumentDTO, true);
 	}
 	

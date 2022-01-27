@@ -18,7 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.dms.api.dtos.document.DocumentDTO;
+import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsType;
@@ -39,7 +39,7 @@ class DocumentControllerTest {
 	DmsDocument validDocument;
 	DmsType type;
 	NewDocumentDTO newDocumentDTO;
-	DocumentDTO validDocumentDTO;
+	DmsDocumentDTO validDocumentDTO;
 
 	@BeforeEach
 	void setUp() {
@@ -54,7 +54,7 @@ class DocumentControllerTest {
 
 		newDocumentDTO = NewDocumentDTO.builder().objectName("testni").description("testni dokument za test")
 				.keywords(Arrays.asList(new String[] { "prvi", "drugi" })).type(type).build();
-		validDocumentDTO = DocumentDTO.builder().objectName("testni").description("testni dokument za test")
+		validDocumentDTO = DmsDocumentDTO.builder().objectName("testni").description("testni dokument za test")
 				.keywords(Arrays.asList(new String[] { "prvi", "drugi" })).type(type).build();
 	}
 

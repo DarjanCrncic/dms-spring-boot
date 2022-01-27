@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.example.dms.api.dtos.document.DocumentDTO;
+import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
@@ -40,9 +40,9 @@ class DocumentServiceIntegrationTest {
 	@Autowired
 	DocumentRepository documentRepository;
 
-	DocumentDTO newDocument;
-	DocumentDTO newVersion;
-	DocumentDTO updatedDocument;
+	DmsDocumentDTO newDocument;
+	DmsDocumentDTO newVersion;
+	DmsDocumentDTO updatedDocument;
 
 	@BeforeEach
 	void setUp() {

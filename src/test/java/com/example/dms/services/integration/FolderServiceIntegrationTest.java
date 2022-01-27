@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.dms.api.dtos.document.DocumentDTO;
+import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsUser;
@@ -75,7 +75,7 @@ class FolderServiceIntegrationTest {
 
 	@Test
 	void deleteFolderTest() {
-		DocumentDTO newDocument = documentService
+		DmsDocumentDTO newDocument = documentService
 				.save(DmsDocument.builder().creator(user).objectName("TestTest").description("Ovo je test u testu")
 						.parentFolder(folderRepository.findById(folder.getId()).orElse(null)).build());
 
@@ -92,7 +92,7 @@ class FolderServiceIntegrationTest {
 
 	@Test
 	void deleteChildrenTest() {
-		DocumentDTO newDocument = documentService.save(DmsDocument.builder().creator(user).objectName("TestTest")
+		DmsDocumentDTO newDocument = documentService.save(DmsDocument.builder().creator(user).objectName("TestTest")
 				.parentFolder(folderRepository.findById(folder.getId()).orElse(null)).build());
 
 		folderService.deleteById(subFolder.getId());

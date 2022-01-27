@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
-import com.example.dms.api.dtos.user.UserDTO;
+import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.mappers.UserMapper;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.NotFoundException;
@@ -26,7 +26,7 @@ class UserServiceIntegrationTest {
 	@Autowired
 	UserService userService;
 	
-	UserDTO user;
+	DmsUserDTO user;
 	
 	@BeforeEach
 	void setUp() {
@@ -47,7 +47,7 @@ class UserServiceIntegrationTest {
 	@Transactional
 	void userUpdateTest() {
 		
-		UserDTO updatedUser = userService.updateUser(new UpdateUserDTO("testuser2", "Darjana", "Crnčića", "test.user@gmaila.com"), user.getId());
+		DmsUserDTO updatedUser = userService.updateUser(new UpdateUserDTO("testuser2", "Darjana", "Crnčića", "test.user@gmaila.com"), user.getId());
 
 		assertEquals(user.getId(), updatedUser.getId());
 		assertEquals("test.user@gmaila.com", updatedUser.getEmail());

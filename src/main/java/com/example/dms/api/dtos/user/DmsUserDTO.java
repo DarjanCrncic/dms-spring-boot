@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDTO {
+public class DmsUserDTO {
 	
 	private UUID id;
 	private LocalDateTime creationDate;

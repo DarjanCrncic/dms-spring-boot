@@ -9,13 +9,13 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
-import com.example.dms.api.dtos.document.DocumentDTO;
+import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.domain.DmsDocument;
 
 @Mapper(uses = UserMapper.class)
-public interface DocumentMapper extends MapperInterface<DmsDocument, DocumentDTO> {
+public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocumentDTO> {
 
 	DocumentMapper INSTANCE = Mappers.getMapper(DocumentMapper.class);
 	
@@ -26,10 +26,10 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DocumentDTO
 	@Mapping(target = "rootId", ignore = true)
 	@Mapping(target = "version", ignore = true)
 	@Mapping(target = "content", ignore = true)
-	DmsDocument documentDTOToDocument(DocumentDTO documentDTO);
+	DmsDocument documentDTOToDocument(DmsDocumentDTO documentDTO);
 	
 	@Override
-	DocumentDTO entityToDto(DmsDocument document);
+	DmsDocumentDTO entityToDto(DmsDocument document);
 	
 	@Mapping(target = "imutable", ignore = true)
 	@Mapping(target = "parentFolder", ignore = true)
@@ -44,7 +44,7 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DocumentDTO
 	DmsDocument newDocumentDTOToDocument(NewDocumentDTO documentDTO);
 	
 	@Override
-	List<DocumentDTO> entityListToDtoList(List<DmsDocument> list);
+	List<DmsDocumentDTO> entityListToDtoList(List<DmsDocument> list);
 	
 	@Mapping(target = "creationDate", ignore = true)
 	@Mapping(target = "id", ignore = true)

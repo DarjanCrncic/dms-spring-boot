@@ -20,7 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.dms.api.dtos.user.NewUserDTO;
-import com.example.dms.api.dtos.user.UserDTO;
+import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.NotFoundException;
@@ -36,7 +36,7 @@ class UserControllerTest {
 	UserService userService;
 
 	DmsUser validUser;
-	UserDTO validUserDTO;
+	DmsUserDTO validUserDTO;
 	String validUserJSON;
 
 	@BeforeEach
@@ -45,7 +45,7 @@ class UserControllerTest {
 				.email("darjan.crncic@gmail.com").build();
 		validUser.setId(UUID.randomUUID());
 
-		validUserDTO = UserDTO.builder().id(validUser.getId()).username("dcrncic").firstName("Darjan")
+		validUserDTO = DmsUserDTO.builder().id(validUser.getId()).username("dcrncic").firstName("Darjan")
 				.lastName("Crnčić").email("darjan.crncic@gmail.com").creationDate(LocalDateTime.now())
 				.modifyDate(LocalDateTime.now()).build();
 		validUserJSON = "{\n    \"password\": \"12345\",\n    \"username\": \"dcrncic\",\n    \"first_name\": \"Darjan\",\n    \"last_name\": \"Crn\u010di\u0107\",\n    \"email\": \"darjan.crncic@gmail.com\"\n}";

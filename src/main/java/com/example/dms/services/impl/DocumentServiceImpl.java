@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.dms.api.dtos.document.DocumentDTO;
+import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
@@ -26,7 +26,7 @@ import com.example.dms.utils.exceptions.NotFoundException;
 
 @Service
 @Transactional
-public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DocumentDTO> implements DocumentService {
+public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsDocumentDTO> implements DocumentService {
 
 	UserRepository userRepository;
 	DocumentRepository documentRepository;
@@ -41,7 +41,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, Docu
 	}
 
 	@Override
-	public DocumentDTO createNewDocument(NewDocumentDTO newDocumentDTO) {
+	public DmsDocumentDTO createNewDocument(NewDocumentDTO newDocumentDTO) {
 		// TODO: Remove hardcoded user.
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
 		newDocumentObject.setCreator(userRepository.findByUsername("dcrncic")
@@ -53,7 +53,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, Docu
 	}
 
 	@Override
-	public DocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
+	public DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(NotFoundException::new);
 		if (doc.isImutable()) {
 			throw new BadRequestException("This version of the document is immutable and cannot be modified.");
@@ -99,7 +99,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, Docu
 	}
 
 	@Override
-	public DocumentDTO createNewVersion(UUID id) {
+	public DmsDocumentDTO createNewVersion(UUID id) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(NotFoundException::new);
 		if (doc.isImutable()) {
 			throw new BadRequestException("This version of the document is immutable and cannot be versioned. "
@@ -118,7 +118,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, Docu
 	}
 
 	@Override
-	public List<DocumentDTO> getAllVersions(UUID id) {
+	public List<DmsDocumentDTO> getAllVersions(UUID id) {
 		return documentMapper.entityListToDtoList(documentRepository.getAllVersions(id));
 	}
 
@@ -130,7 +130,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, Docu
 	}
 
 	@Override
-	public List<DocumentDTO> getAllDocuments() {
+	public List<DmsDocumentDTO> getAllDocuments() {
 		return documentMapper.entityListToDtoList(documentRepository.findAll());
 	}
 
