@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -36,7 +35,7 @@ class FolderServiceTest {
 	FolderMapper folderMapper;
 	
 	@InjectMocks
-	FolderService folderService;
+	FolderService folderService = new FolderServiceImpl(folderRepository, folderMapper);
 
 	Optional<DmsFolder> emptyFolder = Optional.empty();
 	Optional<DmsFolder> rootFolder = Optional.of(DmsFolder.builder().path("/").build());
@@ -44,10 +43,6 @@ class FolderServiceTest {
 	DmsFolder validFolder = DmsFolder.builder().path("/test").parentFolder(rootFolder.get()).build();
 	NewFolderDTO folderDTO = NewFolderDTO.builder().path("/test").build();
 
-	@BeforeEach
-	void setUp() {
-		folderService = new FolderServiceImpl(folderRepository,folderMapper);
-	}
 
 	@Test
 	void folderFindByPathTest() {

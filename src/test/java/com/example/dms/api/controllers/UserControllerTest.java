@@ -2,7 +2,9 @@ package com.example.dms.api.controllers;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,10 +21,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.DmsUserDTO;
+import com.example.dms.api.dtos.user.NewUserDTO;
+import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.services.UserService;
+import com.example.dms.utils.Utils;
 import com.example.dms.utils.exceptions.NotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
@@ -37,7 +41,7 @@ class UserControllerTest {
 
 	DmsUser validUser;
 	DmsUserDTO validUserDTO;
-	String validUserJSON;
+	NewUserDTO newUserDTO;
 
 	@BeforeEach
 	void setUp() {
@@ -48,7 +52,9 @@ class UserControllerTest {
 		validUserDTO = DmsUserDTO.builder().id(validUser.getId()).username("dcrncic").firstName("Darjan")
 				.lastName("Crnčić").email("darjan.crncic@gmail.com").creationDate(LocalDateTime.now())
 				.modifyDate(LocalDateTime.now()).build();
-		validUserJSON = "{\n    \"password\": \"12345\",\n    \"username\": \"dcrncic\",\n    \"first_name\": \"Darjan\",\n    \"last_name\": \"Crn\u010di\u0107\",\n    \"email\": \"darjan.crncic@gmail.com\"\n}";
+
+		newUserDTO = NewUserDTO.builder().username("dcrncic").firstName("Darjan").password("12345").lastName("Crnčić")
+				.email("darjan.crncic@gmail.com").build();
 	}
 
 	@Test
@@ -73,8 +79,8 @@ class UserControllerTest {
 	void testGetUserByUsername() throws Exception {
 		BDDMockito.given(userService.findByUsername(Mockito.any(String.class))).willReturn(validUserDTO);
 
-		mockMvc.perform(get("/api/v1/users/search").param("username", validUser.getUsername())).andExpect(status().isOk())
-				.andExpect(jsonPath("$.id", is(validUser.getId().toString())))
+		mockMvc.perform(get("/api/v1/users/search").param("username", validUser.getUsername()))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.id", is(validUser.getId().toString())))
 				.andExpect(jsonPath("$.username", is(validUser.getUsername())))
 				.andExpect(jsonPath("$.email", is(validUser.getEmail()))).andReturn();
 	}
@@ -89,7 +95,8 @@ class UserControllerTest {
 	void testCreateNewUser() throws Exception {
 		BDDMockito.given(userService.saveNewUser(Mockito.any(NewUserDTO.class))).willReturn(validUserDTO);
 
-		mockMvc.perform(post("/api/v1/users").content(validUserJSON).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(
+				post("/api/v1/users").content(Utils.stringify(newUserDTO)).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()).andReturn();
 	}
 
@@ -98,8 +105,27 @@ class UserControllerTest {
 		BDDMockito.given(userService.saveNewUser(Mockito.any(NewUserDTO.class)))
 				.willThrow(UniqueConstraintViolatedException.class);
 
-		mockMvc.perform(post("/api/v1/users").content(validUserJSON).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(
+				post("/api/v1/users").content(Utils.stringify(newUserDTO)).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest()).andReturn();
+	}
+
+	@Test
+	void updateUserPut() throws Exception {
+		BDDMockito.given(userService.updateUser(Mockito.any(UpdateUserDTO.class), Mockito.any(), Mockito.anyBoolean()))
+				.willReturn(validUserDTO);
+
+		mockMvc.perform(put("/api/v1/users/{id}", UUID.randomUUID()).content(Utils.stringify(newUserDTO))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+	}
+
+	@Test
+	void updateUserPatch() throws Exception {
+		BDDMockito.given(userService.updateUser(Mockito.any(UpdateUserDTO.class), Mockito.any(), Mockito.anyBoolean()))
+				.willReturn(validUserDTO);
+
+		mockMvc.perform(patch("/api/v1/users/{id}", UUID.randomUUID()).content(Utils.stringify(newUserDTO))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
 }

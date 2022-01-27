@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
-import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
@@ -60,7 +61,12 @@ public class UserController {
 	}
 
 	@PutMapping("/{id}")
-	public DmsUserDTO updateExistingUser(@RequestBody UpdateUserDTO userDTO, @PathVariable UUID id) {
-		return userService.updateUser(userDTO, id);
+	public DmsUserDTO updateExistingUser(@Valid @RequestBody UpdateUserDTO userDTO, @PathVariable UUID id) {
+		return userService.updateUser(userDTO, id, false);
+	}
+	
+	@PatchMapping("/{id}")
+	public DmsUserDTO updateExistingUserPatch(@RequestBody UpdateUserDTO userDTO, @PathVariable UUID id) {
+		return userService.updateUser(userDTO, id, true);
 	}
 }

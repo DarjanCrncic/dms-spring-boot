@@ -6,9 +6,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
-import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.mappers.UserMapper;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.UserRepository;
@@ -61,12 +61,13 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 	}
 
 	@Override
-	public DmsUserDTO updateUser(UpdateUserDTO userDTO, UUID id) {
+	public DmsUserDTO updateUser(UpdateUserDTO userDTO, UUID id, boolean patch) {
 		DmsUser user = userRepository.findById(id).orElseThrow(NotFoundException::new);
-		user.setEmail(userDTO.getEmail());
-		user.setFirstName(userDTO.getFirstName());
-		user.setLastName(userDTO.getLastName());
-		user.setUsername(userDTO.getUsername());
+		if (patch) {
+			userMapper.updateUserPatch(userDTO, user);
+		} else {
+			userMapper.updateUserPut(userDTO, user);
+		}
 		return userMapper.entityToDto(userRepository.save(user));
 	}
 }
