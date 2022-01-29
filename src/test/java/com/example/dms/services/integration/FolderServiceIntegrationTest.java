@@ -79,7 +79,7 @@ class FolderServiceIntegrationTest {
 				.save(DmsDocument.builder().creator(user).objectName("TestTest").description("Ovo je test u testu")
 						.parentFolder(folderRepository.findById(folder.getId()).orElse(null)).build());
 
-		assertEquals(folder.getId(), newDocument.getParentFolder().getId());
+		assertEquals(folder.getPath(), newDocument.getParentFolder().getPath());
 
 		folderService.deleteById(folder.getId());
 		

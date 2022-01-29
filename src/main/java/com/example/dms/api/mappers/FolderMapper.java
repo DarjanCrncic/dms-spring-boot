@@ -6,6 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
+import com.example.dms.api.dtos.folder.DmsFolderPathDTO;
 import com.example.dms.domain.DmsFolder;
 
 @Mapper(uses = DocumentMapper.class)
@@ -18,4 +19,8 @@ public interface FolderMapper extends MapperInterface<DmsFolder, DmsFolderDTO>  
 	
 	@Override
 	List<DmsFolderDTO> entityListToDtoList(List<DmsFolder> folders);
+
+	List<DmsFolderPathDTO> dmsFolderListToPathDTOList(List<DmsFolder> folders);
+	
+	DmsFolderPathDTO dmsFolderToPathDTO(DmsFolder folder);
 }

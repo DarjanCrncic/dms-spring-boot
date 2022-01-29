@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import com.example.dms.domain.DmsUser;
+import com.example.dms.api.dtos.user.DmsUserDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,5 +26,5 @@ public class DmsGroupDTO {
 	private String groupName;
 	private String description;
 	@Default
-	private Set<DmsUser> members = new HashSet<>();
+	private Set<DmsUserDTO> members = new HashSet<>();
 }

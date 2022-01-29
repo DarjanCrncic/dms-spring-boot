@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.example.dms.api.dtos.folder.DmsFolderPathDTO;
+import com.example.dms.api.dtos.type.DmsTypeDTO;
 import com.example.dms.api.dtos.user.DmsUserDTO;
-import com.example.dms.domain.DmsFolder;
-import com.example.dms.domain.DmsType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,10 +28,10 @@ public class DmsDocumentDTO {
 	private String objectName;
 	private String description;
 	private DmsUserDTO creator;
-	private DmsType type;
+	private DmsTypeDTO type;
 	@Default
 	private List<String> keywords = new ArrayList<>();
-	private DmsFolder parentFolder;
+	private DmsFolderPathDTO parentFolder;
 	
 	private Long contentSize;
 	private String contentType;

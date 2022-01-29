@@ -55,6 +55,11 @@ public class DocumentController {
 				.toUriString();
 		return new DocumentFileDTO(id, fileDownloadUri, file.getContentType(), file.getSize());
 	}
+	
+	@GetMapping("/{id}")
+	public DmsDocumentDTO getDocumentById(@PathVariable UUID id) {
+		return documentService.findById(id);
+	}
 
 	@GetMapping("/{id}/download")
 	public ResponseEntity<byte[]> downloadDocumentContent(@PathVariable UUID id) {

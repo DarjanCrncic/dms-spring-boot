@@ -44,7 +44,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	public DmsDocumentDTO createNewDocument(NewDocumentDTO newDocumentDTO) {
 		// TODO: Remove hardcoded user.
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
-		newDocumentObject.setCreator(userRepository.findByUsername("dcrncic")
+		newDocumentObject.setCreator(userRepository.findByUsername("user")
 				.orElseThrow(() -> new NotFoundException("Invalid creator user.")));
 		DmsDocument savedDocumentObject = documentRepository.save(newDocumentObject);
 		savedDocumentObject.setRootId(savedDocumentObject.getId());

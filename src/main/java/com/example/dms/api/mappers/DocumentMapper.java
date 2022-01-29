@@ -14,7 +14,7 @@ import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.domain.DmsDocument;
 
-@Mapper(uses = UserMapper.class)
+@Mapper(uses = {UserMapper.class, TypeMapper.class})
 public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocumentDTO> {
 
 	DocumentMapper INSTANCE = Mappers.getMapper(DocumentMapper.class);

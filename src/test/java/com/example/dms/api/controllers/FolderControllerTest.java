@@ -2,6 +2,7 @@ package com.example.dms.api.controllers;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.doNothing;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -25,12 +27,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.dtos.folder.NewFolderDTO;
-import com.example.dms.domain.DmsFolder;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.services.FolderService;
 import com.example.dms.utils.Utils;
 
 @WebMvcTest(FolderController.class)
+@AutoConfigureRestDocs(outputDir = "target/snippets")
 class FolderControllerTest {
 
 	@Autowired
@@ -52,7 +54,7 @@ class FolderControllerTest {
 		validUser.setId(UUID.randomUUID());
 
 		rootFolderDTO = DmsFolderDTO.builder().path("/").build();
-		validFolderDTO = DmsFolderDTO.builder().path("/test").parentFolder(DmsFolder.builder().path("/").build()).build();
+		validFolderDTO = DmsFolderDTO.builder().path("/test").parentFolder(DmsFolderDTO.builder().path("/").build()).build();
 
 		folderList = new ArrayList<DmsFolderDTO>();
 		folderList.add(rootFolderDTO);
@@ -63,7 +65,7 @@ class FolderControllerTest {
 	void testGetAllFolders() throws Exception {
 		BDDMockito.given(folderService.findAll()).willReturn(folderList);
 
-		mockMvc.perform(get(BASE_URL)).andExpect(status().isOk()).andExpect(jsonPath("$").isArray());
+		mockMvc.perform(get(BASE_URL)).andExpect(status().isOk()).andExpect(jsonPath("$").isArray()).andDo(document("folders"));;
 	}
 
 	@Test

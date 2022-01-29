@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
+import com.example.dms.api.dtos.type.DmsTypeDTO;
 import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsType;
 import com.example.dms.domain.DmsUser;
@@ -41,6 +42,7 @@ class DocumentControllerTest {
 	DmsUser validUser;
 	DmsDocument validDocument;
 	DmsType type;
+	DmsTypeDTO typeDTO;
 	NewDocumentDTO newDocumentDTO;
 	DmsDocumentDTO validDocumentDTO;
 	
@@ -49,6 +51,7 @@ class DocumentControllerTest {
 	@BeforeEach
 	void setUp() {
 		type = DmsType.builder().typeName("tajni").build();
+		typeDTO = DmsTypeDTO.builder().typeName("tajni").build();
 		validUser = DmsUser.builder().username("dcrncic").password("12345").firstName("Darjan").lastName("Crnčić")
 				.email("darjan.crncic@gmail.com").build();
 		validUser.setId(UUID.randomUUID());
@@ -60,7 +63,7 @@ class DocumentControllerTest {
 		newDocumentDTO = NewDocumentDTO.builder().objectName("testni").description("testni dokument za test")
 				.keywords(Arrays.asList(new String[] { "prvi", "drugi" })).type(type).build();
 		validDocumentDTO = DmsDocumentDTO.builder().objectName("testni").description("testni dokument za test")
-				.keywords(Arrays.asList(new String[] { "prvi", "drugi" })).type(type).build();
+				.keywords(Arrays.asList(new String[] { "prvi", "drugi" })).type(typeDTO).build();
 	}
 
 	@Test
