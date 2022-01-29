@@ -1,6 +1,9 @@
 package com.example.dms.api.controllers;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,6 +43,8 @@ class DocumentControllerTest {
 	DmsType type;
 	NewDocumentDTO newDocumentDTO;
 	DmsDocumentDTO validDocumentDTO;
+	
+	private static final String BASE_URL = "/api/v1/documents";
 
 	@BeforeEach
 	void setUp() {
@@ -62,9 +67,23 @@ class DocumentControllerTest {
 	void createNewDocumentTest() throws Exception {
 		BDDMockito.given(documentService.createNewDocument(Mockito.any(NewDocumentDTO.class))).willReturn(validDocumentDTO);
 
-		mockMvc.perform(post("/api/v1/documents/").content(Utils.stringify(newDocumentDTO)).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated())
+		mockMvc.perform(post(BASE_URL).content(Utils.stringify(newDocumentDTO)).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated())
 				.andExpect(jsonPath("$.object_name", is(validDocument.getObjectName())))
 				.andExpect(jsonPath("$.description", is(validDocument.getDescription())))
 				.andExpect(jsonPath("$.keywords").isArray());
+	}
+	
+	@Test
+	void deleteDocumentTest() throws Exception {
+		doNothing().when(documentService).deleteById(Mockito.any(UUID.class));
+		
+		mockMvc.perform(delete(BASE_URL + "/{id}", UUID.randomUUID())).andExpect(status().isOk());
+	}
+	
+	@Test 
+	void getAllDocumentsTest() throws Exception {
+		BDDMockito.given(documentService.findAll()).willReturn(Arrays.asList(validDocumentDTO)); 
+		
+		mockMvc.perform(get(BASE_URL)).andExpect(status().isOk()).andExpect(jsonPath("$").isArray());
 	}
 }

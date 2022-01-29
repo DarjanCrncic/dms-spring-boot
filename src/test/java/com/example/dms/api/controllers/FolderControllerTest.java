@@ -43,6 +43,8 @@ class FolderControllerTest {
 	DmsFolderDTO rootFolderDTO;
 	DmsFolderDTO validFolderDTO;
 	List<DmsFolderDTO> folderList;
+	
+	private static final String BASE_URL = "/api/v1/folders";
 
 	@BeforeEach
 	void setUp() {
@@ -61,14 +63,14 @@ class FolderControllerTest {
 	void testGetAllFolders() throws Exception {
 		BDDMockito.given(folderService.findAll()).willReturn(folderList);
 
-		mockMvc.perform(get("/api/v1/folders/")).andExpect(status().isOk()).andExpect(jsonPath("$").isArray());
+		mockMvc.perform(get(BASE_URL)).andExpect(status().isOk()).andExpect(jsonPath("$").isArray());
 	}
 
 	@Test
 	void testFindById() throws Exception {
 		BDDMockito.given(folderService.findById(Mockito.any(UUID.class))).willReturn(rootFolderDTO);
 
-		mockMvc.perform(get("/api/v1/folders/{id}", UUID.randomUUID()))
+		mockMvc.perform(get(BASE_URL + "/{id}", UUID.randomUUID()))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.path", is(rootFolderDTO.getPath())))
 				.andExpect(jsonPath("$.subfolders").isArray())
@@ -80,7 +82,7 @@ class FolderControllerTest {
 	void testFolderSearchByPath() throws Exception {
 		BDDMockito.given(folderService.findByPath(Mockito.anyString())).willReturn(rootFolderDTO);
 
-		mockMvc.perform(get("/api/v1/folders/search").param("path", Mockito.anyString()))
+		mockMvc.perform(get(BASE_URL + "/search").param("path", Mockito.anyString()))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.subfolders").isArray())
 				.andExpect(jsonPath("$.documents").isArray());
@@ -89,7 +91,7 @@ class FolderControllerTest {
 	@Test
 	void testSaveNewFolder() throws Exception {
 		BDDMockito.given(folderService.createNewFolder(Mockito.anyString())).willReturn(validFolderDTO);
-		mockMvc.perform(post("/api/v1/folders/").content(Utils.stringify(new NewFolderDTO("/test"))).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(post(BASE_URL).content(Utils.stringify(new NewFolderDTO("/test"))).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.path", is(validFolderDTO.getPath())))
 				.andExpect(jsonPath("$.subfolders").isArray())
@@ -100,7 +102,7 @@ class FolderControllerTest {
 	void testUpdateFolder() throws Exception {
 		BDDMockito.given(folderService.updateFolder(Mockito.any(UUID.class), Mockito.anyString())).willReturn(validFolderDTO);
 
-		mockMvc.perform(put("/api/v1/folders/{id}", UUID.randomUUID()).content(Utils.stringify(new NewFolderDTO("/test"))).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put(BASE_URL + "/{id}", UUID.randomUUID()).content(Utils.stringify(new NewFolderDTO("/test"))).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.path", is(validFolderDTO.getPath())))
 				.andExpect(jsonPath("$.subfolders").isArray())
@@ -111,7 +113,7 @@ class FolderControllerTest {
 	void deleteById() throws Exception {
 		doNothing().when(folderService).deleteById(Mockito.any(UUID.class));
 
-		mockMvc.perform(delete("/api/v1/folders/{id}", UUID.randomUUID())).andExpect(status().isOk());
+		mockMvc.perform(delete(BASE_URL + "/{id}", UUID.randomUUID())).andExpect(status().isOk());
 	}
 
 }

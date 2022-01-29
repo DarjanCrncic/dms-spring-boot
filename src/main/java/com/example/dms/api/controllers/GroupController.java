@@ -30,8 +30,8 @@ public class GroupController {
 
 	@Autowired
 	GroupService groupService;
-	
-	@GetMapping("/")
+
+	@GetMapping
 	public List<DmsGroupDTO> getAllGroups() {
 		return groupService.findAll();
 	}
@@ -49,7 +49,7 @@ public class GroupController {
 		return groupService.findById(id);
 	}
 	
-	@PostMapping("/") 
+	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public DmsGroupDTO createNewGroup(@RequestBody @Valid NewGroupDTO groupDTO){
 		return groupService.createNewGroup(groupDTO);

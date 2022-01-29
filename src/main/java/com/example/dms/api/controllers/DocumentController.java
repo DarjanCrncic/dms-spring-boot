@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,13 +35,13 @@ public class DocumentController {
 	@Autowired
 	DocumentService documentService;
 
-	@PostMapping("/")
+	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public DmsDocumentDTO createNewDocument(@Valid @RequestBody NewDocumentDTO newDocumentDTO) {
 		return documentService.createNewDocument(newDocumentDTO);
 	}
 
-	@GetMapping("/")
+	@GetMapping
 	public List<DmsDocumentDTO> getAllDocuments() {
 		return documentService.getAllDocuments();
 	}
@@ -70,5 +71,8 @@ public class DocumentController {
 		return documentService.updateDocument(id, modifyDocumentDTO, true);
 	}
 	
-	// TODO: DELETE MAPPINGS
+	@DeleteMapping("/{id}")
+	public void deleteDocumentById(@PathVariable UUID id) {
+		documentService.deleteById(id);
+	}
 }

@@ -34,7 +34,7 @@ public class FolderController {
 		this.folderService = folderService;
 	}
 	
-	@GetMapping("/")
+	@GetMapping
 	public List<DmsFolderDTO> getAllFolders() {
 		return folderService.findAll();
 	}
@@ -51,7 +51,7 @@ public class FolderController {
 		return folderService.findById(id);
 	}
 	
-	@PostMapping("/")
+	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public DmsFolderDTO createNewFolder(@RequestBody @Valid NewFolderDTO newFolderDTO) {
 		return folderService.createNewFolder(newFolderDTO.getPath());

@@ -42,6 +42,8 @@ class UserControllerTest {
 	DmsUser validUser;
 	DmsUserDTO validUserDTO;
 	NewUserDTO newUserDTO;
+	
+	private static final String BASE_URL = "/api/v1/users";
 
 	@BeforeEach
 	void setUp() {
@@ -62,7 +64,7 @@ class UserControllerTest {
 
 		BDDMockito.given(userService.findById(Mockito.any())).willReturn(validUserDTO);
 
-		mockMvc.perform(get("/api/v1/users/{id}", validUser.getId())).andExpect(status().isOk())
+		mockMvc.perform(get(BASE_URL + "/{id}", validUser.getId())).andExpect(status().isOk())
 				.andExpect(jsonPath("$.id", is(validUser.getId().toString())))
 				.andExpect(jsonPath("$.username", is(validUser.getUsername())))
 				.andExpect(jsonPath("$.email", is(validUser.getEmail()))).andReturn();
@@ -72,14 +74,14 @@ class UserControllerTest {
 	void testGetUserByIdNotFound() throws Exception {
 		BDDMockito.given(userService.findById(Mockito.any())).willThrow(NotFoundException.class);
 
-		mockMvc.perform(get("/api/v1/users/{id}", UUID.randomUUID())).andExpect(status().isNotFound()).andReturn();
+		mockMvc.perform(get(BASE_URL + "/{id}", UUID.randomUUID())).andExpect(status().isNotFound()).andReturn();
 	}
 
 	@Test
 	void testGetUserByUsername() throws Exception {
 		BDDMockito.given(userService.findByUsername(Mockito.any(String.class))).willReturn(validUserDTO);
 
-		mockMvc.perform(get("/api/v1/users/search").param("username", validUser.getUsername()))
+		mockMvc.perform(get(BASE_URL + "/search").param("username", validUser.getUsername()))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.id", is(validUser.getId().toString())))
 				.andExpect(jsonPath("$.username", is(validUser.getUsername())))
 				.andExpect(jsonPath("$.email", is(validUser.getEmail()))).andReturn();
@@ -87,7 +89,7 @@ class UserControllerTest {
 
 	@Test
 	void testGetUserWithInvalidParam() throws Exception {
-		mockMvc.perform(get("/api/v1/users/search").param("username2", validUser.getUsername()))
+		mockMvc.perform(get(BASE_URL + "/search").param("username2", validUser.getUsername()))
 				.andExpect(status().isBadRequest()).andReturn();
 	}
 
@@ -96,7 +98,7 @@ class UserControllerTest {
 		BDDMockito.given(userService.saveNewUser(Mockito.any(NewUserDTO.class))).willReturn(validUserDTO);
 
 		mockMvc.perform(
-				post("/api/v1/users").content(Utils.stringify(newUserDTO)).contentType(MediaType.APPLICATION_JSON))
+				post(BASE_URL).content(Utils.stringify(newUserDTO)).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()).andReturn();
 	}
 
@@ -106,7 +108,7 @@ class UserControllerTest {
 				.willThrow(UniqueConstraintViolatedException.class);
 
 		mockMvc.perform(
-				post("/api/v1/users").content(Utils.stringify(newUserDTO)).contentType(MediaType.APPLICATION_JSON))
+				post(BASE_URL).content(Utils.stringify(newUserDTO)).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest()).andReturn();
 	}
 
@@ -115,7 +117,7 @@ class UserControllerTest {
 		BDDMockito.given(userService.updateUser(Mockito.any(UpdateUserDTO.class), Mockito.any(), Mockito.anyBoolean()))
 				.willReturn(validUserDTO);
 
-		mockMvc.perform(put("/api/v1/users/{id}", UUID.randomUUID()).content(Utils.stringify(newUserDTO))
+		mockMvc.perform(put(BASE_URL + "/{id}", UUID.randomUUID()).content(Utils.stringify(newUserDTO))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
@@ -124,7 +126,7 @@ class UserControllerTest {
 		BDDMockito.given(userService.updateUser(Mockito.any(UpdateUserDTO.class), Mockito.any(), Mockito.anyBoolean()))
 				.willReturn(validUserDTO);
 
-		mockMvc.perform(patch("/api/v1/users/{id}", UUID.randomUUID()).content(Utils.stringify(newUserDTO))
+		mockMvc.perform(patch(BASE_URL + "/{id}", UUID.randomUUID()).content(Utils.stringify(newUserDTO))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
