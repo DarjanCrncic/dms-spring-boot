@@ -117,5 +117,13 @@ class FolderControllerTest {
 
 		mockMvc.perform(delete(BASE_URL + "/{id}", UUID.randomUUID())).andExpect(status().isOk());
 	}
+	
+	@Test
+	void moveFilesToFolder() throws Exception {
+		BDDMockito.given(folderService.moveFilesToFolder(Mockito.any(UUID.class), Mockito.anyList())).willReturn(rootFolderDTO);
+		
+		mockMvc.perform(post(BASE_URL + "/move/{id}", UUID.randomUUID()).content(Utils.stringify(new ArrayList<>())).contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk());
+	}
 
 }

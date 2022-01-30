@@ -46,7 +46,7 @@ public class DocumentController {
 		return documentService.getAllDocuments();
 	}
 
-	@PostMapping("/{id}/upload")
+	@PostMapping("/upload/{id}")
 	public DocumentFileDTO uploadDocumentContent(@PathVariable UUID id, @RequestBody MultipartFile file) {
 		if (file == null)
 			throw new BadRequestException("The file parameter in the request body is null.");
@@ -61,7 +61,7 @@ public class DocumentController {
 		return documentService.findById(id);
 	}
 
-	@GetMapping("/{id}/download")
+	@GetMapping("/download/{id}")
 	public ResponseEntity<byte[]> downloadDocumentContent(@PathVariable UUID id) {
 		return documentService.downloadContent(id);
 	}

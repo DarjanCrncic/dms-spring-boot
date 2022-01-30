@@ -1,5 +1,6 @@
 package com.example.dms.services.impl;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -10,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.mappers.FolderMapper;
+import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsFolder;
+import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.FolderService;
 import com.example.dms.utils.Constants;
@@ -24,10 +27,13 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 
 	FolderRepository folderRepository;
 	FolderMapper folderMapper;
+	DocumentRepository documentRepository;
 
-	public FolderServiceImpl(FolderRepository folderRepository, FolderMapper folderMapper) {
+	public FolderServiceImpl(FolderRepository folderRepository, FolderMapper folderMapper, DocumentRepository documentRepository) {
 		super(folderRepository, folderMapper);
 		this.folderRepository = folderRepository;
+		this.folderMapper = folderMapper;
+		this.documentRepository = documentRepository;
 	}
 
 	@Override
@@ -42,14 +48,15 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	@Override
 	public DmsFolderDTO createNewFolder(String path) {
 		checkPath(path);
-		DmsFolder parentFolder = folderRepository.findByPath(getParentFolderPath(path)).orElseThrow(NotFoundException::new);
-		
+		DmsFolder parentFolder = folderRepository.findByPath(getParentFolderPath(path))
+				.orElseThrow(NotFoundException::new);
+
 		DmsFolder newFolder = DmsFolder.builder().path(path).build();
 		newFolder.setParentFolder(parentFolder);
-		
-		return this.save(newFolder);
+
+		return save(newFolder);
 	}
-	
+
 	@Override
 	public DmsFolderDTO updateFolder(UUID id, String path) {
 		checkPath(path);
@@ -57,7 +64,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		oldFolder.setPath(path);
 		return save(oldFolder);
 	}
-	
+
 	private void checkPath(String path) {
 		if (!validateFolderPath(path)) {
 			throw new BadRequestException("Folder path: '" + path + "' does not match required parameters.");
@@ -66,7 +73,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 			throw new UniqueConstraintViolatedException("Folder with path: '" + path + "' already exists.");
 		}
 	}
-	
+
 	public static boolean validateFolderPath(String path) {
 		Pattern p = Pattern.compile(Constants.FOLDER_PATH_REGEX);
 		Matcher m = p.matcher(path);
@@ -75,8 +82,26 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 
 	public static String getParentFolderPath(String path) {
 		int i = path.lastIndexOf("/");
-		return i==0 ? "/" : path.substring(0, i);
+		return i == 0 ? "/" : path.substring(0, i);
 	}
 
+	@Override
+	public DmsFolderDTO moveFilesToFolder(UUID folderId, List<UUID> documentIdList) {
+		DmsFolder folder = folderRepository.findById(folderId)
+				.orElseThrow(() -> new NotFoundException("Folder with specified id: " + folderId + " could not be found."));
+		for (UUID documentId : documentIdList) {
+			DmsDocument doc = documentRepository.findById(documentId)
+					.orElseThrow(() -> new BadRequestException("Ivalid document id: " + documentId + "."));
+			if (!folder.getDocuments().contains(doc)) {
+				doc.setParentFolder(folder);
+				documentRepository.save(doc);
+				folder.getDocuments().add(doc);
+				folder = folderRepository.save(folder);
+			}
+		}
+		return folderMapper.entityToDto(folder);
+	}
+	
+	// TODO: copy file to folder 
 
 }

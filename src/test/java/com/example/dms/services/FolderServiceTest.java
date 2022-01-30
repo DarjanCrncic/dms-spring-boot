@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
 
@@ -17,9 +15,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.dtos.folder.NewFolderDTO;
 import com.example.dms.api.mappers.FolderMapper;
 import com.example.dms.domain.DmsFolder;
+import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.impl.FolderServiceImpl;
 import com.example.dms.utils.exceptions.BadRequestException;
@@ -34,15 +34,19 @@ class FolderServiceTest {
 	@Mock
 	FolderMapper folderMapper;
 	
+	@Mock
+	DocumentRepository documentRepository;
+	
 	@InjectMocks
-	FolderService folderService = new FolderServiceImpl(folderRepository, folderMapper);
+	FolderService folderService = new FolderServiceImpl(folderRepository, folderMapper, documentRepository);
 
 	Optional<DmsFolder> emptyFolder = Optional.empty();
 	Optional<DmsFolder> rootFolder = Optional.of(DmsFolder.builder().path("/").build());
 
 	DmsFolder validFolder = DmsFolder.builder().path("/test").parentFolder(rootFolder.get()).build();
 	NewFolderDTO folderDTO = NewFolderDTO.builder().path("/test").build();
-
+	DmsFolderDTO createdfolderDTO = DmsFolderDTO.builder().path("/test").build();
+	DmsFolderDTO rootFolderDTO = DmsFolderDTO.builder().path("/").build();
 
 	@Test
 	void folderFindByPathTest() {
@@ -71,14 +75,5 @@ class FolderServiceTest {
 	void testIvalidFolderPathWhenCreating() {
 		assertThrows(BadRequestException.class, () -> folderService.createNewFolder("notStartingWithFrontSlash"));
 		assertThrows(BadRequestException.class, () -> folderService.createNewFolder("/endingWithFrontSlash/"));
-	}
-
-	@Test
-	void testCreateFolder() {
-		BDDMockito.when(folderRepository.findByPath(Mockito.anyString())).thenReturn(emptyFolder)
-				.thenReturn(rootFolder);
-		folderService.createNewFolder("/test");
-
-		verify(folderRepository, times(2)).findByPath(Mockito.anyString());
 	}
 }

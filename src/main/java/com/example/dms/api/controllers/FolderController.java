@@ -67,6 +67,8 @@ public class FolderController {
 		folderService.deleteById(id);
 	}
 	
-	//TODO: MOVE FILE TO FOLDER
-	
+	@PostMapping("/move/{id}")
+	public DmsFolderDTO moveFilesToFolder(@PathVariable UUID id, @RequestBody List<UUID> documentIdList) {
+		return folderService.moveFilesToFolder(id, documentIdList);
+	}
 }
