@@ -17,6 +17,7 @@ import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.domain.DmsDocument;
+import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DocumentService;
@@ -44,12 +45,21 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	public DmsDocumentDTO createNewDocument(NewDocumentDTO newDocumentDTO) {
 		// TODO: Remove hardcoded user.
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
-		newDocumentObject.setCreator(userRepository.findByUsername("user")
-				.orElseThrow(() -> new NotFoundException("Invalid creator user.")));
-		DmsDocument savedDocumentObject = documentRepository.save(newDocumentObject);
-		savedDocumentObject.setRootId(savedDocumentObject.getId());
-		savedDocumentObject.setPredecessorId(savedDocumentObject.getId());
-		return save(savedDocumentObject);
+		DmsUser creator = userRepository.findByUsername("user").orElseThrow(() -> new NotFoundException("Invalid creator user."));
+		
+		persistDocumentToUser(creator, newDocumentObject);
+		newDocumentObject.setRootId(newDocumentObject.getId());
+		newDocumentObject.setPredecessorId(newDocumentObject.getId());
+		return save(newDocumentObject);
+	}
+	
+	private void persistDocumentToUser(DmsUser user, DmsDocument document) {
+		if (!user.getDocuments().contains(document)) {
+			document.setCreator(user);
+			document = documentRepository.save(document);
+			user.getDocuments().add(document);
+			user = userRepository.save(user);
+		}
 	}
 
 	@Override

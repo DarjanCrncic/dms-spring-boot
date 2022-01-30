@@ -14,13 +14,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.domain.DmsDocument;
+import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.DocumentRepository;
+import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DocumentService;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.BadRequestException;
@@ -39,6 +42,9 @@ class DocumentServiceIntegrationTest {
 	
 	@Autowired
 	DocumentRepository documentRepository;
+	
+	@Autowired
+	UserRepository userRepository;
 
 	DmsDocumentDTO newDocument;
 	DmsDocumentDTO newVersion;
@@ -67,6 +73,13 @@ class DocumentServiceIntegrationTest {
 		assertEquals(newDocument.getObjectName(), foundDocument.getObjectName());
 		assertEquals(newDocument.getId(), foundDocument.getId());
 		assertSame(newDocument.getCreator().getUsername(), foundDocument.getCreator().getUsername());
+	}
+
+	@Test
+	@Transactional
+	void saveNewDocumentPersistenceTest() {
+		DmsUser creator = userRepository.findById(newDocument.getCreator().getId()).orElse(null);
+		assertEquals(1, creator.getDocuments().size());
 	}
 
 	@Test

@@ -63,7 +63,7 @@ public class DmsUser extends BaseEntity {
 	@Column(unique = true)
 	private String email;
 
-	@ManyToMany(mappedBy = "members", cascade = CascadeType.PERSIST)
+	@ManyToMany(mappedBy = "members", cascade = CascadeType.REFRESH)
 	@ToString.Exclude
 	@JsonIgnore // TODO: change this to use JsonView
 	@Default

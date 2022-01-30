@@ -6,7 +6,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -37,7 +36,7 @@ public class DmsGroup extends BaseEntity {
 	@Default
 	private String description = null;
 
-	@ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	@ManyToMany(cascade = CascadeType.REFRESH)
 	@JoinTable(name = "user_groups", joinColumns = { @JoinColumn(name = "group_id") }, 
 			inverseJoinColumns = { @JoinColumn(name = "user_id") })
 	@Default

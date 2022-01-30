@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -67,7 +66,7 @@ public class DmsDocument extends BaseEntity{
 	@JsonBackReference
 	private DmsType type = null;
 	
-	@ManyToOne(cascade = CascadeType.REFRESH)
+	@ManyToOne
 	@JoinColumn(name = "parent_folder_id")
 	@Default
 	private DmsFolder parentFolder = null;

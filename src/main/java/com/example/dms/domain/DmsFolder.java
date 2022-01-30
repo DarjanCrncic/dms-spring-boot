@@ -12,6 +12,8 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
+import org.apache.commons.lang3.builder.ToStringExclude;
+
 import com.example.dms.utils.Constants;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -51,6 +53,7 @@ public class DmsFolder extends BaseEntity {
 	@OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	@JsonManagedReference("documents")
+	@ToStringExclude
 	private List<DmsDocument> documents = new ArrayList<>();
 
 }

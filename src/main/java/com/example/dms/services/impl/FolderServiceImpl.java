@@ -50,11 +50,10 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		checkPath(path);
 		DmsFolder parentFolder = folderRepository.findByPath(getParentFolderPath(path))
 				.orElseThrow(NotFoundException::new);
-
 		DmsFolder newFolder = DmsFolder.builder().path(path).build();
-		newFolder.setParentFolder(parentFolder);
 
-		return save(newFolder);
+		persistFolderToParentFolder(parentFolder, newFolder);
+		return folderMapper.entityToDto(newFolder);
 	}
 
 	@Override
@@ -92,16 +91,30 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		for (UUID documentId : documentIdList) {
 			DmsDocument doc = documentRepository.findById(documentId)
 					.orElseThrow(() -> new BadRequestException("Ivalid document id: " + documentId + "."));
-			if (!folder.getDocuments().contains(doc)) {
-				doc.setParentFolder(folder);
-				documentRepository.save(doc);
-				folder.getDocuments().add(doc);
-				folder = folderRepository.save(folder);
-			}
+			persistDocumentToFolder(folder, doc);
 		}
 		return folderMapper.entityToDto(folder);
 	}
 	
+	private void persistDocumentToFolder(DmsFolder folder, DmsDocument document) {
+		if (!folder.getDocuments().contains(document)) {
+			document.setParentFolder(folder);
+			document = documentRepository.save(document);
+			folder.getDocuments().add(document);
+			folder = folderRepository.save(folder);
+		}
+	}
+	
+	private void persistFolderToParentFolder(DmsFolder parentFolder, DmsFolder newFolder) {
+		if (!parentFolder.getSubfolders().contains(newFolder)) {
+			newFolder.setParentFolder(parentFolder);
+			newFolder = folderRepository.save(newFolder);
+			parentFolder.getSubfolders().add(newFolder);
+			parentFolder = folderRepository.save(parentFolder);
+		}
+	}
+	
 	// TODO: copy file to folder 
-
+	// TODO: move subfolder to other folder
+	// TODO: copy folder to another folder
 }

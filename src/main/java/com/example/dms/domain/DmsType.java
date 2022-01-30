@@ -3,6 +3,7 @@ package com.example.dms.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -33,7 +34,7 @@ public class DmsType extends BaseEntity{
 	@Column(unique = true)
 	private String typeName;
 	
-	@OneToMany(mappedBy = "type")
+	@OneToMany(mappedBy = "type", cascade = CascadeType.REFRESH)
 	@Default
 	@JsonManagedReference
 	@JsonIgnore
