@@ -12,7 +12,7 @@ import com.example.dms.domain.DmsType;
 public interface TypeMapper extends MapperInterface<DmsType, DmsTypeDTO>{
 
 	TypeMapper INSTANCE = Mappers.getMapper(TypeMapper.class);
-
+	
 	@Override
 	DmsTypeDTO entityToDto(DmsType dmsType);
 	

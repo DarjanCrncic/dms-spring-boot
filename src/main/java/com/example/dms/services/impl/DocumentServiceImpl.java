@@ -17,8 +17,10 @@ import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.domain.DmsDocument;
+import com.example.dms.domain.DmsType;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.DocumentRepository;
+import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DocumentService;
 import com.example.dms.utils.exceptions.BadRequestException;
@@ -32,25 +34,39 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	UserRepository userRepository;
 	DocumentRepository documentRepository;
 	DocumentMapper documentMapper;
+	TypeRepository typeRepository;
 
 	public DocumentServiceImpl(UserRepository userRepository, DocumentRepository documentRepository,
-			DocumentMapper documentMapper) {
+			DocumentMapper documentMapper, TypeRepository typeRepository) {
 		super(documentRepository, documentMapper);
 		this.userRepository = userRepository;
 		this.documentRepository = documentRepository;
 		this.documentMapper = documentMapper;
+		this.typeRepository = typeRepository;
 	}
 
 	@Override
 	public DmsDocumentDTO createNewDocument(NewDocumentDTO newDocumentDTO) {
 		// TODO: Remove hardcoded user.
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
+		
+		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getTypeName()).orElse(null);
 		DmsUser creator = userRepository.findByUsername("user").orElseThrow(() -> new NotFoundException("Invalid creator user."));
 		
 		persistDocumentToUser(creator, newDocumentObject);
+		persistDocumentToType(type, newDocumentObject);
 		newDocumentObject.setRootId(newDocumentObject.getId());
 		newDocumentObject.setPredecessorId(newDocumentObject.getId());
 		return save(newDocumentObject);
+	}
+	
+	private void persistDocumentToType(DmsType type, DmsDocument document) {
+		if (type != null && !type.getDocuments().contains(document)) {
+			document.setType(type);
+			document = documentRepository.save(document);
+			type.getDocuments().add(document);
+			type = typeRepository.save(type);
+		}
 	}
 	
 	private void persistDocumentToUser(DmsUser user, DmsDocument document) {

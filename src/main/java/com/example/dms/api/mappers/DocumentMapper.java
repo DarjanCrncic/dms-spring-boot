@@ -19,18 +19,10 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 
 	DocumentMapper INSTANCE = Mappers.getMapper(DocumentMapper.class);
 	
-	@Mapping(target = "imutable", ignore = true)
-	@Mapping(target = "keywords", ignore = true)
-	@Mapping(target = "parentFolder", ignore = true)
-	@Mapping(target = "predecessorId", ignore = true)
-	@Mapping(target = "rootId", ignore = true)
-	@Mapping(target = "version", ignore = true)
-	@Mapping(target = "content", ignore = true)
-	DmsDocument documentDTOToDocument(DmsDocumentDTO documentDTO);
-	
 	@Override
 	DmsDocumentDTO entityToDto(DmsDocument document);
 	
+	@Mapping(target = "type", ignore = true)
 	@Mapping(target = "imutable", ignore = true)
 	@Mapping(target = "parentFolder", ignore = true)
 	@Mapping(target = "predecessorId", ignore = true)

@@ -1,5 +1,6 @@
 package com.example.dms.services.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -21,8 +22,10 @@ import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.domain.DmsDocument;
+import com.example.dms.domain.DmsType;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.DocumentRepository;
+import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DocumentService;
 import com.example.dms.services.UserService;
@@ -45,15 +48,21 @@ class DocumentServiceIntegrationTest {
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	TypeRepository typeRepository;
 
 	DmsDocumentDTO newDocument;
 	DmsDocumentDTO newVersion;
 	DmsDocumentDTO updatedDocument;
-
+	DmsType type;
+	String typeName = "testni-tip";
+	
 	@BeforeEach
 	void setUp() {
+		type = typeRepository.save(DmsType.builder().typeName(typeName).build());
 		newDocument = documentService.createNewDocument(
-				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").build());
+				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").typeName(typeName).build());
 	}
 
 	@AfterEach
@@ -64,6 +73,8 @@ class DocumentServiceIntegrationTest {
 			documentService.deleteById(newVersion.getId());
 		if (updatedDocument != null && documentRepository.findById(updatedDocument.getId()).isPresent()) 
 			documentService.deleteById(updatedDocument.getId());
+		if (typeRepository.findByTypeName(typeName).isPresent()) 
+			typeRepository.delete(type);
 	}
 
 	@Test
@@ -73,6 +84,16 @@ class DocumentServiceIntegrationTest {
 		assertEquals(newDocument.getObjectName(), foundDocument.getObjectName());
 		assertEquals(newDocument.getId(), foundDocument.getId());
 		assertSame(newDocument.getCreator().getUsername(), foundDocument.getCreator().getUsername());
+	}
+	
+	@Test
+	@Transactional
+	void testTypeBinding() {
+		type = typeRepository.findByTypeName(typeName).orElse(null);
+		
+		assertEquals(type.getTypeName(), newDocument.getType().getTypeName());
+		assertEquals(type.getTypeName(), typeName);
+		assertThat(type.getDocuments()).hasSize(1);
 	}
 
 	@Test

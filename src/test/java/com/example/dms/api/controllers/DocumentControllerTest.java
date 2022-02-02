@@ -61,7 +61,7 @@ class DocumentControllerTest {
 				.imutable(false).type(type).build();
 
 		newDocumentDTO = NewDocumentDTO.builder().objectName("testni").description("testni dokument za test")
-				.keywords(Arrays.asList(new String[] { "prvi", "drugi" })).type(type).build();
+				.keywords(Arrays.asList(new String[] { "prvi", "drugi" })).typeName(type.getTypeName()).build();
 		validDocumentDTO = DmsDocumentDTO.builder().objectName("testni").description("testni dokument za test")
 				.keywords(Arrays.asList(new String[] { "prvi", "drugi" })).type(typeDTO).build();
 	}
