@@ -8,6 +8,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
@@ -15,6 +17,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.example.dms.domain.security.DmsRole;
 import com.example.dms.utils.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -37,15 +40,15 @@ public class DmsUser extends BaseEntity {
 
 	@NotBlank
 	@NonNull
-	@Length(min = Constants.MINLENGTH, message = "Ivalid username length, username must have atleast " + Constants.MINLENGTH
-			+ " characters.")
+	@Length(min = Constants.MINLENGTH, message = "Ivalid username length, username must have atleast "
+			+ Constants.MINLENGTH + " characters.")
 	@Column(unique = true)
 	private String username;
 
 	@NotBlank
 	@NonNull
-	@Length(min = Constants.MINLENGTH, message = "Ivalid password length, password must have atleast " + Constants.MINLENGTH
-			+ " characters.")
+	@Length(min = Constants.MINLENGTH, message = "Ivalid password length, password must have atleast "
+			+ Constants.MINLENGTH + " characters.")
 	private String password;
 
 	@NotBlank
@@ -68,10 +71,20 @@ public class DmsUser extends BaseEntity {
 	@JsonIgnore // TODO: change this to use JsonView
 	@Default
 	private Set<DmsGroup> groups = new HashSet<>();
-	
+
 	@OneToMany(mappedBy = "creator", cascade = CascadeType.REFRESH)
 	@ToString.Exclude
 	@JsonIgnore
 	@Default
 	private List<DmsDocument> documents = new ArrayList<>();
+
+	@ManyToMany
+	@Default
+	@JoinTable(name = "users_roles",
+		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), 
+		inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+	private List<DmsRole> roles = new ArrayList<>();
+	
+	@Default
+	boolean enabled = true;
 }

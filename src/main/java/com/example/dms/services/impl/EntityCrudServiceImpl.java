@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.api.mappers.MapperInterface;
@@ -48,6 +49,7 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D> implements 
 	}
 
 	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void deleteById(UUID id) {
 		repository.deleteById(id);
 	}
