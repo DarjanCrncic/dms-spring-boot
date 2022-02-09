@@ -19,6 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
@@ -27,10 +30,13 @@ import com.example.dms.api.dtos.type.DmsTypeDTO;
 import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsType;
 import com.example.dms.domain.DmsUser;
+import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DocumentService;
 import com.example.dms.utils.Utils;
 
 @WebMvcTest(DocumentController.class)
+@ContextConfiguration
+@WithMockUser(roles = "ADMIN")
 class DocumentControllerTest {
 
 	@Autowired
@@ -38,6 +44,12 @@ class DocumentControllerTest {
 
 	@MockBean
 	DocumentService documentService;
+	
+	@MockBean
+	UserDetailsService userDetailsService;
+	
+	@MockBean
+	UserRepository userRepository;
 
 	DmsUser validUser;
 	DmsDocument validDocument;

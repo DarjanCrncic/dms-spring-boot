@@ -19,18 +19,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.domain.DmsUser;
+import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.Utils;
 import com.example.dms.utils.exceptions.NotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @WebMvcTest(UserController.class)
+@WithMockUser(roles = "ADMIN")
 class UserControllerTest {
 
 	@Autowired
@@ -38,6 +42,12 @@ class UserControllerTest {
 
 	@MockBean
 	UserService userService;
+	
+	@MockBean
+	UserDetailsService userDetailsService;
+	
+	@MockBean
+	UserRepository userRepository;
 
 	DmsUser validUser;
 	DmsUserDTO validUserDTO;

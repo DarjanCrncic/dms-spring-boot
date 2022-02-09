@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.dtos.user.NewUserDTO;
@@ -18,7 +20,9 @@ import com.example.dms.utils.exceptions.NotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @SpringBootTest
-class UserServiceIntegrationTest {
+@ContextConfiguration
+@WithMockUser(roles = "ADMIN")
+class UserServiceIT {
 
 	@Autowired
 	UserMapper userMapper;

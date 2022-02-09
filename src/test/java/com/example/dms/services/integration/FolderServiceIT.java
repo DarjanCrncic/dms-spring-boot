@@ -13,6 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
@@ -29,7 +31,9 @@ import com.example.dms.services.FolderService;
 import com.example.dms.utils.exceptions.NotFoundException;
 
 @SpringBootTest
-class FolderServiceIntegrationTest {
+@ContextConfiguration
+@WithMockUser(authorities = {"ROLE_ADMIN","CREATE_PRIVILEGE"})
+class FolderServiceIT {
 	
 	@Autowired
 	FolderMapper folderMapper;

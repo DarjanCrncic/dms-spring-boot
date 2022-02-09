@@ -39,11 +39,13 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D> implements 
 	}
 
 	@Override
+	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
 	public D save(T object) {
 		return mapper.entityToDto(repository.save(object));
 	}
 
 	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(T object) {
 		repository.delete(object);
 	}

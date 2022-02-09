@@ -23,16 +23,20 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.dtos.folder.NewFolderDTO;
 import com.example.dms.domain.DmsUser;
+import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.FolderService;
 import com.example.dms.utils.Utils;
 
 @WebMvcTest(FolderController.class)
 @AutoConfigureRestDocs(outputDir = "target/snippets")
+@WithMockUser(roles = { "ADMIN" })
 class FolderControllerTest {
 
 	@Autowired
@@ -40,6 +44,12 @@ class FolderControllerTest {
 
 	@MockBean
 	FolderService folderService;
+	
+	@MockBean
+	UserDetailsService userDetailsService;
+	
+	@MockBean
+	UserRepository userRepository;
 
 	DmsUser validUser;
 	DmsFolderDTO rootFolderDTO;

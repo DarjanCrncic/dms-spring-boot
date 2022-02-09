@@ -11,18 +11,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.api.dtos.group.DmsGroupDTO;
 import com.example.dms.api.dtos.group.NewGroupDTO;
-import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.DmsUserDTO;
+import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.repositories.GroupRepository;
 import com.example.dms.services.GroupService;
 import com.example.dms.services.UserService;
 
 @SpringBootTest
-class GroupServiceIntegrationTest {
+@ContextConfiguration
+@WithMockUser(roles = "ADMIN")
+class GroupServiceIT {
 
 	@Autowired
 	GroupRepository groupRepository;

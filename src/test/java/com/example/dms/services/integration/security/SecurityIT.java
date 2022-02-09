@@ -52,7 +52,7 @@ class SecurityIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "tralal", authorities = { "ROLE_ADMIN" })
+	@WithMockUser(username = "testuser", authorities = { "ROLE_ADMIN" })
 	void testSecurityWithMockUser() {
 		userService.deleteById(user.getId());
 		
@@ -60,10 +60,17 @@ class SecurityIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "tralal", authorities = { "ROLE_USER" })
+	@WithMockUser(username = "testuser", roles = { "ADMIN" })
+	void testSecurityWithMockUserRple() {
+		userService.deleteById(user.getId());
+		
+		assertTrue(userRepository.findByUsername("test").isEmpty());
+	}
+	
+	@Test
+	@WithMockUser(username = "testuser", authorities = { "ROLE_USER" })
 	void testSecurityException() {
 		assertThrows(AccessDeniedException.class, () -> userService.deleteById(user.getId()));
 	}
-
 	
 }
