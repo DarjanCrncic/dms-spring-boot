@@ -74,12 +74,12 @@ class DocumentServiceIT {
 	@AfterEach
 	void cleanUp() {
 		if (newDocument != null && documentRepository.findById(newDocument.getId()).isPresent())
-			documentService.deleteById(newDocument.getId());
+			documentRepository.deleteById(newDocument.getId());
 		if (newVersion != null && documentRepository.findById(newVersion.getId()).isPresent())
-			documentService.deleteById(newVersion.getId());
+			documentRepository.deleteById(newVersion.getId());
 		if (updatedDocument != null && documentRepository.findById(updatedDocument.getId()).isPresent()) 
-			documentService.deleteById(updatedDocument.getId());
-		if (typeRepository.findByTypeName(typeName).isPresent()) 
+			documentRepository.deleteById(updatedDocument.getId());
+		if (type != null && typeRepository.findByTypeName(typeName).isPresent()) 
 			typeRepository.delete(type);
 	}
 
@@ -128,6 +128,7 @@ class DocumentServiceIT {
 	}
 
 	@Test
+	@WithUserDetails("user")
 	void testDocumentPut() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").description("updated")
 				.keywords(Arrays.asList(new String[] { "foo", "bar" })).build();
