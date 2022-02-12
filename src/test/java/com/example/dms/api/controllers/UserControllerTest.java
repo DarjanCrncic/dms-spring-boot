@@ -30,7 +30,7 @@ import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.Utils;
-import com.example.dms.utils.exceptions.NotFoundException;
+import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @WebMvcTest(UserController.class)
@@ -82,7 +82,7 @@ class UserControllerTest {
 
 	@Test
 	void testGetUserByIdNotFound() throws Exception {
-		BDDMockito.given(userService.findById(Mockito.any())).willThrow(NotFoundException.class);
+		BDDMockito.given(userService.findById(Mockito.any())).willThrow(DmsNotFoundException.class);
 
 		mockMvc.perform(get(BASE_URL + "/{id}", UUID.randomUUID())).andExpect(status().isNotFound()).andReturn();
 	}

@@ -18,7 +18,7 @@ import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.FolderService;
 import com.example.dms.utils.Constants;
 import com.example.dms.utils.exceptions.BadRequestException;
-import com.example.dms.utils.exceptions.NotFoundException;
+import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @Service
@@ -40,7 +40,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	public DmsFolderDTO findByPath(String path) {
 		Optional<DmsFolder> folder = folderRepository.findByPath(path);
 		if (folder.isEmpty()) {
-			throw new NotFoundException("Folder with specified path: '" + path + "' was not found.");
+			throw new DmsNotFoundException("Folder with specified path: '" + path + "' was not found.");
 		}
 		return folderMapper.entityToDto(folder.get());
 	}
@@ -49,7 +49,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	public DmsFolderDTO createNewFolder(String path) {
 		checkPath(path);
 		DmsFolder parentFolder = folderRepository.findByPath(getParentFolderPath(path))
-				.orElseThrow(NotFoundException::new);
+				.orElseThrow(DmsNotFoundException::new);
 		DmsFolder newFolder = DmsFolder.builder().path(path).build();
 
 		persistFolderToParentFolder(parentFolder, newFolder);
@@ -59,7 +59,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	@Override
 	public DmsFolderDTO updateFolder(UUID id, String path) {
 		checkPath(path);
-		DmsFolder oldFolder = folderRepository.findById(id).orElseThrow(NotFoundException::new);
+		DmsFolder oldFolder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		oldFolder.setPath(path);
 		return save(oldFolder);
 	}
@@ -87,7 +87,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	@Override
 	public DmsFolderDTO moveFilesToFolder(UUID folderId, List<UUID> documentIdList) {
 		DmsFolder folder = folderRepository.findById(folderId)
-				.orElseThrow(() -> new NotFoundException("Folder with specified id: " + folderId + " could not be found."));
+				.orElseThrow(() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));
 		for (UUID documentId : documentIdList) {
 			DmsDocument doc = documentRepository.findById(documentId)
 					.orElseThrow(() -> new BadRequestException("Ivalid document id: " + documentId + "."));

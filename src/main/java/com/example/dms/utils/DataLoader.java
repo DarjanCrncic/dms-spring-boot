@@ -15,6 +15,7 @@ import com.example.dms.repositories.FolderRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.repositories.security.PrivilegeRepository;
 import com.example.dms.repositories.security.RoleRepository;
+import com.example.dms.services.DocumentService;
 
 @Component
 public class DataLoader implements ApplicationRunner {
@@ -30,6 +31,9 @@ public class DataLoader implements ApplicationRunner {
 	
 	@Autowired
 	PrivilegeRepository privilegeRepository;
+	
+	@Autowired
+	DocumentService documentService;
 	
     @Override
 	public void run(ApplicationArguments args) {
@@ -92,5 +96,6 @@ public class DataLoader implements ApplicationRunner {
     	if (userRepository.findByUsername("dmsadmin").isEmpty()) {
     		userRepository.save(adminUser);
     	} 
+
     }
 }

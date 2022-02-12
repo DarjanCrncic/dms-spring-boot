@@ -23,7 +23,7 @@ import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.impl.FolderServiceImpl;
 import com.example.dms.utils.exceptions.BadRequestException;
-import com.example.dms.utils.exceptions.NotFoundException;
+import com.example.dms.utils.exceptions.DmsNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class FolderServiceTest {
@@ -52,7 +52,7 @@ class FolderServiceTest {
 	void folderFindByPathTest() {
 		BDDMockito.given(folderRepository.findByPath(Mockito.anyString())).willReturn(emptyFolder);
 		String path = Mockito.anyString();
-		assertThrows(NotFoundException.class, () -> folderService.findByPath(path));
+		assertThrows(DmsNotFoundException.class, () -> folderService.findByPath(path));
 	}
 
 	@Test

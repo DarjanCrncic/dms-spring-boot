@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -22,10 +23,11 @@ import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
+import com.example.dms.services.DmsAclService;
 import com.example.dms.services.DocumentService;
 import com.example.dms.utils.exceptions.BadRequestException;
+import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.InternalException;
-import com.example.dms.utils.exceptions.NotFoundException;
 
 @Service
 @Transactional
@@ -35,14 +37,16 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	DocumentRepository documentRepository;
 	DocumentMapper documentMapper;
 	TypeRepository typeRepository;
-
+	DmsAclService aclService;
+	
 	public DocumentServiceImpl(UserRepository userRepository, DocumentRepository documentRepository,
-			DocumentMapper documentMapper, TypeRepository typeRepository) {
+			DocumentMapper documentMapper, TypeRepository typeRepository, DmsAclService aclService) {
 		super(documentRepository, documentMapper);
 		this.userRepository = userRepository;
 		this.documentRepository = documentRepository;
 		this.documentMapper = documentMapper;
 		this.typeRepository = typeRepository;
+		this.aclService = aclService;
 	}
 
 	@Override
@@ -51,12 +55,15 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
 		
 		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getTypeName()).orElse(null);
-		DmsUser creator = userRepository.findByUsername("user").orElseThrow(() -> new NotFoundException("Invalid creator user."));
-		
+		DmsUser creator = userRepository.findByUsername("user").orElseThrow(() -> new DmsNotFoundException("Invalid creator user."));
+
 		persistDocumentToUser(creator, newDocumentObject);
 		persistDocumentToType(type, newDocumentObject);
 		newDocumentObject.setRootId(newDocumentObject.getId());
 		newDocumentObject.setPredecessorId(newDocumentObject.getId());
+		
+		aclService.grantCreatorRightsOnDocument(newDocumentObject, creator.getUsername());
+		
 		return save(newDocumentObject);
 	}
 	
@@ -79,8 +86,9 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE')")
 	public DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
-		DmsDocument doc = documentRepository.findById(id).orElseThrow(NotFoundException::new);
+		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (doc.isImutable()) {
 			throw new BadRequestException("This version of the document is immutable and cannot be modified.");
 		}
@@ -94,7 +102,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	public void uploadFile(UUID id, MultipartFile file) {
-		DmsDocument doc = documentRepository.findById(id).orElseThrow(NotFoundException::new);
+		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (doc.isImutable()) {
 			throw new BadRequestException("Object is immutable and you cannot add content to it.");
 		}
@@ -126,7 +134,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	public DmsDocumentDTO createNewVersion(UUID id) {
-		DmsDocument doc = documentRepository.findById(id).orElseThrow(NotFoundException::new);
+		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (doc.isImutable()) {
 			throw new BadRequestException("This version of the document is immutable and cannot be versioned. "
 					+ "Currently you can only version the latest version of the document.");
@@ -162,7 +170,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	public ResponseEntity<byte[]> downloadContent(UUID id) {
-		DmsDocument document = documentRepository.findById(id).orElseThrow(NotFoundException::new);
+		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		checkIsDocumentValidForDownload(document);
 		return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getOriginalFileName() + "\"")

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +65,8 @@ class DocumentServiceIT {
 	
 	@BeforeEach
 	void setUp() {
-		type = typeRepository.save(DmsType.builder().typeName(typeName).build());
+		if (typeRepository.findByTypeName(typeName).isEmpty())
+			type = typeRepository.save(DmsType.builder().typeName(typeName).build());
 		newDocument = documentService.createNewDocument(
 				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").typeName(typeName).build());
 	}
@@ -138,6 +140,7 @@ class DocumentServiceIT {
 	}
 	
 	@Test
+	@WithUserDetails("user")
 	void testDocumentPatch() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);

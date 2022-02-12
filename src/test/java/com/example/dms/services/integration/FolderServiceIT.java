@@ -28,7 +28,7 @@ import com.example.dms.repositories.FolderRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DocumentService;
 import com.example.dms.services.FolderService;
-import com.example.dms.utils.exceptions.NotFoundException;
+import com.example.dms.utils.exceptions.DmsNotFoundException;
 
 @SpringBootTest
 @ContextConfiguration
@@ -108,8 +108,8 @@ class FolderServiceIT {
 		UUID subFolderId = subFolder.getId();
 		UUID newDocumentId = newDocument.getId();
 		
-		assertThrows(NotFoundException.class, () -> folderService.findById(subFolderId));
-		assertThrows(NotFoundException.class, () -> documentService.findById(newDocumentId));
+		assertThrows(DmsNotFoundException.class, () -> folderService.findById(subFolderId));
+		assertThrows(DmsNotFoundException.class, () -> documentService.findById(newDocumentId));
 	}
 
 	@Test

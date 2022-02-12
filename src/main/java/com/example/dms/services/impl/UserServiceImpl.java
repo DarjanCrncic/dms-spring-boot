@@ -13,7 +13,7 @@ import com.example.dms.api.mappers.UserMapper;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.UserService;
-import com.example.dms.utils.exceptions.NotFoundException;
+import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @Service
@@ -35,7 +35,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 		if(foundUser.isPresent()) {
 			return userMapper.entityToDto(foundUser.get());
 		}
-		throw new NotFoundException("User with username: '" + username + "' is not found.");
+		throw new DmsNotFoundException("User with username: '" + username + "' is not found.");
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 		if(foundUser.isPresent()) {
 			return userMapper.entityToDto(foundUser.get());
 		}
-		throw new NotFoundException("User with email: '" + email + "' is not found.");
+		throw new DmsNotFoundException("User with email: '" + email + "' is not found.");
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 
 	@Override
 	public DmsUserDTO updateUser(UpdateUserDTO userDTO, UUID id, boolean patch) {
-		DmsUser user = userRepository.findById(id).orElseThrow(NotFoundException::new);
+		DmsUser user = userRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (patch) {
 			userMapper.updateUserPatch(userDTO, user);
 		} else {

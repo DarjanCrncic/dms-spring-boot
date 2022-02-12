@@ -5,13 +5,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.api.mappers.MapperInterface;
 import com.example.dms.domain.BaseEntity;
 import com.example.dms.services.CrudService;
-import com.example.dms.utils.exceptions.NotFoundException;
+import com.example.dms.utils.exceptions.DmsNotFoundException;
 @Transactional
 public abstract class EntityCrudServiceImpl<T extends BaseEntity, D> implements CrudService<T, D, UUID>{
 
@@ -26,6 +27,7 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D> implements 
 	}
 
 	@Override
+	@PostFilter("hasAuthority('READ_PRIVILEGE')")
 	public List<D> findAll() {
 		return mapper.entityListToDtoList(repository.findAll());
 	}
@@ -34,7 +36,7 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D> implements 
 	public D findById(UUID id) {
 		Optional<T> entity = repository.findById(id);
 		if (!entity.isPresent())
-			throw new NotFoundException("The entity with requested id: '" + id + "' does not exist.");
+			throw new DmsNotFoundException("The entity with requested id: '" + id + "' does not exist.");
 		return mapper.entityToDto(entity.get());
 	}
 

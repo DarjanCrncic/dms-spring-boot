@@ -29,8 +29,10 @@ public class AclContext {
 
     @Bean 
     public JdbcMutableAclService aclService() { 
-    	return new JdbcMutableAclService(
+    	JdbcMutableAclService jdbcMutableAclService = new JdbcMutableAclService(
     			dataSource, lookupStrategy(), aclCache()); 
+    	jdbcMutableAclService.setAclClassIdSupported(true);
+    	return jdbcMutableAclService;
     }
     
     @Bean
@@ -56,12 +58,14 @@ public class AclContext {
 
     @Bean 
     public LookupStrategy lookupStrategy() { 
-        return new BasicLookupStrategy(
+        BasicLookupStrategy basicLookupStrategy = new BasicLookupStrategy(
           dataSource, 
           aclCache(), 
           aclAuthorizationStrategy(), 
           new ConsoleAuditLogger()
         ); 
+        basicLookupStrategy.setAclClassIdSupported(true);
+        return basicLookupStrategy;
     }
     
     @Bean

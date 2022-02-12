@@ -16,7 +16,7 @@ import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.api.mappers.UserMapper;
 import com.example.dms.services.UserService;
-import com.example.dms.utils.exceptions.NotFoundException;
+import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @SpringBootTest
@@ -82,7 +82,7 @@ class UserServiceIT {
 		
 		assertEquals(user.getId(), userService.findByUsername(user.getUsername()).getId());
 		
-		assertThrows(NotFoundException.class, () -> userService.findByUsername("test"));
+		assertThrows(DmsNotFoundException.class, () -> userService.findByUsername("test"));
 	}
 
 	@Test
@@ -90,7 +90,7 @@ class UserServiceIT {
 		
 		assertEquals(user.getId(), userService.findByEmail(user.getEmail()).getId());
 		
-		assertThrows(NotFoundException.class, () -> userService.findByEmail("test"));
+		assertThrows(DmsNotFoundException.class, () -> userService.findByEmail("test"));
 	}
 	
 }

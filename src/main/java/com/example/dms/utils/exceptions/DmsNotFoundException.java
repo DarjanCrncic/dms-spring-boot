@@ -12,9 +12,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class NotFoundException extends RuntimeException{
+public class DmsNotFoundException extends RuntimeException{
 	
-	public NotFoundException(@NonNull String message) {
+	public DmsNotFoundException(@NonNull String message) {
 		super();
 		this.message = message;
 	}

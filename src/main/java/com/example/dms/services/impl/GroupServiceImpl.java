@@ -15,7 +15,7 @@ import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.GroupRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.GroupService;
-import com.example.dms.utils.exceptions.NotFoundException;
+import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @Service
@@ -35,19 +35,19 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 
 	@Override
 	public DmsGroupDTO addUserToGroup(UUID groupId, UUID userId) {
-		DmsGroup group = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Group with specified id was not found."));
+		DmsGroup group = groupRepository.findById(groupId).orElseThrow(() -> new DmsNotFoundException("Group with specified id was not found."));
 		DmsUser user = null;
-		user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User with specified id was not found."));
+		user = userRepository.findById(userId).orElseThrow(() -> new DmsNotFoundException("User with specified id was not found."));
 		group.getMembers().add(user);
 		return save(group);
 	}
 	
 	@Override
 	public DmsGroupDTO addUsersToGroup(UUID groupId, List<UUID> userIdList) {
-		DmsGroup group = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Group with specified id was not found."));
+		DmsGroup group = groupRepository.findById(groupId).orElseThrow(() -> new DmsNotFoundException("Group with specified id was not found."));
 		DmsUser user = null;
 		for (UUID id : userIdList) {
-			user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with specified id was not found."));
+			user = userRepository.findById(id).orElseThrow(() -> new DmsNotFoundException("User with specified id was not found."));
 			group.getMembers().add(user);
 		}
 		return save(group);
@@ -73,7 +73,7 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 
 	@Override
 	public DmsGroupDTO updateGroup(UUID id, NewGroupDTO groupDTO) {
-		DmsGroup existingGroup = groupRepository.findById(id).orElseThrow(NotFoundException::new);
+		DmsGroup existingGroup = groupRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		existingGroup.setDescription(groupDTO.getDescription());
 		existingGroup.setGroupName(groupDTO.getGroupName());
 		return save(existingGroup);
