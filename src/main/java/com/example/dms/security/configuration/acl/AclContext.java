@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
-import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.AclAuthorizationStrategy;
 import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
 import org.springframework.security.acls.domain.ConsoleAuditLogger;
@@ -55,6 +55,11 @@ public class AclContext {
                 aclAuthorizationStrategy()
         );
     }
+    
+    @Bean
+    public PermissionEvaluator permissionEvaluator() {
+    	return new DmsAclPermissionEvaluator(aclService());
+    }
 
     @Bean 
     public LookupStrategy lookupStrategy() { 
@@ -72,8 +77,8 @@ public class AclContext {
     public MethodSecurityExpressionHandler 
       defaultMethodSecurityExpressionHandler() {
         DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
-        AclPermissionEvaluator permissionEvaluator = new AclPermissionEvaluator(aclService());
-        expressionHandler.setPermissionEvaluator(permissionEvaluator);
+//        AclPermissionEvaluator permissionEvaluator = new AclPermissionEvaluator(aclService());
+        expressionHandler.setPermissionEvaluator(permissionEvaluator());
         return expressionHandler;
     }
 }
