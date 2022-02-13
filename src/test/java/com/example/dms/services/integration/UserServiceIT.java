@@ -15,6 +15,7 @@ import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.api.mappers.UserMapper;
+import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
@@ -30,6 +31,9 @@ class UserServiceIT {
 	@Autowired
 	UserService userService;
 	
+	@Autowired
+	UserRepository userRepository;
+	
 	DmsUserDTO user;
 	
 	@BeforeEach
@@ -39,8 +43,8 @@ class UserServiceIT {
 	
 	@AfterEach
 	void cleanUp() {
-		if (user != null) {
-			userService.deleteById(user.getId());
+		if (user != null && userRepository.existsById(user.getId())) {
+			userRepository.deleteById(user.getId());
 		}
 	}
 	
@@ -55,7 +59,6 @@ class UserServiceIT {
 	
 	@Test
 	void userUpdateTestPut() {
-		
 		DmsUserDTO updatedUser = userService.updateUser(new UpdateUserDTO("testuser2", "Darjana", "Crnčića", "test.user@gmaila.com"), user.getId(), false);
 
 		assertEquals(user.getId(), updatedUser.getId());
@@ -67,7 +70,6 @@ class UserServiceIT {
 	
 	@Test
 	void userUpdateTestPatch() {
-		
 		DmsUserDTO updatedUser = userService.updateUser(new UpdateUserDTO("testuser2", null, null, "test.user@gmaila.com"), user.getId(), true);
 		
 		assertEquals(user.getId(), updatedUser.getId());
@@ -79,17 +81,13 @@ class UserServiceIT {
 	
 	@Test
 	void findUserByUsername() {
-		
 		assertEquals(user.getId(), userService.findByUsername(user.getUsername()).getId());
-		
 		assertThrows(DmsNotFoundException.class, () -> userService.findByUsername("test"));
 	}
 
 	@Test
 	void findUserByEmail() {
-		
 		assertEquals(user.getId(), userService.findByEmail(user.getEmail()).getId());
-		
 		assertThrows(DmsNotFoundException.class, () -> userService.findByEmail("test"));
 	}
 	

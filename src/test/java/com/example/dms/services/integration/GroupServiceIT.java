@@ -20,6 +20,7 @@ import com.example.dms.api.dtos.group.NewGroupDTO;
 import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.repositories.GroupRepository;
+import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.GroupService;
 import com.example.dms.services.UserService;
 
@@ -30,6 +31,9 @@ class GroupServiceIT {
 
 	@Autowired
 	GroupRepository groupRepository;
+	
+	@Autowired
+	UserRepository userRepository;
 	
 	@Autowired
 	UserService userService;
@@ -51,9 +55,12 @@ class GroupServiceIT {
 	
 	@AfterEach
 	void cleanUp() {
-		userService.deleteById(user1.getId());
-		userService.deleteById(user2.getId());
-		groupService.deleteById(savedGroup.getId());
+		if (savedGroup != null && groupRepository.existsById(savedGroup.getId()))
+			groupRepository.deleteById(savedGroup.getId());
+		if (user1 != null && userRepository.existsById(user1.getId()))
+			userRepository.deleteById(user1.getId());
+		if (user2 != null && userRepository.existsById(user2.getId()))
+			userRepository.deleteById(user2.getId());
 	}
 	
 	@Test

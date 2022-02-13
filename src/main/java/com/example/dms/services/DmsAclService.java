@@ -14,4 +14,6 @@ public interface DmsAclService {
 
 	void grantRightsOnDocument(UUID documentId, Sid sid, List<Permission> permissions);
 
+	void revokeRightsOnDocument(UUID documentId, Sid sid, List<Permission> permissions);
+
 }

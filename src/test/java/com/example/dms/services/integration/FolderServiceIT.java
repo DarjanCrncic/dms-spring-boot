@@ -73,13 +73,13 @@ class FolderServiceIT {
 
 	@AfterEach
 	void cleanUp() {
-		if (newDocument != null && documentRepository.findById(newDocument.getId()).isPresent())
+		if (newDocument != null && documentRepository.existsById(newDocument.getId()))
 			documentService.deleteById(newDocument.getId());
-		if (user != null && userRepository.findById(user.getId()).isPresent())
+		if (user != null && userRepository.existsById(user.getId()))
 			userRepository.deleteById(user.getId());
-		if (subFolder != null && folderRepository.findById(subFolder.getId()).isPresent())
+		if (subFolder != null && folderRepository.existsById(subFolder.getId()))
 			folderService.deleteById(subFolder.getId());
-		if (folder != null && folderRepository.findById(folder.getId()).isPresent())
+		if (folder != null && folderRepository.existsById(folder.getId()))
 			folderService.deleteById(folder.getId());
 	}
 

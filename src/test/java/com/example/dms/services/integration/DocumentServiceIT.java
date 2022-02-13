@@ -73,13 +73,13 @@ class DocumentServiceIT {
 
 	@AfterEach
 	void cleanUp() {
-		if (newDocument != null && documentRepository.findById(newDocument.getId()).isPresent())
+		if (newDocument != null && documentRepository.existsById(newDocument.getId()))
 			documentRepository.deleteById(newDocument.getId());
-		if (newVersion != null && documentRepository.findById(newVersion.getId()).isPresent())
+		if (newVersion != null && documentRepository.existsById(newVersion.getId()))
 			documentRepository.deleteById(newVersion.getId());
-		if (updatedDocument != null && documentRepository.findById(updatedDocument.getId()).isPresent()) 
+		if (updatedDocument != null && documentRepository.existsById(updatedDocument.getId())) 
 			documentRepository.deleteById(updatedDocument.getId());
-		if (type != null && typeRepository.findByTypeName(typeName).isPresent()) 
+		if (type != null && typeRepository.existsById(type.getId())) 
 			typeRepository.delete(type);
 	}
 
@@ -123,7 +123,6 @@ class DocumentServiceIT {
 		assertEquals(newDocument.getId(), newVersion.getRootId());
 
 		assertThrows(BadRequestException.class, () -> documentService.createNewVersion(newDocument.getId()));
-
 		assertEquals(2, documentService.getAllVersions(newVersion.getId()).size());
 	}
 

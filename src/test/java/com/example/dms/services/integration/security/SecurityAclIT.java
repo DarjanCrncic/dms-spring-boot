@@ -1,7 +1,6 @@
 package com.example.dms.services.integration.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
@@ -69,9 +68,6 @@ class SecurityAclIT {
 		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
 		
 		assertEquals(modifyDTO.getObjectName(), updatedDocument.getObjectName());
-		assertNull(modifyDTO.getDescription());
-		assertNull(modifyDTO.getKeywords());
-		assertEquals(newDocument.getRootId(), updatedDocument.getRootId());
 	}
 	
 	@Test
@@ -81,9 +77,6 @@ class SecurityAclIT {
 		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
 		
 		assertEquals(modifyDTO.getObjectName(), updatedDocument.getObjectName());
-		assertNull(modifyDTO.getDescription());
-		assertNull(modifyDTO.getKeywords());
-		assertEquals(newDocument.getRootId(), updatedDocument.getRootId());
 	}
 	
 	@Test
@@ -101,5 +94,25 @@ class SecurityAclIT {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
 		assertEquals(modifyDTO.getObjectName(), updatedDocument.getObjectName());
+	}
+	
+	@Test
+	@WithMockUser(username = "testUser", roles = "USER")
+	void testModifyWithRevokedRights() {
+		dmsAclService.grantRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
+		dmsAclService.revokeRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
+		
+		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
+		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(newDocument.getId(), modifyDTO, true));
+	}
+	
+	@Test
+	@WithMockUser(username = "testUser", roles = "USER")
+	void testModifyWithRevokedAllRights() {
+		dmsAclService.grantRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
+		dmsAclService.revokeRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), null);
+		
+		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
+		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(newDocument.getId(), modifyDTO, true));
 	}
 }
