@@ -34,4 +34,5 @@ public class UpdateUserDTO {
 	@Email
 	@Column(unique = true)
 	private String email;
+	
 }

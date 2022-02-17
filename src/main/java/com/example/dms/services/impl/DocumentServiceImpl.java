@@ -89,6 +89,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE')")
 	public DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
+		DmsType type = typeRepository.findByTypeName(modifyDocumentDTO.getTypeName()).orElse(null);
 		if (doc.isImutable()) {
 			throw new BadRequestException("This version of the document is immutable and cannot be modified.");
 		}
@@ -96,7 +97,14 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 			documentMapper.updateDocumentPatch(modifyDocumentDTO, doc);
 		} else {
 			documentMapper.updateDocumentPut(modifyDocumentDTO, doc);
+			if (type == null) {
+				doc.setType(null);
+			}
 		}
+		if (type != null) {
+			persistDocumentToType(type, doc);
+		}
+		
 		return save(doc);
 	}
 
