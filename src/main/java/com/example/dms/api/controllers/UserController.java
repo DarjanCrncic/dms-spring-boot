@@ -69,4 +69,7 @@ public class UserController {
 	public DmsUserDTO updateExistingUserPatch(@RequestBody UpdateUserDTO userDTO, @PathVariable UUID id) {
 		return userService.updateUser(userDTO, id, true);
 	}
+	
+	//TODO: deativate and activate user endpoint
+	//TODO: change user roles endpoint
 }

@@ -36,7 +36,7 @@ import com.example.dms.utils.exceptions.BadRequestException;
 
 @SpringBootTest
 @ContextConfiguration
-@WithMockUser(roles = "ADMIN")
+@WithMockUser(authorities = {"ROLE_ADMIN","CREATE_PRIVILEGE","VERSION_PRIVILEGE","READ_PRIVILEGE","WRITE_PRIVILEGE","DELETE_PRIVILEGE"})
 class DocumentServiceIT {
 
 	@Autowired

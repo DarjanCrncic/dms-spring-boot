@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +51,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
+	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
 	public DmsDocumentDTO createNewDocument(NewDocumentDTO newDocumentDTO) {
 		// TODO: Remove hardcoded user.
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
@@ -86,7 +88,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE')")
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') OR hasRole('EDITOR')")
 	public DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		DmsType type = typeRepository.findByTypeName(modifyDocumentDTO.getTypeName()).orElse(null);
@@ -109,6 +111,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE')")
 	public void uploadFile(UUID id, MultipartFile file) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (doc.isImutable()) {
@@ -133,6 +136,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
+	@PreAuthorize("hasAuthority('READ_PRIVILEGE')")
 	public boolean checkIsDocumentValidForDownload(DmsDocument document) {
 		if (document.getContent() == null || document.getContentType() == null
 				|| document.getOriginalFileName() == null)
@@ -141,6 +145,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') AND hasAuthority('VERSION_PRIVILEGE')")
 	public DmsDocumentDTO createNewVersion(UUID id) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (doc.isImutable()) {
@@ -160,6 +165,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
+	@PostFilter("hasPermission(filterObject,'READ')")
 	public List<DmsDocumentDTO> getAllVersions(UUID id) {
 		return documentMapper.entityListToDtoList(documentRepository.getAllVersions(id));
 	}
@@ -172,11 +178,13 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
+	@PostFilter("hasPermission(filterObject,'READ')")
 	public List<DmsDocumentDTO> getAllDocuments() {
 		return documentMapper.entityListToDtoList(documentRepository.findAll());
 	}
 
 	@Override
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ') or hasRole('EDITOR')")
 	public ResponseEntity<byte[]> downloadContent(UUID id) {
 		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		checkIsDocumentValidForDownload(document);

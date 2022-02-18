@@ -43,21 +43,25 @@ public class DataLoader implements ApplicationRunner {
     		folderRepository.save(DmsFolder.builder().path("/").build());
     	
     	// create privileges
-    	DmsPrivilege delete = null, read = null, write = null, version = null, create = null;
-    	if (privilegeRepository.findByName(Privileges.DELETE.name()).isEmpty()) {
-    		delete = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.DELETE.name()).build());
+    	DmsPrivilege delete = privilegeRepository.findByName(Privileges.DELETE_PRIVILEGE.name()).orElse(null);
+    	if (delete == null) {
+    		delete = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.DELETE_PRIVILEGE.name()).build());
     	}
-    	if (privilegeRepository.findByName(Privileges.READ.name()).isEmpty()) {
-    		read = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.READ.name()).build());
+    	DmsPrivilege read = privilegeRepository.findByName(Privileges.READ_PRIVILEGE.name()).orElse(null);
+    	if (read == null) {
+    		read = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.READ_PRIVILEGE.name()).build());
     	}
-    	if (privilegeRepository.findByName(Privileges.WRITE.name()).isEmpty()) {
-    		write = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.WRITE.name()).build());
+    	DmsPrivilege write = privilegeRepository.findByName(Privileges.WRITE_PRIVILEGE.name()).orElse(null);
+    	if (write == null) {
+    		write = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.WRITE_PRIVILEGE.name()).build());
     	}
-    	if (privilegeRepository.findByName(Privileges.VERSION.name()).isEmpty()) {
-    		version = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.VERSION.name()).build());
+    	DmsPrivilege version = privilegeRepository.findByName(Privileges.VERSION_PRIVILEGE.name()).orElse(null);
+    	if (version == null) {
+    		version = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.VERSION_PRIVILEGE.name()).build());
     	}
-    	if (privilegeRepository.findByName(Privileges.CREATE.name()).isEmpty()) {
-    		create = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.CREATE.name()).build());
+    	DmsPrivilege create = privilegeRepository.findByName(Privileges.CREATE_PRIVILEGE.name()).orElse(null);
+    	if (create == null) {
+    		create = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.CREATE_PRIVILEGE.name()).build());
     	}
     	
     	// create roles
@@ -67,16 +71,16 @@ public class DataLoader implements ApplicationRunner {
     				Arrays.asList(delete,read,write,version,create)
     				).build());
     	}
-
+    	DmsRole creatorRole = null;
     	if (roleRepository.findByName(Roles.ROLE_CREATOR.name()).isEmpty()) {
-    		roleRepository.save(DmsRole.builder().name(Roles.ROLE_CREATOR.name()).privileges(
+    		creatorRole = roleRepository.save(DmsRole.builder().name(Roles.ROLE_CREATOR.name()).privileges(
     				Arrays.asList(read,write,version,create)
     				).build());
     	}
 
     	if (roleRepository.findByName(Roles.ROLE_EDITOR.name()).isEmpty()) {
     		roleRepository.save(DmsRole.builder().name(Roles.ROLE_EDITOR.name()).privileges(
-    				Arrays.asList(read,write,version)
+    				Arrays.asList(read,write)
     				).build());
     	}
     	DmsRole userRole = null;
@@ -87,7 +91,7 @@ public class DataLoader implements ApplicationRunner {
     	}
     	
     	// test and admin users
-    	DmsUser user = DmsUser.builder().username("user").password("12345").firstName("user").lastName("user").email("user.user@gmail.com").roles(Arrays.asList(userRole)).build();	
+    	DmsUser user = DmsUser.builder().username("user").password("12345").firstName("user").lastName("user").email("user.user@gmail.com").roles(Arrays.asList(creatorRole)).build();	
     	if (userRepository.findByUsername("user").isEmpty()) {
     		userRepository.save(user);
     	} 

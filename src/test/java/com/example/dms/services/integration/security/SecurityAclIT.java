@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,14 +50,14 @@ class SecurityAclIT {
 	DmsDocumentDTO newDocument;
 	
 	@BeforeEach
-	@WithMockUser(roles = "ADMIN")
 	void setUp() {
 		newDocument = documentService.createNewDocument(
 				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").build());
 	}
 	
+	@AfterEach
 	void cleanUp() {
-		if (documentRepository.existsById(newDocument.getId())) {
+		if (newDocument != null && documentRepository.existsById(newDocument.getId())) {
 			documentRepository.deleteById(newDocument.getId());
 		}
 	}
@@ -71,7 +72,7 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", roles = "ADMIN")
+	@WithMockUser(username = "testUser", authorities = {"CREATE_PRIVILEGE","ROLE_ADMIN"})
 	void testModifyWithAclWithAdmin() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
@@ -80,14 +81,14 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", roles = "USER")
+	@WithMockUser(username = "testUser", roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithAclInvalidUser() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(newDocument.getId(), modifyDTO, true));
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", roles = "USER")
+	@WithMockUser(username = "testUser", roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithGrantedRights() {
 		dmsAclService.grantRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
 		
@@ -97,7 +98,7 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", roles = "USER")
+	@WithMockUser(username = "testUser", roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithRevokedRights() {
 		dmsAclService.grantRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
 		dmsAclService.revokeRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
@@ -107,7 +108,7 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", roles = "USER")
+	@WithMockUser(username = "testUser", roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithRevokedAllRights() {
 		dmsAclService.grantRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
 		dmsAclService.revokeRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), null);

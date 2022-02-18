@@ -1,9 +1,9 @@
 package com.example.dms.utils;
 
 public enum Privileges {
-	DELETE,
-	VERSION,
-	CREATE,
-	WRITE,
-	READ,
+	DELETE_PRIVILEGE,
+	VERSION_PRIVILEGE,
+	CREATE_PRIVILEGE,
+	WRITE_PRIVILEGE,
+	READ_PRIVILEGE,
 }
