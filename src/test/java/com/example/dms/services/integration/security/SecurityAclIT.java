@@ -63,7 +63,7 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithUserDetails("user")
+	@WithUserDetails("creator")
 	void testModifyWithAcl() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);

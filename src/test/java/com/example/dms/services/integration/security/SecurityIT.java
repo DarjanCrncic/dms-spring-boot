@@ -44,7 +44,7 @@ class SecurityIT {
 	}
 	
 	@Test
-	@WithUserDetails("dmsadmin")
+	@WithUserDetails("admin")
 	void testSecurityWithUserDetails() {
 		userService.deleteById(user.getId());
 		

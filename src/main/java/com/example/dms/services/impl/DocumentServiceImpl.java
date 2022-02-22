@@ -57,7 +57,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
 		
 		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getTypeName()).orElse(null);
-		DmsUser creator = userRepository.findByUsername("user").orElseThrow(() -> new DmsNotFoundException("Invalid creator user."));
+		DmsUser creator = userRepository.findByUsername("creator").orElseThrow(() -> new DmsNotFoundException("Invalid creator user."));
 
 		persistDocumentToUser(creator, newDocumentObject);
 		persistDocumentToType(type, newDocumentObject);
@@ -88,7 +88,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') OR hasRole('EDITOR')")
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE')")
 	public DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		DmsType type = typeRepository.findByTypeName(modifyDocumentDTO.getTypeName()).orElse(null);
@@ -184,7 +184,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ') or hasRole('EDITOR')")
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ')")
 	public ResponseEntity<byte[]> downloadContent(UUID id) {
 		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		checkIsDocumentValidForDownload(document);

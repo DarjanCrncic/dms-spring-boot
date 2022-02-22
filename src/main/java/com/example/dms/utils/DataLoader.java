@@ -77,9 +77,9 @@ public class DataLoader implements ApplicationRunner {
     				Arrays.asList(read,write,version,create)
     				).build());
     	}
-
+    	DmsRole editorRole = null;
     	if (roleRepository.findByName(Roles.ROLE_EDITOR.name()).isEmpty()) {
-    		roleRepository.save(DmsRole.builder().name(Roles.ROLE_EDITOR.name()).privileges(
+    		editorRole = roleRepository.save(DmsRole.builder().name(Roles.ROLE_EDITOR.name()).privileges(
     				Arrays.asList(read,write)
     				).build());
     	}
@@ -91,15 +91,25 @@ public class DataLoader implements ApplicationRunner {
     	}
     	
     	// test and admin users
-    	DmsUser user = DmsUser.builder().username("user").password("12345").firstName("user").lastName("user").email("user.user@gmail.com").roles(Arrays.asList(creatorRole)).build();	
+    	DmsUser user = DmsUser.builder().username("user").password("12345").firstName("user").lastName("user").email("user.user@gmail.com")
+    			.roles(Arrays.asList(userRole)).build();	
     	if (userRepository.findByUsername("user").isEmpty()) {
     		userRepository.save(user);
     	} 
-    	
-    	DmsUser adminUser = DmsUser.builder().username("dmsadmin").password("dmsadmin").firstName("dmsadmin").lastName("dmsadmin").email("dms.admin@gmail.com").roles(Arrays.asList(adminRole)).build();	
-    	if (userRepository.findByUsername("dmsadmin").isEmpty()) {
-    		userRepository.save(adminUser);
+    	DmsUser editor = DmsUser.builder().username("editor").password("12345").firstName("editor").lastName("editor").email("editor.editor@gmail.com")
+    			.roles(Arrays.asList(editorRole)).build();	
+    	if (userRepository.findByUsername("editor").isEmpty()) {
+    		userRepository.save(editor);
     	} 
-
+    	DmsUser creator = DmsUser.builder().username("creator").password("12345").firstName("creator").lastName("creator").email("creator.creator@gmail.com")
+    			.roles(Arrays.asList(creatorRole)).build();	
+    	if (userRepository.findByUsername("creator").isEmpty()) {
+    		userRepository.save(creator);
+    	} 
+    	DmsUser admin = DmsUser.builder().username("admin").password("12345").firstName("admin").lastName("admin").email("admin.admin@gmail.com")
+    			.roles(Arrays.asList(adminRole)).build();	
+    	if (userRepository.findByUsername("dmsadmin").isEmpty()) {
+    		userRepository.save(admin);
+    	} 
     }
 }

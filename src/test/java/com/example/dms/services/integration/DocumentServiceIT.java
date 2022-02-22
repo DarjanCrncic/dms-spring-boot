@@ -127,7 +127,7 @@ class DocumentServiceIT {
 	}
 
 	@Test
-	@WithUserDetails("user")
+	@WithUserDetails("creator")
 	void testDocumentPut() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").description("updated")
 				.keywords(Arrays.asList(new String[] { "foo", "bar" })).build();
@@ -140,7 +140,7 @@ class DocumentServiceIT {
 	}
 	
 	@Test
-	@WithUserDetails("user")
+	@WithUserDetails("creator")
 	void testDocumentPatch() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
