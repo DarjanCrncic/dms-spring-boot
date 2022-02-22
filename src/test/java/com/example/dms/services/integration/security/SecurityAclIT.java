@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,7 +85,8 @@ class SecurityAclIT {
 	@WithMockUser(username = "testUser", roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithAclInvalidUser() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
-		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(newDocument.getId(), modifyDTO, true));
+		UUID docId = newDocument.getId();
+		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(docId, modifyDTO, true));
 	}
 	
 	@Test
@@ -104,7 +106,8 @@ class SecurityAclIT {
 		dmsAclService.revokeRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
 		
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
-		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(newDocument.getId(), modifyDTO, true));
+		UUID docId = newDocument.getId();
+		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(docId, modifyDTO, true));
 	}
 	
 	@Test
@@ -114,6 +117,7 @@ class SecurityAclIT {
 		dmsAclService.revokeRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), null);
 		
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
-		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(newDocument.getId(), modifyDTO, true));
+		UUID docId = newDocument.getId();
+		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(docId, modifyDTO, true));
 	}
 }

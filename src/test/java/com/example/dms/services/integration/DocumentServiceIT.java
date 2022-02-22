@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,7 +123,8 @@ class DocumentServiceIT {
 		assertEquals(newDocument.getId(), newDocument.getRootId());
 		assertEquals(newDocument.getId(), newVersion.getRootId());
 
-		assertThrows(BadRequestException.class, () -> documentService.createNewVersion(newDocument.getId()));
+		UUID docId = newDocument.getId();
+		assertThrows(BadRequestException.class, () -> documentService.createNewVersion(docId));
 		assertEquals(2, documentService.getAllVersions(newVersion.getId()).size());
 	}
 

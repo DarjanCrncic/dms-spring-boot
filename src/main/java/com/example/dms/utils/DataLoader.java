@@ -91,22 +91,23 @@ public class DataLoader implements ApplicationRunner {
     	}
     	
     	// test and admin users
-    	DmsUser user = DmsUser.builder().username("user").password("12345").firstName("user").lastName("user").email("user.user@gmail.com")
+    	String dummyPassword = "12345";
+    	DmsUser user = DmsUser.builder().username("user").password(dummyPassword).firstName("userF").lastName("userL").email("user.user@gmail.com")
     			.roles(Arrays.asList(userRole)).build();	
     	if (userRepository.findByUsername("user").isEmpty()) {
     		userRepository.save(user);
     	} 
-    	DmsUser editor = DmsUser.builder().username("editor").password("12345").firstName("editor").lastName("editor").email("editor.editor@gmail.com")
+    	DmsUser editor = DmsUser.builder().username("editor").password(dummyPassword).firstName("editorF").lastName("editorL").email("editor.editor@gmail.com")
     			.roles(Arrays.asList(editorRole)).build();	
     	if (userRepository.findByUsername("editor").isEmpty()) {
     		userRepository.save(editor);
     	} 
-    	DmsUser creator = DmsUser.builder().username("creator").password("12345").firstName("creator").lastName("creator").email("creator.creator@gmail.com")
+    	DmsUser creator = DmsUser.builder().username("creator").password(dummyPassword).firstName("creatorF").lastName("creatorL").email("creator.creator@gmail.com")
     			.roles(Arrays.asList(creatorRole)).build();	
     	if (userRepository.findByUsername("creator").isEmpty()) {
     		userRepository.save(creator);
     	} 
-    	DmsUser admin = DmsUser.builder().username("admin").password("12345").firstName("admin").lastName("admin").email("admin.admin@gmail.com")
+    	DmsUser admin = DmsUser.builder().username("admin").password(dummyPassword).firstName("adminF").lastName("adminL").email("admin.admin@gmail.com")
     			.roles(Arrays.asList(adminRole)).build();	
     	if (userRepository.findByUsername("dmsadmin").isEmpty()) {
     		userRepository.save(admin);

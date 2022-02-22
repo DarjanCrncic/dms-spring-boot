@@ -67,7 +67,8 @@ class SecurityIT {
 	@Test
 	@WithMockUser(username = "testuser", authorities = { "ROLE_USER" })
 	void testSecurityException() {
-		assertThrows(AccessDeniedException.class, () -> userService.saveNewUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com")));
+		NewUserDTO dto = new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com");
+		assertThrows(AccessDeniedException.class, () -> userService.saveNewUser(dto));
 	}
 	
 }
