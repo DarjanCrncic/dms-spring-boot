@@ -33,6 +33,7 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D> implements 
 	}
 
 	@Override
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ')")
 	public D findById(UUID id) {
 		Optional<T> entity = repository.findById(id);
 		if (!entity.isPresent())
@@ -47,13 +48,13 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D> implements 
 	}
 
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#id,'com.example.dms.domain.DmsDocument','DELETE')")
 	public void delete(T object) {
 		repository.delete(object);
 	}
 
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#id,'com.example.dms.domain.DmsDocument','DELETE')")
 	public void deleteById(UUID id) {
 		repository.deleteById(id);
 	}

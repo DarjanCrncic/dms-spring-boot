@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,14 +30,9 @@ class SecurityIT {
 	
 	DmsUserDTO user;
 	
-	@BeforeEach
-	void setUp() {
-		user = userService.saveNewUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
-	}
-	
 	@AfterEach
 	void cleanUp() {
-		if (userRepository.existsById(user.getId())) {
+		if (user != null && userRepository.existsById(user.getId())) {
 			userRepository.deleteById(user.getId());
 		}
 	}
@@ -46,6 +40,7 @@ class SecurityIT {
 	@Test
 	@WithUserDetails("admin")
 	void testSecurityWithUserDetails() {
+		user = userService.saveNewUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
 		userService.deleteById(user.getId());
 		
 		assertTrue(userRepository.findByUsername("test").isEmpty());
@@ -54,6 +49,7 @@ class SecurityIT {
 	@Test
 	@WithMockUser(username = "testuser", authorities = { "ROLE_ADMIN" })
 	void testSecurityWithMockUser() {
+		user = userService.saveNewUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
 		userService.deleteById(user.getId());
 		
 		assertTrue(userRepository.findByUsername("test").isEmpty());
@@ -62,6 +58,7 @@ class SecurityIT {
 	@Test
 	@WithMockUser(username = "testuser", roles = { "ADMIN" })
 	void testSecurityWithMockUserRple() {
+		user = userService.saveNewUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
 		userService.deleteById(user.getId());
 		
 		assertTrue(userRepository.findByUsername("test").isEmpty());
@@ -70,7 +67,7 @@ class SecurityIT {
 	@Test
 	@WithMockUser(username = "testuser", authorities = { "ROLE_USER" })
 	void testSecurityException() {
-		assertThrows(AccessDeniedException.class, () -> userService.deleteById(user.getId()));
+		assertThrows(AccessDeniedException.class, () -> userService.saveNewUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com")));
 	}
 	
 }

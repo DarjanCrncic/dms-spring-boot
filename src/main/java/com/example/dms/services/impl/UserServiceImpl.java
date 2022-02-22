@@ -3,6 +3,7 @@ package com.example.dms.services.impl;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 	}
 
 	@Override
+	@PreAuthorize("hasRole('ADMIN')")
 	public DmsUserDTO saveNewUser(NewUserDTO userDTO) {
 		DmsUser user = userMapper.newUserDTOToUser(userDTO);
 		if (userRepository.findByEmail(user.getEmail()).isPresent()) {
@@ -61,6 +63,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 	}
 
 	@Override
+	@PreAuthorize("hasRole('ADMIN')")
 	public DmsUserDTO updateUser(UpdateUserDTO userDTO, UUID id, boolean patch) {
 		DmsUser user = userRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (patch) {

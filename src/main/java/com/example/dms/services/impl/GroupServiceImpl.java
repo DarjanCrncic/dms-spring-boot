@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @Service
 @Transactional
+@PreAuthorize("hasRole('ADMIN')")
 public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDTO> implements GroupService{
 
 	GroupRepository groupRepository;
