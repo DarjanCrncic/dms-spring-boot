@@ -1,7 +1,6 @@
 package com.example.dms.services.impl;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
@@ -15,7 +14,7 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 
-import com.example.dms.domain.DmsDocument;
+import com.example.dms.domain.security.AclAllowedClass;
 import com.example.dms.services.DmsAclService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +31,8 @@ public class DmsAclServiceImpl implements DmsAclService {
 	}
 
 	@Override
-	public void grantCreatorRightsOnDocument(DmsDocument document, String username) {
-		ObjectIdentity oi = new ObjectIdentityImpl(document);
+	public <T extends AclAllowedClass> void grantCreatorRights(T object, String username) {
+		ObjectIdentity oi = new ObjectIdentityImpl(object);
 		Sid sid = new PrincipalSid(username);
 
 		MutableAcl acl = null;
@@ -42,7 +41,7 @@ public class DmsAclServiceImpl implements DmsAclService {
 		} catch (NotFoundException nfe) {
 			acl = aclService.createAcl(oi);
 		}
-		log.debug("granting creator '{}' rights on document: {}, {}, {}", sid, BasePermission.DELETE,
+		log.debug("granting creator '{}' rights on object (" + object.getClass() + "): {}, {}, {}", sid, BasePermission.DELETE,
 				BasePermission.WRITE, BasePermission.READ);
 
 		acl.insertAce(acl.getEntries().size(), BasePermission.DELETE, sid, true);
@@ -52,8 +51,8 @@ public class DmsAclServiceImpl implements DmsAclService {
 	}
 
 	@Override
-	public void grantRightsOnDocument(UUID documentId, Sid sid, List<Permission> permissions) {
-		ObjectIdentity oi = new ObjectIdentityImpl(DmsDocument.class, documentId);
+	public <T extends AclAllowedClass> void grantRightsOnObject(T object, Sid sid, List<Permission> permissions) {
+		ObjectIdentity oi = new ObjectIdentityImpl(object);
 
 		MutableAcl acl = null;
 		try {
@@ -70,8 +69,8 @@ public class DmsAclServiceImpl implements DmsAclService {
 	}
 
 	@Override
-	public void revokeRightsOnDocument(UUID documentId, Sid sid, List<Permission> permissions) {
-		ObjectIdentity oi = new ObjectIdentityImpl(DmsDocument.class, documentId);
+	public <T extends AclAllowedClass> void revokeRightsOnObject(T object, Sid sid, List<Permission> permissions) {
+		ObjectIdentity oi = new ObjectIdentityImpl(object);
 
 		MutableAcl acl = null;
 		try {
@@ -89,6 +88,25 @@ public class DmsAclServiceImpl implements DmsAclService {
 				log.debug("revoking user '{}' right on document: {}", sid, entry.getPermission());
 				acl.deleteAce(i);
 			}
+		}
+	}
+	
+	@Override
+	public <T> void removeEntriesOnDelete(T object) {
+		ObjectIdentity oi = new ObjectIdentityImpl(object);
+
+		MutableAcl acl = null;
+		try {
+			acl = (MutableAcl) aclService.readAclById(oi);
+		} catch (NotFoundException nfe) {
+			log.warn("object deleted, no acls found...");
+			return;
+		}
+		
+		for (int i = acl.getEntries().size() - 1; i >= 0; i--) {
+			AccessControlEntry entry = acl.getEntries().get(i);
+			log.debug("object deleted, revoking user '{}' right on document: {}", entry.getSid(), entry.getPermission());
+			acl.deleteAce(i);
 		}
 	}
 

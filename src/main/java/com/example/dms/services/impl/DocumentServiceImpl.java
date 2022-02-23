@@ -64,7 +64,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		newDocumentObject.setRootId(newDocumentObject.getId());
 		newDocumentObject.setPredecessorId(newDocumentObject.getId());
 		
-		aclService.grantCreatorRightsOnDocument(newDocumentObject, creator.getUsername());
+		aclService.grantCreatorRights(newDocumentObject, creator.getUsername());
 		
 		return save(newDocumentObject);
 	}

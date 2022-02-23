@@ -21,6 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
+import com.example.dms.domain.DmsDocument;
 import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.services.DocumentService;
@@ -49,16 +50,19 @@ class SecurityAclIT {
 //	}
 	
 	DmsDocumentDTO newDocument;
+	DmsDocument doc;
 	
 	@BeforeEach
 	void setUp() {
 		newDocument = documentService.createNewDocument(
 				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").build());
+		doc = documentRepository.findById(newDocument.getId()).orElse(null);
 	}
 	
 	@AfterEach
 	void cleanUp() {
 		if (newDocument != null && documentRepository.existsById(newDocument.getId())) {
+			dmsAclService.removeEntriesOnDelete(doc);
 			documentRepository.deleteById(newDocument.getId());
 		}
 	}
@@ -92,7 +96,7 @@ class SecurityAclIT {
 	@Test
 	@WithMockUser(username = "testUser", roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithGrantedRights() {
-		dmsAclService.grantRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
+		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
 		
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
@@ -102,8 +106,8 @@ class SecurityAclIT {
 	@Test
 	@WithMockUser(username = "testUser", roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithRevokedRights() {
-		dmsAclService.grantRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
-		dmsAclService.revokeRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
+		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
+		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
 		
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		UUID docId = newDocument.getId();
@@ -113,8 +117,8 @@ class SecurityAclIT {
 	@Test
 	@WithMockUser(username = "testUser", roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithRevokedAllRights() {
-		dmsAclService.grantRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
-		dmsAclService.revokeRightsOnDocument(newDocument.getId(), (new PrincipalSid("testUser")), null);
+		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
+		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid("testUser")), null);
 		
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		UUID docId = newDocument.getId();

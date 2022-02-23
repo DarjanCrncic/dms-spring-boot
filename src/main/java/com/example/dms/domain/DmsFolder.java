@@ -14,6 +14,7 @@ import javax.validation.constraints.Pattern;
 
 import org.apache.commons.lang3.builder.ToStringExclude;
 
+import com.example.dms.domain.security.AclAllowedClass;
 import com.example.dms.utils.Constants;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -32,7 +33,7 @@ import lombok.Setter;
 @EqualsAndHashCode(callSuper = false, exclude = {"parentFolder", "subfolders"})
 @Builder
 @Entity
-public class DmsFolder extends BaseEntity {
+public class DmsFolder extends BaseEntity implements AclAllowedClass{
 
 	@NotEmpty
 	@Column(unique = true)

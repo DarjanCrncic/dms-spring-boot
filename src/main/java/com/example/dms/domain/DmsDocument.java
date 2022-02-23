@@ -17,6 +17,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Length;
 
+import com.example.dms.domain.security.AclAllowedClass;
 import com.example.dms.utils.Constants;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,7 +36,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper=true)
 @Builder
 @Entity
-public class DmsDocument extends BaseEntity{
+public class DmsDocument extends BaseEntity implements AclAllowedClass{
 
 	@ManyToOne
 	@JoinColumn(name = "creator_id")

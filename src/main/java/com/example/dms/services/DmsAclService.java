@@ -1,19 +1,20 @@
 package com.example.dms.services;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 
-import com.example.dms.domain.DmsDocument;
+import com.example.dms.domain.security.AclAllowedClass;
 
 public interface DmsAclService {
 
-	void grantCreatorRightsOnDocument(DmsDocument document, String username);
+	<T extends AclAllowedClass> void grantCreatorRights(T object, String username);
 
-	void grantRightsOnDocument(UUID documentId, Sid sid, List<Permission> permissions);
+	<T extends AclAllowedClass> void revokeRightsOnObject(T object, Sid sid, List<Permission> permissions);
 
-	void revokeRightsOnDocument(UUID documentId, Sid sid, List<Permission> permissions);
+	<T extends AclAllowedClass> void grantRightsOnObject(T object, Sid sid, List<Permission> permissions);
+
+	<T> void removeEntriesOnDelete(T object);
 
 }

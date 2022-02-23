@@ -38,6 +38,7 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 	@Override
 	List<DmsDocumentDTO> entityListToDtoList(List<DmsDocument> list);
 	
+	@Mapping(target = "type", ignore = true)
 	@Mapping(target = "creationDate", ignore = true)
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "modifyDate", ignore = true)
@@ -53,6 +54,7 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 	@Mapping(target = "version", ignore = true)
 	void updateDocumentPut(ModifyDocumentDTO documentDTO, @MappingTarget DmsDocument document);
 	
+	@Mapping(target = "type", ignore = true)
 	@Mapping(target = "creationDate", ignore = true)
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "modifyDate", ignore = true)
