@@ -1,6 +1,8 @@
 package com.example.dms.security.configuration.acl;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.UUID;
 
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.acls.AclPermissionEvaluator;
@@ -27,12 +29,27 @@ public class DmsAclPermissionEvaluator extends AclPermissionEvaluator implements
 	}
 
 	@Override
-	public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType,
-			Object permission) {
+	public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) {
 		GrantedAuthority adminAuthority = new SimpleGrantedAuthority(Roles.ROLE_ADMIN.name());
 		if (authentication.getAuthorities().contains(adminAuthority)) {
 			return true;
 		}
 		return super.hasPermission(authentication, targetId, targetType, permission);
+	}
+	
+	public boolean hasPermission(Authentication authentication, Collection<Object> targetDomainObjects, Object permission) {
+        for (Object targetDomainObject : targetDomainObjects) {
+            if (!hasPermission(authentication, targetDomainObject, permission))
+                return false;
+        }
+        return true;
+    }
+	
+	public boolean hasPermission(Collection<Object> targetDomainIds, String targetType, Object permission, Authentication authentication) {
+		for (Object targetDomainId : targetDomainIds) {
+			if (!hasPermission(authentication, (UUID) targetDomainId, targetType, permission))
+				return false;
+		}
+		return true;
 	}
 }

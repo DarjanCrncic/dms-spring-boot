@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsFolder;
 import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.repositories.FolderRepository;
+import com.example.dms.services.DmsAclService;
 import com.example.dms.services.FolderService;
 import com.example.dms.utils.Constants;
 import com.example.dms.utils.exceptions.BadRequestException;
@@ -28,12 +30,15 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	FolderRepository folderRepository;
 	FolderMapper folderMapper;
 	DocumentRepository documentRepository;
+	DmsAclService aclService;
 
-	public FolderServiceImpl(FolderRepository folderRepository, FolderMapper folderMapper, DocumentRepository documentRepository) {
+	public FolderServiceImpl(FolderRepository folderRepository, FolderMapper folderMapper,
+			DocumentRepository documentRepository, DmsAclService aclService) {
 		super(folderRepository, folderMapper);
 		this.folderRepository = folderRepository;
 		this.folderMapper = folderMapper;
 		this.documentRepository = documentRepository;
+		this.aclService = aclService;
 	}
 
 	@Override
@@ -46,6 +51,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 
 	@Override
+	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
 	public DmsFolderDTO createNewFolder(String path) {
 		checkPath(path);
 		DmsFolder parentFolder = folderRepository.findByPath(getParentFolderPath(path))
@@ -53,10 +59,12 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		DmsFolder newFolder = DmsFolder.builder().path(path).build();
 
 		persistFolderToParentFolder(parentFolder, newFolder);
+		aclService.grantCreatorRights(newFolder, "creator"); // TODO: change to principal
 		return folderMapper.entityToDto(newFolder);
 	}
 
 	@Override
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','WRITE')")
 	public DmsFolderDTO updateFolder(UUID id, String path) {
 		checkPath(path);
 		DmsFolder oldFolder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
@@ -85,6 +93,8 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 
 	@Override
+	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','WRITE') "
+			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication)")
 	public DmsFolderDTO moveFilesToFolder(UUID folderId, List<UUID> documentIdList) {
 		DmsFolder folder = folderRepository.findById(folderId)
 				.orElseThrow(() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));

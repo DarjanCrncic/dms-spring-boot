@@ -5,19 +5,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.UUID;
 
+import javax.sql.DataSource;
+
+import org.h2.tools.Server;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
+import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.mappers.FolderMapper;
 import com.example.dms.domain.DmsDocument;
@@ -33,6 +42,7 @@ import com.example.dms.utils.exceptions.DmsNotFoundException;
 @SpringBootTest
 @ContextConfiguration
 @WithMockUser(authorities = {"ROLE_ADMIN","CREATE_PRIVILEGE"})
+@TestInstance(Lifecycle.PER_CLASS) // DEBUGGING WITH H2 
 class FolderServiceIT {
 	
 	@Autowired
@@ -53,11 +63,21 @@ class FolderServiceIT {
 	@Autowired
 	DocumentRepository documentRepository;
 
+//  DEBUGGING WITH H2 
+	@Autowired
+	DataSource dataSource;
+	@BeforeAll
+	public void initTest() throws SQLException {
+	    Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082")
+	    .start();
+	}
+
 	DmsUser user;
 	DmsFolderDTO folder;
 	DmsFolder folderObject;
 	DmsFolderDTO subFolder;
 	DmsDocument newDocument;
+	DmsDocumentDTO documentWithPermissions;
 
 	@BeforeEach
 	void setUp() {
@@ -69,18 +89,21 @@ class FolderServiceIT {
 		newDocument = documentRepository.save(
 				DmsDocument.builder().objectName("TestTest").description("Ovo je test u testu").creator(user)
 					.parentFolder(folderObject).build());
+		
 	}
 
 	@AfterEach
 	void cleanUp() {
 		if (newDocument != null && documentRepository.existsById(newDocument.getId()))
-			documentService.deleteById(newDocument.getId());
+			documentRepository.deleteById(newDocument.getId());
+		if (documentWithPermissions != null && documentRepository.existsById(documentWithPermissions.getId()))
+			documentRepository.deleteById(documentWithPermissions.getId());
 		if (user != null && userRepository.existsById(user.getId()))
 			userRepository.deleteById(user.getId());
 		if (subFolder != null && folderRepository.existsById(subFolder.getId()))
-			folderService.deleteById(subFolder.getId());
+			folderRepository.deleteById(subFolder.getId());
 		if (folder != null && folderRepository.existsById(folder.getId()))
-			folderService.deleteById(folder.getId());
+			folderRepository.deleteById(folder.getId());
 	}
 
 	@Test
@@ -140,5 +163,17 @@ class FolderServiceIT {
 
 		assertEquals(0, folder.getDocuments().size());
 		assertEquals(1, subFolder.getDocuments().size());
+	}
+	
+	@Test
+	@WithUserDetails("creator")
+	void moveDocumentToDifferentFolderSecurityTest() {
+		DmsFolderDTO subFolderPerm = folderService.createNewFolder("/test/perm");
+		documentWithPermissions = documentService.createNewDocument(NewDocumentDTO.builder().objectName("Permissions").description("Test with permission").build());
+		subFolderPerm = folderService.moveFilesToFolder(subFolderPerm.getId(), Arrays.asList(documentWithPermissions.getId()));
+		
+		folder = folderService.findById(folder.getId());
+		
+		assertEquals(1, subFolderPerm.getDocuments().size());
 	}
 }
