@@ -15,6 +15,7 @@ import com.example.dms.domain.DmsGroup;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.GroupRepository;
 import com.example.dms.repositories.UserRepository;
+import com.example.dms.services.DmsAclService;
 import com.example.dms.services.GroupService;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
@@ -28,8 +29,8 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 	UserRepository userRepository;
 	GroupMapper groupMapper;
 	
-	public GroupServiceImpl(GroupRepository groupRepository, UserRepository userRepository, GroupMapper groupMapper) {
-		super(groupRepository, groupMapper);
+	public GroupServiceImpl(GroupRepository groupRepository, UserRepository userRepository, GroupMapper groupMapper, DmsAclService aclService) {
+		super(groupRepository, groupMapper, aclService);
 		this.groupMapper = groupMapper;
 		this.groupRepository = groupRepository;
 		this.userRepository = userRepository;

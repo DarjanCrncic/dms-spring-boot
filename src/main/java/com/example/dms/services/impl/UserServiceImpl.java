@@ -13,6 +13,7 @@ import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.api.mappers.UserMapper;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.UserRepository;
+import com.example.dms.services.DmsAclService;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
@@ -24,8 +25,8 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 	UserRepository userRepository;
 	UserMapper userMapper;
 	
-	public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
-		super(userRepository, userMapper);
+	public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, DmsAclService aclService) {
+		super(userRepository, userMapper, aclService);
 		this.userRepository = userRepository;
 		this.userMapper = userMapper;
 	}

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,16 +18,14 @@ import com.example.dms.utils.exceptions.DmsNotFoundException;
 public abstract class EntityCrudServiceImpl<T extends BaseEntity, D> implements CrudService<T, D, UUID>{
 
 	JpaRepository<T, UUID> repository;
-	
 	MapperInterface<T, D> mapper;
-	
-	@Autowired
 	DmsAclService aclService;
 	
-	protected EntityCrudServiceImpl(JpaRepository<T, UUID> repository, MapperInterface<T, D> mapper) {
+	protected EntityCrudServiceImpl(JpaRepository<T, UUID> repository, MapperInterface<T, D> mapper, DmsAclService aclService) {
 		super();
 		this.repository = repository;
 		this.mapper = mapper;
+		this.aclService = aclService;
 	}
 
 	@Override

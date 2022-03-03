@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -66,13 +65,13 @@ public class DmsUser extends BaseEntity {
 	@Column(unique = true)
 	private String email;
 
-	@ManyToMany(mappedBy = "members", cascade = CascadeType.REFRESH)
+	@ManyToMany(mappedBy = "members")
 	@ToString.Exclude
 	@JsonIgnore // TODO: change this to use JsonView
 	@Default
 	private Set<DmsGroup> groups = new HashSet<>();
 
-	@OneToMany(mappedBy = "creator", cascade = CascadeType.REFRESH)
+	@OneToMany(mappedBy = "creator")
 	@ToString.Exclude
 	@JsonIgnore
 	@Default

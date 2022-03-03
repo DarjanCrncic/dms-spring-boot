@@ -30,15 +30,13 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	FolderRepository folderRepository;
 	FolderMapper folderMapper;
 	DocumentRepository documentRepository;
-	DmsAclService aclService;
 
 	public FolderServiceImpl(FolderRepository folderRepository, FolderMapper folderMapper,
 			DocumentRepository documentRepository, DmsAclService aclService) {
-		super(folderRepository, folderMapper);
+		super(folderRepository, folderMapper, aclService);
 		this.folderRepository = folderRepository;
 		this.folderMapper = folderMapper;
 		this.documentRepository = documentRepository;
-		this.aclService = aclService;
 	}
 
 	@Override
@@ -59,7 +57,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		DmsFolder newFolder = DmsFolder.builder().path(path).build();
 
 		persistFolderToParentFolder(parentFolder, newFolder);
-		aclService.grantCreatorRights(newFolder, "creator"); // TODO: change to principal
+		super.aclService.grantCreatorRights(newFolder, "creator"); // TODO: change to principal
 		return folderMapper.entityToDto(newFolder);
 	}
 

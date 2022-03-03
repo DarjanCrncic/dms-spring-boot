@@ -36,7 +36,7 @@ public class DmsGroup extends BaseEntity {
 	@Default
 	private String description = null;
 
-	@ManyToMany(cascade = CascadeType.REFRESH)
+	@ManyToMany(cascade = CascadeType.PERSIST)
 	@JoinTable(name = "user_groups", joinColumns = { @JoinColumn(name = "group_id") }, 
 			inverseJoinColumns = { @JoinColumn(name = "user_id") })
 	@Default

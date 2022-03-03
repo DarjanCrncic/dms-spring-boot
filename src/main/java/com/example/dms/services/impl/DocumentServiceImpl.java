@@ -38,16 +38,14 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	DocumentRepository documentRepository;
 	DocumentMapper documentMapper;
 	TypeRepository typeRepository;
-	DmsAclService aclService;
 	
 	public DocumentServiceImpl(UserRepository userRepository, DocumentRepository documentRepository,
 			DocumentMapper documentMapper, TypeRepository typeRepository, DmsAclService aclService) {
-		super(documentRepository, documentMapper);
+		super(documentRepository, documentMapper, aclService);
 		this.userRepository = userRepository;
 		this.documentRepository = documentRepository;
 		this.documentMapper = documentMapper;
 		this.typeRepository = typeRepository;
-		this.aclService = aclService;
 	}
 
 	@Override
@@ -64,7 +62,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		newDocumentObject.setRootId(newDocumentObject.getId());
 		newDocumentObject.setPredecessorId(newDocumentObject.getId());
 		
-		aclService.grantCreatorRights(newDocumentObject, creator.getUsername());
+		super.aclService.grantCreatorRights(newDocumentObject, creator.getUsername());
 		
 		return save(newDocumentObject);
 	}
@@ -74,7 +72,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 			document.setType(type);
 			document = documentRepository.save(document);
 			type.getDocuments().add(document);
-			type = typeRepository.save(type);
+			typeRepository.save(type);
 		}
 	}
 	
@@ -83,7 +81,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 			document.setCreator(user);
 			document = documentRepository.save(document);
 			user.getDocuments().add(document);
-			user = userRepository.save(user);
+			userRepository.save(user);
 		}
 	}
 
