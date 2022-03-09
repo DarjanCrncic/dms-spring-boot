@@ -87,7 +87,7 @@ class DocumentControllerTest {
 
 	@Test
 	void createNewDocumentTest() throws Exception {
-		BDDMockito.given(documentService.createNewDocument(Mockito.any(NewDocumentDTO.class))).willReturn(validDocumentDTO);
+		BDDMockito.given(documentService.createDocument(Mockito.any(NewDocumentDTO.class))).willReturn(validDocumentDTO);
 
 		mockMvc.perform(post(BASE_URL).content(Utils.stringify(newDocumentDTO)).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated())
 				.andExpect(jsonPath("$.object_name", is(validDocument.getObjectName())))

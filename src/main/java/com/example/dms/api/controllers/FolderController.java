@@ -54,7 +54,7 @@ public class FolderController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public DmsFolderDTO createNewFolder(@RequestBody @Valid NewFolderDTO newFolderDTO) {
-		return folderService.createNewFolder(newFolderDTO.getPath());
+		return folderService.createFolder(newFolderDTO.getPath());
 	}
 	
 	@PutMapping("/{id}")

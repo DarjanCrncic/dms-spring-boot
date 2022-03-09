@@ -38,7 +38,7 @@ class UserServiceIT {
 	
 	@BeforeEach
 	void setUp() {
-		user = userService.saveNewUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
+		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
 	}
 	
 	@AfterEach
@@ -51,10 +51,10 @@ class UserServiceIT {
 	@Test
 	void userCreateTest() {
 		NewUserDTO userDTO = new NewUserDTO("testuser", "12345", "test", "test","test1.test@gmail.com");
-		assertThrows(UniqueConstraintViolatedException.class, () -> userService.saveNewUser(userDTO));
+		assertThrows(UniqueConstraintViolatedException.class, () -> userService.createUser(userDTO));
 		
 		NewUserDTO secondUserDTO = new NewUserDTO("testuser1", "12345", "test", "test","test.test@gmail.com");
-		assertThrows(UniqueConstraintViolatedException.class, () -> userService.saveNewUser(secondUserDTO));
+		assertThrows(UniqueConstraintViolatedException.class, () -> userService.createUser(secondUserDTO));
 	}
 	
 	@Test

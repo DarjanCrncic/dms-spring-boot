@@ -38,7 +38,7 @@ public class DocumentController {
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public DmsDocumentDTO createNewDocument(@Valid @RequestBody NewDocumentDTO newDocumentDTO) {
-		return documentService.createNewDocument(newDocumentDTO);
+		return documentService.createDocument(newDocumentDTO);
 	}
 
 	@GetMapping

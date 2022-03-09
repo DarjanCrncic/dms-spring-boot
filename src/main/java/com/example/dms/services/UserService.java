@@ -13,7 +13,7 @@ public interface UserService extends CrudService<DmsUser, DmsUserDTO, UUID>{
 
 	DmsUserDTO findByEmail(String email);
 
-	DmsUserDTO saveNewUser(NewUserDTO userDTO);
+	DmsUserDTO createUser(NewUserDTO userDTO);
 
 	DmsUserDTO updateUser(UpdateUserDTO userDTO, UUID id, boolean patch);
 

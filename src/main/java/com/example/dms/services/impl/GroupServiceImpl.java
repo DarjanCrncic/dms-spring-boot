@@ -66,7 +66,7 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 	}
 	
 	@Override
-	public DmsGroupDTO createNewGroup(NewGroupDTO dmsGroup) {
+	public DmsGroupDTO createGroup(NewGroupDTO dmsGroup) {
 		Optional<DmsGroup> existingGroup = groupRepository.findByGroupName(dmsGroup.getGroupName());
 		if (existingGroup.isPresent()) {
 			throw new UniqueConstraintViolatedException("Following field is not unique: groupName, value: '" + dmsGroup.getGroupName() + "'");

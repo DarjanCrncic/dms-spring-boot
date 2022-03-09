@@ -52,7 +52,7 @@ public class GroupController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public DmsGroupDTO createNewGroup(@RequestBody @Valid NewGroupDTO groupDTO){
-		return groupService.createNewGroup(groupDTO);
+		return groupService.createGroup(groupDTO);
 	}
 	
 

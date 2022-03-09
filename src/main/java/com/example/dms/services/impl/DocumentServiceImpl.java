@@ -50,7 +50,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
-	public DmsDocumentDTO createNewDocument(NewDocumentDTO newDocumentDTO) {
+	public DmsDocumentDTO createDocument(NewDocumentDTO newDocumentDTO) {
 		// TODO: Remove hardcoded user.
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
 		

@@ -47,10 +47,10 @@ class GroupServiceIT {
 	
 	@BeforeEach
 	void setUp() {
-		user1 = userService.saveNewUser(new NewUserDTO("testuser", "12345", "Darjan", "Crnčić", "test.user@gmail.com"));
-		user2 = userService.saveNewUser(new NewUserDTO("testuser2", "12345", "Darjan", "Crnčić", "test2.user@gmail.com"));
+		user1 = userService.createUser(new NewUserDTO("testuser", "12345", "Darjan", "Crnčić", "test.user@gmail.com"));
+		user2 = userService.createUser(new NewUserDTO("testuser2", "12345", "Darjan", "Crnčić", "test2.user@gmail.com"));
 		newGroupDTO = NewGroupDTO.builder().groupName("grupa").description("testna grupa").build();
-		savedGroup = groupService.createNewGroup(newGroupDTO);
+		savedGroup = groupService.createGroup(newGroupDTO);
 	}
 	
 	@AfterEach

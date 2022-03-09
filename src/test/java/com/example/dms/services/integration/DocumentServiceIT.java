@@ -68,7 +68,7 @@ class DocumentServiceIT {
 	void setUp() {
 		if (typeRepository.findByTypeName(typeName).isEmpty())
 			type = typeRepository.save(DmsType.builder().typeName(typeName).build());
-		newDocument = documentService.createNewDocument(
+		newDocument = documentService.createDocument(
 				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").typeName(typeName).build());
 	}
 

@@ -51,7 +51,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 
 	@Override
 	@PreAuthorize("hasRole('ADMIN')")
-	public DmsUserDTO saveNewUser(NewUserDTO userDTO) {
+	public DmsUserDTO createUser(NewUserDTO userDTO) {
 		DmsUser user = userMapper.newUserDTOToUser(userDTO);
 		if (userRepository.findByEmail(user.getEmail()).isPresent()) {
 			throw new UniqueConstraintViolatedException("Following field is not unique: email, value: " + user.getEmail());

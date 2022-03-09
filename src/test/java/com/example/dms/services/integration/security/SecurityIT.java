@@ -40,7 +40,7 @@ class SecurityIT {
 	@Test
 	@WithUserDetails("admin")
 	void testSecurityWithUserDetails() {
-		user = userService.saveNewUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
+		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
 		userService.deleteById(user.getId());
 		
 		assertTrue(userRepository.findByUsername("test").isEmpty());
@@ -49,7 +49,7 @@ class SecurityIT {
 	@Test
 	@WithMockUser(username = "testuser", authorities = { "ROLE_ADMIN" })
 	void testSecurityWithMockUser() {
-		user = userService.saveNewUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
+		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
 		userService.deleteById(user.getId());
 		
 		assertTrue(userRepository.findByUsername("test").isEmpty());
@@ -58,7 +58,7 @@ class SecurityIT {
 	@Test
 	@WithMockUser(username = "testuser", roles = { "ADMIN" })
 	void testSecurityWithMockUserRple() {
-		user = userService.saveNewUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
+		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
 		userService.deleteById(user.getId());
 		
 		assertTrue(userRepository.findByUsername("test").isEmpty());
@@ -68,7 +68,7 @@ class SecurityIT {
 	@WithMockUser(username = "testuser", authorities = { "ROLE_USER" })
 	void testSecurityException() {
 		NewUserDTO dto = new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com");
-		assertThrows(AccessDeniedException.class, () -> userService.saveNewUser(dto));
+		assertThrows(AccessDeniedException.class, () -> userService.createUser(dto));
 	}
 	
 }

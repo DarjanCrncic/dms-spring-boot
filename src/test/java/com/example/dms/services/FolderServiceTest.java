@@ -76,7 +76,7 @@ class FolderServiceTest {
 
 	@Test
 	void testIvalidFolderPathWhenCreating() {
-		assertThrows(BadRequestException.class, () -> folderService.createNewFolder("notStartingWithFrontSlash"));
-		assertThrows(BadRequestException.class, () -> folderService.createNewFolder("/endingWithFrontSlash/"));
+		assertThrows(BadRequestException.class, () -> folderService.createFolder("notStartingWithFrontSlash"));
+		assertThrows(BadRequestException.class, () -> folderService.createFolder("/endingWithFrontSlash/"));
 	}
 }

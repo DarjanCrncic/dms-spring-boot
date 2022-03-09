@@ -13,7 +13,7 @@ import com.example.dms.domain.DmsDocument;
 
 public interface DocumentService extends CrudService<DmsDocument, DmsDocumentDTO, UUID>{
 
-	DmsDocumentDTO createNewDocument(NewDocumentDTO newDocumentDTO);
+	DmsDocumentDTO createDocument(NewDocumentDTO newDocumentDTO);
 
 	void uploadFile(UUID id, MultipartFile file);
 

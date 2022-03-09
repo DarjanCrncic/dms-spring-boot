@@ -50,7 +50,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 
 	@Override
 	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
-	public DmsFolderDTO createNewFolder(String path) {
+	public DmsFolderDTO createFolder(String path) {
 		checkPath(path);
 		DmsFolder parentFolder = folderRepository.findByPath(getParentFolderPath(path))
 				.orElseThrow(DmsNotFoundException::new);

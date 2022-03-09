@@ -83,8 +83,8 @@ class FolderServiceIT {
 	void setUp() {
 		user = userRepository.save(DmsUser.builder().username("dcrncictest").password("12345").firstName("Darjan")
 				.lastName("Crnčić").email("darjan.crncic.test@gmail.com").build());
-		folder = folderService.createNewFolder("/test");
-		subFolder = folderService.createNewFolder("/test/inside");
+		folder = folderService.createFolder("/test");
+		subFolder = folderService.createFolder("/test/inside");
 		folderObject = folderRepository.findById(folder.getId()).orElse(null);
 		newDocument = documentRepository.save(
 				DmsDocument.builder().objectName("TestTest").description("Ovo je test u testu").creator(user)
@@ -168,8 +168,8 @@ class FolderServiceIT {
 	@Test
 	@WithUserDetails("creator")
 	void moveDocumentToDifferentFolderSecurityTest() {
-		DmsFolderDTO subFolderPerm = folderService.createNewFolder("/test/perm");
-		documentWithPermissions = documentService.createNewDocument(NewDocumentDTO.builder().objectName("Permissions").description("Test with permission").build());
+		DmsFolderDTO subFolderPerm = folderService.createFolder("/test/perm");
+		documentWithPermissions = documentService.createDocument(NewDocumentDTO.builder().objectName("Permissions").description("Test with permission").build());
 		subFolderPerm = folderService.moveFilesToFolder(subFolderPerm.getId(), Arrays.asList(documentWithPermissions.getId()));
 		
 		folder = folderService.findById(folder.getId());

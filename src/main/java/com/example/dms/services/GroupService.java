@@ -11,7 +11,7 @@ import com.example.dms.domain.DmsGroup;
 
 public interface GroupService extends CrudService<DmsGroup, DmsGroupDTO, UUID>{
 
-	DmsGroupDTO createNewGroup(@Valid NewGroupDTO groupDTO);
+	DmsGroupDTO createGroup(@Valid NewGroupDTO groupDTO);
 
 	DmsGroupDTO findGroupByGroupName(String groupName);
 

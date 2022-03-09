@@ -57,7 +57,7 @@ public class UserController {
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public DmsUserDTO createNewUser(@Valid @RequestBody NewUserDTO userDTO) {
-		return userService.saveNewUser(userDTO);
+		return userService.createUser(userDTO);
 	}
 
 	@PutMapping("/{id}")

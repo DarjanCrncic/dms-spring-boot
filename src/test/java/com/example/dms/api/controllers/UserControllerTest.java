@@ -105,7 +105,7 @@ class UserControllerTest {
 
 	@Test
 	void testCreateNewUser() throws Exception {
-		BDDMockito.given(userService.saveNewUser(Mockito.any(NewUserDTO.class))).willReturn(validUserDTO);
+		BDDMockito.given(userService.createUser(Mockito.any(NewUserDTO.class))).willReturn(validUserDTO);
 
 		mockMvc.perform(
 				post(BASE_URL).content(Utils.stringify(newUserDTO)).contentType(MediaType.APPLICATION_JSON))
@@ -114,7 +114,7 @@ class UserControllerTest {
 
 	@Test
 	void testCreateNewUserUnique() throws Exception {
-		BDDMockito.given(userService.saveNewUser(Mockito.any(NewUserDTO.class)))
+		BDDMockito.given(userService.createUser(Mockito.any(NewUserDTO.class)))
 				.willThrow(UniqueConstraintViolatedException.class);
 
 		mockMvc.perform(
