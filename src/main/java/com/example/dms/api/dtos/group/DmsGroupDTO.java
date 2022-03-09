@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.example.dms.api.dtos.BaseEntityDTO;
 import com.example.dms.api.dtos.user.DmsUserDTO;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DmsGroupDTO {
+public class DmsGroupDTO implements BaseEntityDTO {
 	
 	private UUID id;
 	private LocalDateTime creationDate;

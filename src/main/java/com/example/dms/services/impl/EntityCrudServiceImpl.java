@@ -9,13 +9,14 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.dms.api.dtos.BaseEntityDTO;
 import com.example.dms.api.mappers.MapperInterface;
 import com.example.dms.domain.BaseEntity;
 import com.example.dms.services.CrudService;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 @Transactional
-public abstract class EntityCrudServiceImpl<T extends BaseEntity, D> implements CrudService<T, D, UUID>{
+public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends BaseEntityDTO> implements CrudService<T, D, UUID>{
 
 	JpaRepository<T, UUID> repository;
 	MapperInterface<T, D> mapper;

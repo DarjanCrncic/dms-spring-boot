@@ -47,6 +47,12 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		this.documentMapper = documentMapper;
 		this.typeRepository = typeRepository;
 	}
+	
+	@Override
+	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
+	public List<DmsDocumentDTO> findAll() {
+		return documentMapper.entityListToDtoList(documentRepository.findAll());
+	}
 
 	@Override
 	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")

@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,12 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		this.folderRepository = folderRepository;
 		this.folderMapper = folderMapper;
 		this.documentRepository = documentRepository;
+	}
+	
+	@Override
+	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
+	public List<DmsFolderDTO> findAll() {
+		return folderMapper.entityListToDtoList(folderRepository.findAll());
 	}
 
 	@Override

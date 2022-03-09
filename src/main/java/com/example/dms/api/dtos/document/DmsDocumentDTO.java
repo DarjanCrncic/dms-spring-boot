@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.example.dms.api.dtos.BaseEntityDTO;
 import com.example.dms.api.dtos.folder.DmsFolderPathDTO;
 import com.example.dms.api.dtos.type.DmsTypeDTO;
 import com.example.dms.api.dtos.user.DmsUserDTO;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DmsDocumentDTO {
+public class DmsDocumentDTO implements BaseEntityDTO {
 
 	private UUID id;
 	private LocalDateTime creationDate;
