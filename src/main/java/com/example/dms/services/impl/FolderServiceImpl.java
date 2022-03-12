@@ -71,6 +71,8 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','WRITE')")
 	public DmsFolderDTO updateFolder(UUID id, String path) {
+		// TODO: when updating folder it could cause the folder structure to change, 
+		// add check to make sure only the folder name is changed
 		checkPath(path);
 		DmsFolder oldFolder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		oldFolder.setPath(path);
@@ -129,6 +131,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		}
 	}
 	
+	// TODO: no checking permissions for documents when deleting folder
 	// TODO: copy file to folder 
 	// TODO: move subfolder to other folder
 	// TODO: copy folder to another folder

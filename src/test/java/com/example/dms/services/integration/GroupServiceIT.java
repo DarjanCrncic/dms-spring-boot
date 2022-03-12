@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -64,12 +65,14 @@ class GroupServiceIT {
 	}
 	
 	@Test
+	@DisplayName("Test creation of a new group.")
 	void createNewGroupTest() {
 		assertEquals(newGroupDTO.getGroupName(), savedGroup.getGroupName());
 		assertEquals(newGroupDTO.getDescription(), savedGroup.getDescription());
 		assertEquals(0, savedGroup.getMembers().size());
 	}
 	@Test
+	@DisplayName("Test adding users to group.")
 	@Transactional
 	void addUsersToGroup() {
 		savedGroup = groupService.addUserToGroup(savedGroup.getId(), user1.getId());
@@ -79,6 +82,7 @@ class GroupServiceIT {
 		assertEquals(2, savedGroup.getMembers().size());
 	}
 	@Test
+	@DisplayName("Test adding multiple users to group.")
 	@Transactional
 	void addMultipleUsersToGroup() {
 		List<UUID> userList = Arrays.asList(new UUID[]{user1.getId(), user2.getId()});

@@ -15,6 +15,7 @@ import org.h2.tools.Server;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -113,12 +114,14 @@ class FolderServiceIT {
 
 	@Test
 	@Transactional
+	@DisplayName("Test creation of folder and subfolder.")
 	void createNewFolderTest() {
 		assertEquals(1, folderObject.getSubfolders().size());
 		assertEquals(0, folder.getDocuments().size());
 	}
 
 	@Test
+	@DisplayName("Test deleting folder and documents within.")
 	void deleteFolderTest() {
 		DmsDocumentDTO newDocument = documentService
 				.save(DmsDocument.builder().creator(user).objectName("TestTest").description("Ovo je test u testu")
@@ -136,6 +139,7 @@ class FolderServiceIT {
 	}
 
 	@Test
+	@DisplayName("Test deletion of subfolder.")
 	void deleteChildrenTest() {
 		DmsDocumentDTO newDocument = documentService.save(DmsDocument.builder().creator(user).objectName("TestTest")
 				.parentFolder(folderRepository.findById(folder.getId()).orElse(null)).build());
@@ -147,6 +151,7 @@ class FolderServiceIT {
 	}
 
 	@Test
+	@DisplayName("Test modifying folder path.")
 	void modifiyFolderTest() {
 		folderService.updateFolder(folder.getId(), "/renamed");
 		subFolder = folderService.findById(subFolder.getId());
@@ -154,6 +159,7 @@ class FolderServiceIT {
 	}
 	
 	@Test
+	@DisplayName("Test moving documents from folder to folder.")
 	void moveDocumentToDifferentFolder() {
 		folder = folderService.findById(folder.getId());
 		assertEquals(1, folder.getDocuments().size());
@@ -166,6 +172,7 @@ class FolderServiceIT {
 	}
 	
 	@Test
+	@DisplayName("Test moving documents from folder to folder with security.")
 	@WithUserDetails("creator")
 	void moveDocumentToDifferentFolderSecurityTest() {
 		DmsFolderDTO subFolderPerm = folderService.createFolder("/test/perm");
