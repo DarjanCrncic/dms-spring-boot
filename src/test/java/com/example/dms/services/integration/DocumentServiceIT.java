@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -66,8 +67,7 @@ class DocumentServiceIT {
 	
 	@BeforeEach
 	void setUp() {
-		if (typeRepository.findByTypeName(typeName).isEmpty())
-			type = typeRepository.save(DmsType.builder().typeName(typeName).build());
+		type = typeRepository.save(DmsType.builder().typeName(typeName).build());
 		newDocument = documentService.createDocument(
 				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").typeName(typeName).build());
 	}
@@ -85,6 +85,7 @@ class DocumentServiceIT {
 	}
 
 	@Test
+	@DisplayName("Test saving of a new document.")
 	void saveNewDocumentTest() {
 		DmsDocument foundDocument = documentRepository.findById(newDocument.getId()).orElse(null);
 
@@ -94,6 +95,7 @@ class DocumentServiceIT {
 	}
 	
 	@Test
+	@DisplayName("Test binding of document to type.")
 	@Transactional
 	void testTypeBinding() {
 		type = typeRepository.findByTypeName(typeName).orElse(null);
@@ -104,6 +106,7 @@ class DocumentServiceIT {
 	}
 
 	@Test
+	@DisplayName("Test if the document relation is persisted for the creator user.")
 	@Transactional
 	void saveNewDocumentPersistenceTest() {
 		DmsUser creator = userRepository.findById(newDocument.getCreator().getId()).orElse(null);
@@ -111,6 +114,7 @@ class DocumentServiceIT {
 	}
 
 	@Test
+	@DisplayName("Test document versioning and previous version imutability.")
 	void testVersioning() {
 		newVersion = documentService.createNewVersion(newDocument.getId());
 		newDocument = documentService.findById(newDocument.getId());
@@ -129,6 +133,7 @@ class DocumentServiceIT {
 	}
 
 	@Test
+	@DisplayName("Test modifying document with put HTTP request.")
 	@WithUserDetails("creator")
 	void testDocumentPut() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").description("updated")
@@ -142,6 +147,7 @@ class DocumentServiceIT {
 	}
 	
 	@Test
+	@DisplayName("Test modifying document with patch HTTP request.")
 	@WithUserDetails("creator")
 	void testDocumentPatch() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
