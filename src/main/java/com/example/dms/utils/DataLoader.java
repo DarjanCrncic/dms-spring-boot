@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.example.dms.domain.DmsFolder;
@@ -34,6 +35,9 @@ public class DataLoader implements ApplicationRunner {
 	
 	@Autowired
 	DocumentService documentService;
+	
+	@Autowired
+	BCryptPasswordEncoder passwordEncoder;
 	
     @Override
 	public void run(ApplicationArguments args) {
@@ -91,7 +95,7 @@ public class DataLoader implements ApplicationRunner {
     	}
     	
     	// test and admin users
-    	String dummyPassword = "12345";
+    	String dummyPassword = passwordEncoder.encode("12345");
     	DmsUser user = DmsUser.builder().username("user").password(dummyPassword).firstName("userF").lastName("userL").email("user.user@gmail.com")
     			.roles(Arrays.asList(userRole)).build();	
     	if (userRepository.findByUsername("user").isEmpty()) {
