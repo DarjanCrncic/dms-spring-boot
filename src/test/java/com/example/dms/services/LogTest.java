@@ -1,10 +1,12 @@
 package com.example.dms.services;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
-@Slf4j
+@Log4j2
+@SpringBootTest
 class LogTest {
 	
 	@Test
