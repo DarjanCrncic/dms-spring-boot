@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.example.dms.api.dtos.BaseEntityDTO;
+import com.example.dms.api.dtos.content.DmsContentDTO;
 import com.example.dms.api.dtos.folder.DmsFolderPathDTO;
 import com.example.dms.api.dtos.type.DmsTypeDTO;
 import com.example.dms.api.dtos.user.DmsUserDTO;
@@ -34,9 +35,7 @@ public class DmsDocumentDTO implements BaseEntityDTO {
 	private List<String> keywords = new ArrayList<>();
 	private DmsFolderPathDTO parentFolder;
 	
-	private Long contentSize;
-	private String contentType;
-	private String originalFileName;
+	private DmsContentDTO content;
 	
 	private UUID rootId;
 	private UUID predecessorId;

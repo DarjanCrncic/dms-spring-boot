@@ -45,7 +45,7 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends Base
 	@Override
 	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
 	public D save(T object) {
-		return mapper.entityToDto(repository.save(object));
+		return mapper.entityToDto(repository.saveAndFlush(object));
 	}
 
 	@Override

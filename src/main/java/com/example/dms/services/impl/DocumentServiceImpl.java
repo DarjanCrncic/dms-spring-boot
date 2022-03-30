@@ -18,9 +18,11 @@ import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
+import com.example.dms.domain.DmsContent;
 import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsType;
 import com.example.dms.domain.DmsUser;
+import com.example.dms.repositories.ContentRepository;
 import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
@@ -38,14 +40,16 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	DocumentRepository documentRepository;
 	DocumentMapper documentMapper;
 	TypeRepository typeRepository;
+	ContentRepository contentRepository;
 	
 	public DocumentServiceImpl(UserRepository userRepository, DocumentRepository documentRepository,
-			DocumentMapper documentMapper, TypeRepository typeRepository, DmsAclService aclService) {
+			DocumentMapper documentMapper, TypeRepository typeRepository, DmsAclService aclService, ContentRepository contentRepository) {
 		super(documentRepository, documentMapper, aclService);
 		this.userRepository = userRepository;
 		this.documentRepository = documentRepository;
 		this.documentMapper = documentMapper;
 		this.typeRepository = typeRepository;
+		this.contentRepository = contentRepository;
 	}
 	
 	@Override
@@ -127,23 +131,28 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		}
 
 		String originalFileName = StringUtils.cleanPath(path);
+		DmsContent content = null;
 		try {
-			doc.setContent(file.getBytes());
+			content = DmsContent.builder()
+					.content(file.getBytes())
+					.contentSize(file.getSize())
+					.contentType(file.getContentType())
+					.originalFileName(file.getOriginalFilename())
+					.document(doc).build();
+			contentRepository.save(content);
+			doc.setContent(content);
 		} catch (IOException e) {
 			throw new InternalException(
 					"Could not upload file: '" + originalFileName + "' for document: '" + id + "'.");
 		}
-		doc.setContentSize(file.getSize());
-		doc.setContentType(file.getContentType());
-		doc.setOriginalFileName(originalFileName);
 		save(doc);
 	}
 
 	@Override
 	@PreAuthorize("hasAuthority('READ_PRIVILEGE')")
 	public boolean checkIsDocumentValidForDownload(DmsDocument document) {
-		if (document.getContent() == null || document.getContentType() == null
-				|| document.getOriginalFileName() == null)
+		if (document.getContent() == null || document.getContent().getContentType() == null
+				|| document.getContent().getOriginalFileName() == null || document.getContent().getContentSize() == 0)
 			throw new InternalException("Document has corrupted (or no) content, download unavailable.");
 		return true;
 	}
@@ -175,10 +184,9 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	private DmsDocument copyDocument(DmsDocument original) {
-		return DmsDocument.builder().content(original.getContent()).contentSize(original.getContentSize())
-				.contentType(original.getContentType()).creator(original.getCreator())
+		return DmsDocument.builder().content(original.getContent()).creator(original.getCreator())
 				.description(original.getDescription()).parentFolder(original.getParentFolder())
-				.objectName(original.getObjectName()).originalFileName(original.getOriginalFileName()).build();
+				.objectName(original.getObjectName()).build();
 	}
 
 	@Override
@@ -193,8 +201,8 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		checkIsDocumentValidForDownload(document);
 		return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getOriginalFileName() + "\"")
-                .contentType(MediaType.valueOf(document.getContentType()))
-                .body(document.getContent());
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getContent().getOriginalFileName() + "\"")
+                .contentType(MediaType.valueOf(document.getContent().getContentType()))
+                .body(document.getContent().getContent());
 	}
 }

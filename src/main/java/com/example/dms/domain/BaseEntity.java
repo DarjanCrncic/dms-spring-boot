@@ -23,13 +23,13 @@ import lombok.Setter;
 public class BaseEntity {
 
 	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(length=16)
 	@GeneratedValue(generator = "uuid")
 	@GenericGenerator(name = "uuid", strategy = "uuid2")
 	private UUID id;
 	
 	@CreationTimestamp
+	@Column(updatable = false)
 	private LocalDateTime creationDate;
 	
 	@UpdateTimestamp

@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -73,15 +75,8 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass{
 	private DmsFolder parentFolder = null;
 
 	// internal attributes
-	@Lob
-	@Default
-	private byte[] content = null;
-	@Default
-	private Long contentSize = 0l;
-	@Default
-	private String contentType = null;
-	@Default
-	private String originalFileName = null;
+	@OneToOne(mappedBy = "document", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+	private DmsContent content;
 	
 	@Default
 	private UUID rootId = null;

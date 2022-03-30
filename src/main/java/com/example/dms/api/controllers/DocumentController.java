@@ -51,7 +51,7 @@ public class DocumentController {
 		if (file == null)
 			throw new BadRequestException("The file parameter in the request body is null.");
 		documentService.uploadFile(id, file);
-		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/documents/" + id).path("/download")
+		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/documents/download" + id)
 				.toUriString();
 		return new DocumentFileDTO(id, fileDownloadUri, file.getContentType(), file.getSize());
 	}

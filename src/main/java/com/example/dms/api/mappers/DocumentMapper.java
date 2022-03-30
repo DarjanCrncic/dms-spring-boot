@@ -14,7 +14,7 @@ import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.domain.DmsDocument;
 
-@Mapper(uses = {UserMapper.class, TypeMapper.class})
+@Mapper(uses = {UserMapper.class, TypeMapper.class, ContentMapper.class})
 public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocumentDTO> {
 
 	DocumentMapper INSTANCE = Mappers.getMapper(DocumentMapper.class);
@@ -30,9 +30,6 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 	@Mapping(target = "version", ignore = true)
 	@Mapping(target = "creator", ignore = true)
 	@Mapping(target = "content", ignore = true)
-	@Mapping(target = "contentSize", ignore = true)
-	@Mapping(target = "contentType", ignore = true)
-	@Mapping(target = "originalFileName", ignore = true)
 	DmsDocument newDocumentDTOToDocument(NewDocumentDTO documentDTO);
 	
 	@Override
@@ -43,11 +40,8 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "modifyDate", ignore = true)
 	@Mapping(target = "content", ignore = true)
-	@Mapping(target = "contentSize", ignore = true)
-	@Mapping(target = "contentType", ignore = true)
 	@Mapping(target = "creator", ignore = true)
 	@Mapping(target = "imutable", ignore = true)
-	@Mapping(target = "originalFileName", ignore = true)
 	@Mapping(target = "parentFolder", ignore = true)
 	@Mapping(target = "predecessorId", ignore = true)
 	@Mapping(target = "rootId", ignore = true)
@@ -59,11 +53,8 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "modifyDate", ignore = true)
 	@Mapping(target = "content", ignore = true)
-	@Mapping(target = "contentSize", ignore = true)
-	@Mapping(target = "contentType", ignore = true)
 	@Mapping(target = "creator", ignore = true)
 	@Mapping(target = "imutable", ignore = true)
-	@Mapping(target = "originalFileName", ignore = true)
 	@Mapping(target = "parentFolder", ignore = true)
 	@Mapping(target = "predecessorId", ignore = true)
 	@Mapping(target = "rootId", ignore = true)
