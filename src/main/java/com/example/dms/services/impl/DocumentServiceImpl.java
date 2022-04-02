@@ -28,6 +28,8 @@ import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.services.DocumentService;
+import com.example.dms.services.search.SpecificationBuilder;
+import com.example.dms.services.search.document.DocumentSpecProvider;
 import com.example.dms.utils.exceptions.BadRequestException;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.InternalException;
@@ -204,5 +206,12 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getContent().getOriginalFileName() + "\"")
                 .contentType(MediaType.valueOf(document.getContent().getContentType()))
                 .body(document.getContent().getContent());
+	}
+
+	@Override
+	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
+	public List<DmsDocumentDTO> searchAll(String search) {
+		SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
+		return documentMapper.entityListToDtoList(documentRepository.findAll(builder.parse(search)));
 	}
 }

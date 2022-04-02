@@ -29,4 +29,6 @@ public interface DocumentService extends CrudService<DmsDocument, DmsDocumentDTO
 
 	ResponseEntity<byte[]> downloadContent(UUID id);
 
+	List<DmsDocumentDTO> searchAll(String search);
+
 }
