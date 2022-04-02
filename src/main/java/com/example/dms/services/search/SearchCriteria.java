@@ -13,12 +13,14 @@ public class SearchCriteria {
     private String key;
     private String operation;
     private Object value;
+    private String operator;
 	
-    public SearchCriteria(String key, String operation, Object value) {
+    public SearchCriteria(String key, String operation, Object value, String operator) {
 		super();
 		this.key = StringUtils.snakeToCammel(key);
 		this.operation = operation;
 		this.value = value;
-	}
+		this.operator = operator;
+    }
     
 }

@@ -11,12 +11,15 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class SpecificationBuilder<T> {
+	
+	public static final String OR_OPERATOR = "~";
+	public static final String AND_OPERATOR = ",";
     
 	private Providable<T> specProvider;
     private final List<SearchCriteria> params = new ArrayList<>();
 
-    public SpecificationBuilder<T> with(String key, String operation, Object value) {
-        params.add(new SearchCriteria(key, operation, value));
+    public SpecificationBuilder<T> with(String key, String operation, Object value, String operator) {
+        params.add(new SearchCriteria(key, operation, value, operator));
         return this;
     }
 
@@ -32,18 +35,21 @@ public class SpecificationBuilder<T> {
         
         Specification<T> result = specs.get(0);
 
-        for (int i = 1; i < params.size(); i++) {
-            result = Specification.where(result).and(specs.get(i));
+        for (int i = 1; i < specs.size(); i++) {
+        	if (params.get(i-1).getOperator().equalsIgnoreCase(OR_OPERATOR))
+        		result = Specification.where(result).or(specs.get(i));
+        	else
+        		result = Specification.where(result).and(specs.get(i));
         }       
         
         return result;
     }
     
     public Specification<T> parse(String search) {
-		Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?),");
-        Matcher matcher = pattern.matcher(search + ",");
+		Pattern pattern = Pattern.compile("(\\w+?)(:|<|>|!|<=|>=)(\\w+?)(,|~)");
+        Matcher matcher = pattern.matcher(search + AND_OPERATOR);
         while (matcher.find()) {
-            this.with(matcher.group(1), matcher.group(2), matcher.group(3));
+            this.with(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4));
         }
         
         return this.build();
