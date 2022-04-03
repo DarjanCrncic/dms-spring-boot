@@ -8,6 +8,7 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.example.dms.domain.DmsDocument;
+import com.example.dms.domain.DmsType;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.services.search.BasicSearchSpecification;
 import com.example.dms.services.search.SearchCriteria;
@@ -31,7 +32,9 @@ public class DocumentSpecification extends BasicSearchSpecification implements S
         if (criteria.getOperation().equalsIgnoreCase(BasicSearchSpecification.EQUALS)) {
             if (root.get(criteria.getKey()).getJavaType() == DmsUser.class) {
         		return builder.like(root.<DmsUser>get("creator").<String>get("username"), "%" + criteria.getValue() + "%");
-        	} 
+        	} else if (root.get(criteria.getKey()).getJavaType() == DmsType.class) {
+        		return builder.like(root.<DmsType>get("type").<String>get("typeName"), "%" + criteria.getValue() + "%");
+        	}
         }
         return super.toPredicateBasic(root, query, builder, criteria);
     }

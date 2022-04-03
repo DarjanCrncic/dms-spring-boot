@@ -17,7 +17,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
@@ -35,8 +34,6 @@ import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DocumentService;
 import com.example.dms.services.UserService;
-import com.example.dms.services.search.SearchCriteria;
-import com.example.dms.services.search.document.DocumentSpecification;
 import com.example.dms.utils.exceptions.BadRequestException;
 
 @SpringBootTest
@@ -160,26 +157,5 @@ class DocumentServiceIT {
 		assertNull(modifyDTO.getDescription());
 		assertNull(modifyDTO.getKeywords());
 		assertEquals(newDocument.getRootId(), updatedDocument.getRootId());
-	}
-	
-	@Test
-	@DisplayName("Test search with search criteria.")
-	@WithUserDetails("creator")
-	void testSearchCriteria() {
-		DocumentSpecification spec1 = new DocumentSpecification(new SearchCriteria("object_name", ":", "TestTest"));
-		DocumentSpecification spec2 = new DocumentSpecification(new SearchCriteria("creator", ":", "creator"));
-		
-		assertEquals(1, documentRepository.findAll(Specification.where(spec1).and(spec2)).size());
-	}
-	
-	@Test
-	@DisplayName("Test search with search criteria - no results found.")
-	@WithUserDetails("creator")
-	void testSearchCriteriaNotFound() {
-		DocumentSpecification spec1 = new DocumentSpecification(new SearchCriteria("object_name", ":", "TestTestaaa"));
-//		DocumentSpecification spec2 = new DocumentSpecification(new SearchCriteria("creator", ":", "creator"));
-		DocumentSpecification spec2 = new DocumentSpecification(new SearchCriteria("description", ":", "testaaaaa"));
-		
-		assertEquals(0, documentRepository.findAll(Specification.where(spec1).and(spec2)).size());
 	}
 }
