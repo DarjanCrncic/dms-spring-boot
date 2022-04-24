@@ -100,4 +100,11 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass{
 			type.getDocuments().add(this);
 		}
 	}
+	
+	public void addParentFolder(DmsFolder folder) {
+		if (folder != null && !folder.getDocuments().contains(this)) {
+			this.setParentFolder(folder);
+			folder.getDocuments().add(this);
+		}
+	}
 }

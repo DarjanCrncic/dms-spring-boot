@@ -20,10 +20,12 @@ import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.domain.DmsContent;
 import com.example.dms.domain.DmsDocument;
+import com.example.dms.domain.DmsFolder;
 import com.example.dms.domain.DmsType;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.ContentRepository;
 import com.example.dms.repositories.DocumentRepository;
+import com.example.dms.repositories.FolderRepository;
 import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DmsAclService;
@@ -43,17 +45,20 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	DocumentMapper documentMapper;
 	TypeRepository typeRepository;
 	ContentRepository contentRepository;
-	
+	FolderRepository folderRepository;
+
 	public DocumentServiceImpl(UserRepository userRepository, DocumentRepository documentRepository,
-			DocumentMapper documentMapper, TypeRepository typeRepository, DmsAclService aclService, ContentRepository contentRepository) {
+			DocumentMapper documentMapper, TypeRepository typeRepository, DmsAclService aclService,
+			ContentRepository contentRepository, FolderRepository folderRepository) {
 		super(documentRepository, documentMapper, aclService);
 		this.userRepository = userRepository;
 		this.documentRepository = documentRepository;
 		this.documentMapper = documentMapper;
 		this.typeRepository = typeRepository;
 		this.contentRepository = contentRepository;
+		this.folderRepository = folderRepository;
 	}
-	
+
 	@Override
 	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
 	public List<DmsDocumentDTO> findAll() {
@@ -68,6 +73,11 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		
 		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getTypeName()).orElse(null);
 		DmsUser creator = userRepository.findByUsername("creator").orElseThrow(() -> new DmsNotFoundException("Invalid creator user."));
+		
+		if(newDocumentDTO.getFolderPath() != null && !newDocumentDTO.getFolderPath().isEmpty()) {
+			DmsFolder folder = folderRepository.findByPath(newDocumentDTO.getFolderPath()).orElseThrow(() -> new DmsNotFoundException("Invalid parent folder."));
+			newDocumentObject.addParentFolder(folder);
+		}
 
 		newDocumentObject.addCreator(creator);
 		newDocumentObject.addType(type);
@@ -101,7 +111,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 			doc.addType(type);
 			doc = documentRepository.save(doc);
 		}
-		
+
 		return save(doc);
 	}
 
@@ -120,12 +130,9 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		String originalFileName = StringUtils.cleanPath(path);
 		DmsContent content = null;
 		try {
-			content = DmsContent.builder()
-					.content(file.getBytes())
-					.contentSize(file.getSize())
-					.contentType(file.getContentType())
-					.originalFileName(file.getOriginalFilename())
-					.document(doc).build();
+			content = DmsContent.builder().content(file.getBytes()).contentSize(file.getSize())
+					.contentType(file.getContentType()).originalFileName(file.getOriginalFilename()).document(doc)
+					.build();
 			contentRepository.save(content);
 			doc.setContent(content);
 		} catch (IOException e) {
@@ -188,9 +195,10 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		checkIsDocumentValidForDownload(document);
 		return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getContent().getOriginalFileName() + "\"")
-                .contentType(MediaType.valueOf(document.getContent().getContentType()))
-                .body(document.getContent().getContent());
+				.header(HttpHeaders.CONTENT_DISPOSITION,
+						"attachment; filename=\"" + document.getContent().getOriginalFileName() + "\"")
+				.contentType(MediaType.valueOf(document.getContent().getContentType()))
+				.body(document.getContent().getContent());
 	}
 
 	@Override
