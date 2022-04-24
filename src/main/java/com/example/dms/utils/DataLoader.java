@@ -17,6 +17,7 @@ import com.example.dms.repositories.UserRepository;
 import com.example.dms.repositories.security.PrivilegeRepository;
 import com.example.dms.repositories.security.RoleRepository;
 import com.example.dms.services.DocumentService;
+import com.example.dms.services.FolderService;
 
 @Component
 public class DataLoader implements ApplicationRunner {
@@ -37,14 +38,33 @@ public class DataLoader implements ApplicationRunner {
 	DocumentService documentService;
 	
 	@Autowired
+	FolderService folderService;
+	
+	@Autowired
 	BCryptPasswordEncoder passwordEncoder;
 	
     @Override
 	public void run(ApplicationArguments args) {
     	
-    	
+    	DmsFolder root = null;
     	if (folderRepository.findByPath("/").isEmpty())
-    		folderRepository.save(DmsFolder.builder().path("/").build());
+    		root = folderRepository.save(DmsFolder.builder().path("/").build());
+    	
+    	// frontend test required
+    	DmsFolder child1 = null;
+    	if (folderRepository.findByPath("/child1").isEmpty())
+    		child1 = folderRepository.save(DmsFolder.builder().path("/child1").parentFolder(root).build());
+    	DmsFolder child2 = null;
+    	if (folderRepository.findByPath("/child2").isEmpty())
+    		child2 = folderRepository.save(DmsFolder.builder().path("/child2").parentFolder(root).build());
+    	
+    	DmsFolder grandchild1 = null;
+    	if (folderRepository.findByPath("/child1/grandchild1").isEmpty())
+    		grandchild1 = folderRepository.save(DmsFolder.builder().path("/child1/grandchild1").parentFolder(child1).build());
+    	
+    	DmsFolder grandchild2 = null;
+    	if (folderRepository.findByPath("/child1/grandchild2").isEmpty())
+    		grandchild2 = folderRepository.save(DmsFolder.builder().path("/child1/grandchild2").parentFolder(child1).build());
     	
     	// create privileges
     	DmsPrivilege delete = privilegeRepository.findByName(Privileges.DELETE_PRIVILEGE.name()).orElse(null);

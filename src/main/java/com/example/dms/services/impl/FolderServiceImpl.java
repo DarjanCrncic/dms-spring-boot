@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
+import com.example.dms.api.dtos.folder.FolderTreeDTO;
 import com.example.dms.api.mappers.FolderMapper;
 import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsFolder;
@@ -44,6 +45,13 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
 	public List<DmsFolderDTO> findAll() {
 		return folderMapper.entityListToDtoList(folderRepository.findAll());
+	}
+	
+	@Override
+	@PreAuthorize("hasAuthority('READ_PRIVILEGE')")
+	public FolderTreeDTO getSubfolderTree(String path) {
+		DmsFolder parentFolder = folderRepository.findByPath(getParentFolderPath(path)).orElseThrow(DmsNotFoundException::new);;
+		return folderMapper.dmsFolderToFolderTree(parentFolder);
 	}
 
 	@Override

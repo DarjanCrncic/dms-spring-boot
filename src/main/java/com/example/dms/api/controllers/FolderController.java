@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
+import com.example.dms.api.dtos.folder.FolderTreeDTO;
 import com.example.dms.api.dtos.folder.NewFolderDTO;
 import com.example.dms.services.FolderService;
 import com.example.dms.utils.exceptions.BadRequestException;
@@ -37,6 +38,11 @@ public class FolderController {
 	@GetMapping
 	public List<DmsFolderDTO> getAllFolders() {
 		return folderService.findAll();
+	}
+	
+	@GetMapping("/tree")
+	public FolderTreeDTO getFolderTreeDTO(@RequestParam String path) {
+		return folderService.getSubfolderTree(path);
 	}
 
 	@GetMapping("/search")

@@ -7,6 +7,7 @@ import org.mapstruct.factory.Mappers;
 
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.dtos.folder.DmsFolderPathDTO;
+import com.example.dms.api.dtos.folder.FolderTreeDTO;
 import com.example.dms.domain.DmsFolder;
 
 @Mapper(uses = DocumentMapper.class)
@@ -23,4 +24,8 @@ public interface FolderMapper extends MapperInterface<DmsFolder, DmsFolderDTO>  
 	List<DmsFolderPathDTO> dmsFolderListToPathDTOList(List<DmsFolder> folders);
 	
 	DmsFolderPathDTO dmsFolderToPathDTO(DmsFolder folder);
+	
+	FolderTreeDTO dmsFolderToFolderTree(DmsFolder folder);
+
+	List<FolderTreeDTO> dmsFolderListToFolderTreeList(List<DmsFolder> folders);
 }
