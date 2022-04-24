@@ -69,32 +69,16 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getTypeName()).orElse(null);
 		DmsUser creator = userRepository.findByUsername("creator").orElseThrow(() -> new DmsNotFoundException("Invalid creator user."));
 
-		persistDocumentToUser(creator, newDocumentObject);
-		persistDocumentToType(type, newDocumentObject);
+		newDocumentObject.addCreator(creator);
+		newDocumentObject.addType(type);
+		
+		newDocumentObject = documentRepository.save(newDocumentObject);
 		newDocumentObject.setRootId(newDocumentObject.getId());
 		newDocumentObject.setPredecessorId(newDocumentObject.getId());
 		
 		super.aclService.grantCreatorRights(newDocumentObject, creator.getUsername());
 		
 		return save(newDocumentObject);
-	}
-	
-	private void persistDocumentToType(DmsType type, DmsDocument document) {
-		if (type != null && !type.getDocuments().contains(document)) {
-			document.setType(type);
-			document = documentRepository.save(document);
-			type.getDocuments().add(document);
-			typeRepository.save(type);
-		}
-	}
-	
-	private void persistDocumentToUser(DmsUser user, DmsDocument document) {
-		if (!user.getDocuments().contains(document)) {
-			document.setCreator(user);
-			document = documentRepository.save(document);
-			user.getDocuments().add(document);
-			userRepository.save(user);
-		}
 	}
 
 	@Override
@@ -114,7 +98,8 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 			}
 		}
 		if (type != null) {
-			persistDocumentToType(type, doc);
+			doc.addType(type);
+			doc = documentRepository.save(doc);
 		}
 		
 		return save(doc);

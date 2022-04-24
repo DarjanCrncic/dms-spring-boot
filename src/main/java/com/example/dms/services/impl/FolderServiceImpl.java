@@ -71,7 +71,9 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 				.orElseThrow(DmsNotFoundException::new);
 		DmsFolder newFolder = DmsFolder.builder().path(path).build();
 
-		persistFolderToParentFolder(parentFolder, newFolder);
+		newFolder.addParentFolder(parentFolder);
+		newFolder = folderRepository.save(newFolder);
+		
 		super.aclService.grantCreatorRights(newFolder, "creator"); // TODO: change to principal
 		return folderMapper.entityToDto(newFolder);
 	}
@@ -116,27 +118,10 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		for (UUID documentId : documentIdList) {
 			DmsDocument doc = documentRepository.findById(documentId)
 					.orElseThrow(() -> new BadRequestException("Ivalid document id: " + documentId + "."));
-			persistDocumentToFolder(folder, doc);
-		}
-		return folderMapper.entityToDto(folder);
-	}
-	
-	private void persistDocumentToFolder(DmsFolder folder, DmsDocument document) {
-		if (!folder.getDocuments().contains(document)) {
-			document.setParentFolder(folder);
-			document = documentRepository.save(document);
-			folder.getDocuments().add(document);
+			folder.addDocument(doc);
 			folder = folderRepository.save(folder);
 		}
-	}
-	
-	private void persistFolderToParentFolder(DmsFolder parentFolder, DmsFolder newFolder) {
-		if (!parentFolder.getSubfolders().contains(newFolder)) {
-			newFolder.setParentFolder(parentFolder);
-			newFolder = folderRepository.save(newFolder);
-			parentFolder.getSubfolders().add(newFolder);
-			parentFolder = folderRepository.save(parentFolder);
-		}
+		return folderMapper.entityToDto(folder);
 	}
 	
 	// TODO: no checking permissions for documents when deleting folder

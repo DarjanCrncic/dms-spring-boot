@@ -57,4 +57,17 @@ public class DmsFolder extends BaseEntity implements AclAllowedClass{
 	@ToStringExclude
 	private List<DmsDocument> documents = new ArrayList<>();
 
+	public void addParentFolder(DmsFolder parentFolder) {
+		if (!parentFolder.getSubfolders().contains(this)) {
+			this.setParentFolder(parentFolder);
+			parentFolder.getSubfolders().add(this);
+		}
+	}
+	
+	public void addDocument(DmsDocument document) {
+		if (!this.getDocuments().contains(document)) {
+			document.setParentFolder(this);
+			this.getDocuments().add(document);
+		}
+	}
 }

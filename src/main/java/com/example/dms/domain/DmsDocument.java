@@ -86,4 +86,18 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass{
 	private boolean imutable = false;
 	@Default 
 	private int version = 1;
+	
+	public void addCreator(DmsUser creator) {
+		if (creator != null && !creator.getDocuments().contains(this) && this.getCreator() == null) {
+			this.setCreator(creator);
+			creator.getDocuments().add(this);
+		}
+	}
+	
+	public void addType(DmsType type) {
+		if (type != null && !type.getDocuments().contains(this)) {
+			this.setType(type);
+			type.getDocuments().add(this);
+		}
+	}
 }
