@@ -1,11 +1,13 @@
 package com.example.dms.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.dms.api.dtos.SortDTO;
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
@@ -25,10 +27,12 @@ public interface DocumentService extends CrudService<DmsDocument, DmsDocumentDTO
 
 	DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch);
 
-	List<DmsDocumentDTO> getAllDocuments();
+	List<DmsDocumentDTO> getAllDocuments(Optional<SortDTO> sort);
 
 	ResponseEntity<byte[]> downloadContent(UUID id);
 
-	List<DmsDocumentDTO> searchAll(String search);
+	List<DmsDocumentDTO> searchAll(String search, Optional<SortDTO> sort);
+
+	void deleteInBatch(List<UUID> ids);
 
 }

@@ -2,6 +2,7 @@ package com.example.dms.services.impl;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.dms.api.dtos.SortDTO;
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
@@ -32,6 +34,7 @@ import com.example.dms.services.DmsAclService;
 import com.example.dms.services.DocumentService;
 import com.example.dms.services.search.SpecificationBuilder;
 import com.example.dms.services.search.document.DocumentSpecProvider;
+import com.example.dms.utils.Utils;
 import com.example.dms.utils.exceptions.BadRequestException;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.InternalException;
@@ -185,8 +188,8 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
-	public List<DmsDocumentDTO> getAllDocuments() {
-		return documentMapper.entityListToDtoList(documentRepository.findAll());
+	public List<DmsDocumentDTO> getAllDocuments(Optional<SortDTO> sort) {
+		return documentMapper.entityListToDtoList(documentRepository.findAll(Utils.toSort(sort)));
 	}
 
 	@Override
@@ -203,8 +206,14 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
-	public List<DmsDocumentDTO> searchAll(String search) {
+	public List<DmsDocumentDTO> searchAll(String search, Optional<SortDTO> sort) {
 		SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
-		return documentMapper.entityListToDtoList(documentRepository.findAll(builder.parse(search)));
+		return documentMapper.entityListToDtoList(documentRepository.findAll(builder.parse(search), Utils.toSort(sort)));
+	}
+
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or @permissionEvaluator.hasPermission(#ids,'com.example.dms.domain.DmsDocument','WRITE',authentication)")
+	public void deleteInBatch(List<UUID> ids) {
+		ids.stream().forEach(documentRepository::deleteById);
 	}
 }
