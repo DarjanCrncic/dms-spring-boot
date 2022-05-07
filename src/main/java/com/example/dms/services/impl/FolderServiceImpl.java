@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 
 	@Override
+	@PostAuthorize("hasPermission(returnObject.id,'com.example.dms.domain.DmsFolder','READ')")
 	public DmsFolderDTO findByPath(String path) {
 		Optional<DmsFolder> folder = folderRepository.findByPath(path);
 		if (folder.isEmpty()) {

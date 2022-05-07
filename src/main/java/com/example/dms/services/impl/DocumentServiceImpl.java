@@ -92,7 +92,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE')")
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') && hasAuthority('WRITE_PRIVILEGE')")
 	public DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		DmsType type = typeRepository.findByTypeName(modifyDocumentDTO.getTypeName()).orElse(null);
@@ -116,7 +116,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE')")
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') && hasAuthority('WRITE_PRIVILEGE')")
 	public void uploadFile(UUID id, MultipartFile file) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (doc.isImutable()) {
@@ -172,7 +172,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject,'READ')")
+	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
 	public List<DmsDocumentDTO> getAllVersions(UUID id) {
 		return documentMapper.entityListToDtoList(documentRepository.getAllVersions(id));
 	}
@@ -184,13 +184,13 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject,'READ')")
+	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
 	public List<DmsDocumentDTO> getAllDocuments() {
 		return documentMapper.entityListToDtoList(documentRepository.findAll());
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ')")
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ') && hasAuthority('READ_PRIVILEGE')")
 	public ResponseEntity<byte[]> downloadContent(UUID id) {
 		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		checkIsDocumentValidForDownload(document);

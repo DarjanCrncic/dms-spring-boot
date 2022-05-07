@@ -77,7 +77,7 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", authorities = {"CREATE_PRIVILEGE","ROLE_ADMIN"})
+	@WithMockUser(username = "testUser", authorities = {"CREATE_PRIVILEGE","ROLE_ADMIN", "WRITE_PRIVILEGE"})
 	void testModifyWithAclWithAdmin() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
@@ -94,7 +94,7 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", roles = "USER", authorities = "CREATE_PRIVILEGE")
+	@WithMockUser(username = "testUser", roles = "USER", authorities = {"CREATE_PRIVILEGE", "WRITE_PRIVILEGE"})
 	void testModifyWithGrantedRights() {
 		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
 		
