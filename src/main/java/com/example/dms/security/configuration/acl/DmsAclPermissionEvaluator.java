@@ -30,14 +30,6 @@ public class DmsAclPermissionEvaluator extends AclPermissionEvaluator implements
 		return super.hasPermission(authentication, targetId, targetType, permission);
 	}
 	
-//	public boolean hasPermission(Authentication authentication, Collection<Object> targetDomainObjects, Object permission) {
-//        for (Object targetDomainObject : targetDomainObjects) {
-//            if (!hasPermission(authentication, targetDomainObject, permission))
-//                return false;
-//        }
-//        return true;
-//    }
-	
 	private boolean checkAuthoritiesForAdminRole(Collection<? extends GrantedAuthority> authorities) {
 		boolean retVal = false;
 		for (GrantedAuthority authority : authorities) {
@@ -53,4 +45,5 @@ public class DmsAclPermissionEvaluator extends AclPermissionEvaluator implements
 		}
 		return true;
 	}
+	
 }
