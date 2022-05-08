@@ -13,7 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -40,10 +39,9 @@ import lombok.ToString;
 @Entity
 public class DmsDocument extends BaseEntity implements AclAllowedClass{
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "creator_id")
 	@JsonIgnore
-	@NotNull
 	@Default
 	private DmsUser creator = null;
 	
@@ -69,7 +67,7 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass{
 	@JsonBackReference
 	private DmsType type = null;
 	
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "parent_folder_id")
 	@Default
 	private DmsFolder parentFolder = null;
