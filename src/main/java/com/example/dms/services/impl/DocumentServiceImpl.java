@@ -49,6 +49,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	TypeRepository typeRepository;
 	ContentRepository contentRepository;
 	FolderRepository folderRepository;
+	DmsAclService aclService;
 
 	public DocumentServiceImpl(UserRepository userRepository, DocumentRepository documentRepository,
 			DocumentMapper documentMapper, TypeRepository typeRepository, DmsAclService aclService,
@@ -60,6 +61,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		this.typeRepository = typeRepository;
 		this.contentRepository = contentRepository;
 		this.folderRepository = folderRepository;
+		this.aclService = aclService;
 	}
 
 	@Override
@@ -214,6 +216,9 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or @permissionEvaluator.hasPermission(#ids,'com.example.dms.domain.DmsDocument','WRITE',authentication)")
 	public void deleteInBatch(List<UUID> ids) {
-		ids.stream().forEach(documentRepository::deleteById);
+		ids.stream().forEach(id -> {
+			aclService.removeEntriesOnDelete(checkPresent(id)); 
+			documentRepository.deleteById(id);
+		});
 	}
 }

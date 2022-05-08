@@ -14,4 +14,5 @@ public class FolderTreeDTO {
 
 	private String path;
 	private List<FolderTreeDTO> subfolders = new ArrayList<>();
+	private int numOfDocuments;
 }

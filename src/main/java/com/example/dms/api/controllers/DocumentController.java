@@ -52,6 +52,7 @@ public class DocumentController {
 	public List<DmsDocumentDTO> getAllDocuments(@RequestParam Optional<String> search, Optional<SortDTO> sort) {
 		log.debug("sort data: {}", sort.toString());
 		if (search.isPresent()) {
+			log.debug("search: {}", search.get());
 			return documentService.searchAll(search.get(), sort);
 		}
 		return documentService.getAllDocuments(sort);

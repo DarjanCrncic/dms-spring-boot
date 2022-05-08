@@ -103,11 +103,7 @@ public class DmsAclServiceImpl implements DmsAclService {
 			return;
 		}
 		
-		for (int i = acl.getEntries().size() - 1; i >= 0; i--) {
-			AccessControlEntry entry = acl.getEntries().get(i);
-			log.debug("object deleted, revoking user '{}' right on document: {}", entry.getSid(), entry.getPermission());
-			acl.deleteAce(i);
-		}
+		aclService.deleteAcl(acl.getObjectIdentity(), true);
 	}
 
 }

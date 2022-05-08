@@ -183,4 +183,12 @@ class FolderServiceIT {
 		
 		assertEquals(1, subFolderPerm.getDocuments().size());
 	}
+	
+	@Test
+	@DisplayName("Test delete folder with security.")
+	@WithUserDetails("creator")
+	void deleteFolderWithDocuments() {
+		assertDoesNotThrow(() -> folderService.delete(folderObject));
+	}
+
 }

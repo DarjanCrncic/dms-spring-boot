@@ -51,7 +51,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	@Override
 	@PreAuthorize("hasAuthority('READ_PRIVILEGE')")
 	public FolderTreeDTO getSubfolderTree(String path) {
-		DmsFolder parentFolder = folderRepository.findByPath(getParentFolderPath(path)).orElseThrow(DmsNotFoundException::new);;
+		DmsFolder parentFolder = folderRepository.findByPath(getParentFolderPath(path)).orElseThrow(DmsNotFoundException::new);
 		return folderMapper.dmsFolderToFolderTree(parentFolder);
 	}
 

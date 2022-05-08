@@ -64,7 +64,7 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends Base
 		repository.deleteById(id);
 	}
 	
-	private T checkPresent(UUID id) {
+	protected T checkPresent(UUID id) {
 		Optional<T> entity = repository.findById(id);
 		if (!entity.isPresent())
 			throw new DmsNotFoundException("The entity with given id: '" + id + "' does not exist.");

@@ -8,8 +8,10 @@ import java.util.regex.Pattern;
 import org.springframework.data.jpa.domain.Specification;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @AllArgsConstructor
+@Log4j2
 public class SpecificationBuilder<T> {
 	
 	public static final String OR_OPERATOR = "~";
@@ -41,12 +43,12 @@ public class SpecificationBuilder<T> {
         	else
         		result = Specification.where(result).and(specs.get(i));
         }       
-        
+        log.debug(result);
         return result;
     }
     
     public Specification<T> parse(String search) {
-		Pattern pattern = Pattern.compile("(\\w+?)(:|<|>|!|<=|>=)(\\w+?)(,|~)");
+		Pattern pattern = Pattern.compile("([\\w|\\/]+?)(:|<|>|!|<=|>=)([\\w|\\/]+?)(,|~|$)");
         Matcher matcher = pattern.matcher(search + AND_OPERATOR);
         while (matcher.find()) {
             this.with(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4));
