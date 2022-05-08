@@ -20,6 +20,7 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 	DocumentMapper INSTANCE = Mappers.getMapper(DocumentMapper.class);
 	
 	@Override
+	@Mapping(target = "parentFolder", expression = "java(document.getParentFolder().getPath())")
 	DmsDocumentDTO entityToDto(DmsDocument document);
 	
 	@Mapping(target = "type", ignore = true)

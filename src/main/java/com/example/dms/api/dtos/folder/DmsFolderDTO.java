@@ -26,7 +26,7 @@ public class DmsFolderDTO implements BaseEntityDTO {
 	private String path;
 	private DmsFolderDTO parentFolder;
 	@Default
-	private List<DmsFolderPathDTO> subfolders = new ArrayList<>();
+	private List<String> subfolders = new ArrayList<>();
 	@Default
 	private List<DmsDocumentDTO> documents  = new ArrayList<>();
 }

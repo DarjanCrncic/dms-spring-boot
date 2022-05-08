@@ -127,7 +127,7 @@ class FolderServiceIT {
 				.save(DmsDocument.builder().creator(user).objectName("TestTest").description("Ovo je test u testu")
 						.parentFolder(folderRepository.findById(folder.getId()).orElse(null)).build());
 
-		assertEquals(folder.getPath(), newDocument.getParentFolder().getPath());
+		assertEquals(folder.getPath(), newDocument.getParentFolder());
 
 		folderService.deleteById(folder.getId());
 		

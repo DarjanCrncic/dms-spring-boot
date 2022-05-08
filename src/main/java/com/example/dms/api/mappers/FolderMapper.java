@@ -7,7 +7,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
-import com.example.dms.api.dtos.folder.DmsFolderPathDTO;
 import com.example.dms.api.dtos.folder.FolderTreeDTO;
 import com.example.dms.domain.DmsFolder;
 
@@ -19,13 +18,15 @@ public interface FolderMapper extends MapperInterface<DmsFolder, DmsFolderDTO>  
 	@Override
 	DmsFolderDTO entityToDto(DmsFolder folder);
 	
+	List<String> foldersToPaths(List<DmsFolder> folders);
+	
+	default String folderToPath(DmsFolder folder) {
+		return folder.getPath();
+	}
+	
 	@Override
 	List<DmsFolderDTO> entityListToDtoList(List<DmsFolder> folders);
 
-	List<DmsFolderPathDTO> dmsFolderListToPathDTOList(List<DmsFolder> folders);
-	
-	DmsFolderPathDTO dmsFolderToPathDTO(DmsFolder folder);
-	
 	@Mapping(target="numOfDocuments", expression = "java(folder.getDocuments().size())")
 	FolderTreeDTO dmsFolderToFolderTree(DmsFolder folder);
 
