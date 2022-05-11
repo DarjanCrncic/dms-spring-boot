@@ -15,5 +15,6 @@ public class DocumentFileDTO {
 	private String urlToFile;
 	private String contentType;
 	private long contentSize;
+	private String originalFileName;
 	
 }

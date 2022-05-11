@@ -72,7 +72,7 @@ public class DocumentController {
 		documentService.uploadFile(id, file);
 		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
 				.path("/api/v1/documents/download" + id).toUriString();
-		return new DocumentFileDTO(id, fileDownloadUri, file.getContentType(), file.getSize());
+		return new DocumentFileDTO(id, fileDownloadUri, file.getContentType(), file.getSize(), file.getOriginalFilename());
 	}
 
 	@GetMapping("/{id}")

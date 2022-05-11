@@ -204,6 +204,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 				.header(HttpHeaders.CONTENT_DISPOSITION,
 						"attachment; filename=\"" + document.getContent().getOriginalFileName() + "\"")
 				.contentType(MediaType.valueOf(document.getContent().getContentType()))
+				.header("File-Name", document.getContent().getOriginalFileName())
 				.body(document.getContent().getContent());
 	}
 
