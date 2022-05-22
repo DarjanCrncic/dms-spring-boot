@@ -133,7 +133,7 @@ public class DataLoader implements ApplicationRunner {
     	} 
     	DmsUser admin = DmsUser.builder().username("admin").password(dummyPassword).firstName("adminF").lastName("adminL").email("admin.admin@gmail.com")
     			.roles(Arrays.asList(adminRole)).build();	
-    	if (userRepository.findByUsername("dmsadmin").isEmpty()) {
+    	if (userRepository.findByUsername("admin").isEmpty()) {
     		userRepository.save(admin);
     	} 
     }
