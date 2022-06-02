@@ -76,6 +76,12 @@ public class DmsUser extends BaseEntity {
 	@JsonIgnore
 	@Default
 	private List<DmsDocument> documents = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "user")
+	@ToString.Exclude
+	@JsonIgnore
+	@Default
+	private List<DmsDocumentColumnPreference> documentColumnPreferences = new ArrayList<>();
 
 	@ManyToMany
 	@Default
