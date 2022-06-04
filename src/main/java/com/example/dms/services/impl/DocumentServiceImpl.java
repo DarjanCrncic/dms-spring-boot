@@ -76,12 +76,13 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
 		
 		// TODO: REplace with throws
-		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getTypeName()).orElse(null);
+		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getType()).orElse(null);
 		DmsUser creator = userRepository.findByUsername(newDocumentDTO.getUsername()).orElseThrow(() -> new DmsNotFoundException("Invalid user."));
 		DmsFolder folder = folderRepository.findByPath("/").orElseThrow(() -> new InternalException("Root folder not set up."));
 		
-		if(newDocumentDTO.getFolderPath() != null && !newDocumentDTO.getFolderPath().isEmpty()) {
-			folder = folderRepository.findByPath(newDocumentDTO.getFolderPath()).orElseThrow(() -> new DmsNotFoundException("Invalid parent folder."));
+		String path = newDocumentDTO.getParentFolder();
+		if(path != null && !path.isEmpty()) {
+			folder = folderRepository.findByPath(path).orElseThrow(() -> new DmsNotFoundException("Invalid parent folder."));
 		}
 		newDocumentObject.addParentFolder(folder);
 		newDocumentObject.addCreator(creator);
@@ -101,7 +102,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	public DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		// TODO: replace with throws
-		DmsType type = typeRepository.findByTypeName(modifyDocumentDTO.getTypeName()).orElse(null);
+		DmsType type = typeRepository.findByTypeName(modifyDocumentDTO.getType()).orElse(null);
 		if (doc.isImutable()) {
 			throw new BadRequestException("This version of the document is immutable and cannot be modified.");
 		}

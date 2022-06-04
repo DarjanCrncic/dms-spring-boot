@@ -62,11 +62,11 @@ class DocumentSearchIT {
 	void setUp() {
 		type = typeRepository.save(DmsType.builder().typeName(typeName).build());
 		newDocument = documentService.createDocument(NewDocumentDTO.builder().objectName("TestTest")
-				.description("Ovo je test u testu").typeName(typeName).username("creator").build());
+				.description("Ovo je test u testu").type(typeName).username("creator").build());
 		newDocument2 = documentService.createDocument(NewDocumentDTO.builder().objectName("Test2")
-				.description("Ovo je test u testu 2").typeName(typeName).username("creator").build());
+				.description("Ovo je test u testu 2").type(typeName).username("creator").build());
 		newDocument3 = documentService.createDocument(NewDocumentDTO.builder().objectName("Test3")
-				.description("Ovo je test u testu 3").typeName(typeName).username("creator").build());
+				.description("Ovo je test u testu 3").type(typeName).username("creator").build());
 	}
 
 	@AfterEach

@@ -69,7 +69,7 @@ class DocumentServiceIT {
 	void setUp() {
 		type = typeRepository.save(DmsType.builder().typeName(typeName).build());
 		newDocument = documentService.createDocument(
-				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").typeName(typeName).username("creator").build());
+				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").type(typeName).username("creator").build());
 	}
 
 	@AfterEach
@@ -100,7 +100,7 @@ class DocumentServiceIT {
 	void testTypeBinding() {
 		type = typeRepository.findByTypeName(typeName).orElse(null);
 		
-		assertEquals(type.getTypeName(), newDocument.getType().getTypeName());
+		assertEquals(type.getTypeName(), newDocument.getType());
 		assertEquals(type.getTypeName(), typeName);
 		assertThat(type.getDocuments()).hasSize(1);
 	}

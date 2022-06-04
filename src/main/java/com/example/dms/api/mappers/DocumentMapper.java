@@ -14,13 +14,14 @@ import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.domain.DmsDocument;
 
-@Mapper(uses = {UserMapper.class, TypeMapper.class, ContentMapper.class})
+@Mapper(uses = {UserMapper.class, ContentMapper.class})
 public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocumentDTO> {
 
 	DocumentMapper INSTANCE = Mappers.getMapper(DocumentMapper.class);
 	
 	@Override
 	@Mapping(target = "parentFolder", expression = "java(document.getParentFolder().getPath())")
+	@Mapping(target = "type", source = "document.type.typeName")
 	DmsDocumentDTO entityToDto(DmsDocument document);
 	
 	@Mapping(target = "type", ignore = true)

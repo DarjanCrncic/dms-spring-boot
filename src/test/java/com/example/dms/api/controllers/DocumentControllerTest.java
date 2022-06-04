@@ -105,13 +105,13 @@ class DocumentControllerTest {
 				.imutable(false).type(type).build();
 
 		newDocumentDTO = NewDocumentDTO.builder().objectName("testni").description("testni dokument za test")
-				.keywords(Arrays.asList(new String[] { "prvi", "drugi" })).typeName(type.getTypeName()).username("admin").build();
+				.keywords(Arrays.asList(new String[] { "prvi", "drugi" })).type(type.getTypeName()).username("admin").build();
 		validDocumentDTO = DmsDocumentDTO.builder().objectName("testni").description("testni dokument za test")
-				.keywords(Arrays.asList(new String[] { "prvi", "drugi" })).type(typeDTO).build();
+				.keywords(Arrays.asList(new String[] { "prvi", "drugi" })).type(typeDTO.getTypeName()).build();
 
 		modifyDocumentDTO = ModifyDocumentDTO.builder().objectName("modifiedDoc")
 				.description("this is the modified doc").keywords(Arrays.asList(new String[] { "prvi", "drugi" }))
-				.typeName("tajni").build();
+				.type("tajni").build();
 	}
 
 	@Test

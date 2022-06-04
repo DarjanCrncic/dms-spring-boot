@@ -2,46 +2,38 @@ package com.example.dms.utils;
 
 import java.util.Arrays;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.example.dms.domain.DmsFolder;
+import com.example.dms.domain.DmsType;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.domain.security.DmsPrivilege;
 import com.example.dms.domain.security.DmsRole;
 import com.example.dms.repositories.FolderRepository;
+import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.repositories.security.PrivilegeRepository;
 import com.example.dms.repositories.security.RoleRepository;
 import com.example.dms.services.DocumentService;
 import com.example.dms.services.FolderService;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class DataLoader implements ApplicationRunner {
 
-	@Autowired
-	UserRepository userRepository;
-	
-	@Autowired
-	FolderRepository folderRepository;
-	
-	@Autowired
-	RoleRepository roleRepository;
-	
-	@Autowired
-	PrivilegeRepository privilegeRepository;
-	
-	@Autowired
-	DocumentService documentService;
-	
-	@Autowired
-	FolderService folderService;
-	
-	@Autowired
-	BCryptPasswordEncoder passwordEncoder;
+	private final UserRepository userRepository;
+	private final FolderRepository folderRepository;
+	private final RoleRepository roleRepository;
+	private final PrivilegeRepository privilegeRepository;
+	private final DocumentService documentService;
+	private final FolderService folderService;
+	private final BCryptPasswordEncoder passwordEncoder;
+	private final TypeRepository typeRepository;
 	
     @Override
 	public void run(ApplicationArguments args) {
@@ -136,5 +128,9 @@ public class DataLoader implements ApplicationRunner {
     	if (userRepository.findByUsername("admin").isEmpty()) {
     		userRepository.save(admin);
     	} 
+    	
+    	if (!typeRepository.existsByTypeName("document")) {
+    		typeRepository.save(DmsType.builder().typeName("document").build());
+    	}
     }
 }

@@ -27,5 +27,5 @@ public class ModifyDocumentDTO {
 	
 	private List<String> keywords;
 	
-	private String typeName;
+	private String type;
 }

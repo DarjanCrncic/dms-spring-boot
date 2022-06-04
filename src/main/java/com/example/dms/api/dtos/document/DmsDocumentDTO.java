@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import com.example.dms.api.dtos.BaseEntityDTO;
 import com.example.dms.api.dtos.content.DmsContentDTO;
-import com.example.dms.api.dtos.type.DmsTypeDTO;
 import com.example.dms.api.dtos.user.DmsUserDTO;
 
 import lombok.AllArgsConstructor;
@@ -29,7 +28,7 @@ public class DmsDocumentDTO implements BaseEntityDTO {
 	private String objectName;
 	private String description;
 	private DmsUserDTO creator;
-	private DmsTypeDTO type;
+	private String type;
 	@Default
 	private List<String> keywords = new ArrayList<>();
 	private String parentFolder;

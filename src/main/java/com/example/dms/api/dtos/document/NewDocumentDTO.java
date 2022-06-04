@@ -23,9 +23,9 @@ public class NewDocumentDTO {
 	
 	private List<String> keywords;
 	
-	private String typeName;
+	private String type;
 	
-	private String folderPath;
+	private String parentFolder;
 	
 	private String username;
 }
