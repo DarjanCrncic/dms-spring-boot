@@ -69,7 +69,7 @@ class DocumentServiceIT {
 	void setUp() {
 		type = typeRepository.save(DmsType.builder().typeName(typeName).build());
 		newDocument = documentService.createDocument(
-				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").typeName(typeName).build());
+				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").typeName(typeName).username("creator").build());
 	}
 
 	@AfterEach

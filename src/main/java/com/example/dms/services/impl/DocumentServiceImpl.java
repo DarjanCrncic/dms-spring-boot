@@ -73,19 +73,17 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	@Override
 	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
 	public DmsDocumentDTO createDocument(NewDocumentDTO newDocumentDTO) {
-		// TODO: Remove hardcoded user.
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
 		
-		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getTypeName()).orElse(null);
 		// TODO: REplace with throws
-		DmsUser creator = userRepository.findByUsername("creator").orElseThrow(() -> new DmsNotFoundException("Invalid creator user."));
+		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getTypeName()).orElse(null);
+		DmsUser creator = userRepository.findByUsername(newDocumentDTO.getUsername()).orElseThrow(() -> new DmsNotFoundException("Invalid user."));
 		DmsFolder folder = folderRepository.findByPath("/").orElseThrow(() -> new InternalException("Root folder not set up."));
 		
 		if(newDocumentDTO.getFolderPath() != null && !newDocumentDTO.getFolderPath().isEmpty()) {
 			folder = folderRepository.findByPath(newDocumentDTO.getFolderPath()).orElseThrow(() -> new DmsNotFoundException("Invalid parent folder."));
 		}
 		newDocumentObject.addParentFolder(folder);
-
 		newDocumentObject.addCreator(creator);
 		newDocumentObject.addType(type);
 		
@@ -102,6 +100,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') && hasAuthority('WRITE_PRIVILEGE')")
 	public DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
+		// TODO: replace with throws
 		DmsType type = typeRepository.findByTypeName(modifyDocumentDTO.getTypeName()).orElse(null);
 		if (doc.isImutable()) {
 			throw new BadRequestException("This version of the document is immutable and cannot be modified.");

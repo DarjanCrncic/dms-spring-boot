@@ -26,4 +26,6 @@ public class NewDocumentDTO {
 	private String typeName;
 	
 	private String folderPath;
+	
+	private String username;
 }

@@ -55,7 +55,7 @@ class SecurityAclIT {
 	@BeforeEach
 	void setUp() {
 		newDocument = documentService.createDocument(
-				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").build());
+				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").username("creator").build());
 		doc = documentRepository.findById(newDocument.getId()).orElse(null);
 	}
 	

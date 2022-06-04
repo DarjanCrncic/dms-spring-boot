@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -28,6 +29,7 @@ import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.DocumentFileDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
+import com.example.dms.security.DmsUserDetails;
 import com.example.dms.services.DocumentService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
@@ -44,7 +46,9 @@ public class DocumentController {
 
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
-	public DmsDocumentDTO createNewDocument(@Valid @RequestBody NewDocumentDTO newDocumentDTO) {
+	public DmsDocumentDTO createNewDocument(@Valid @RequestBody NewDocumentDTO newDocumentDTO,
+			@AuthenticationPrincipal DmsUserDetails userDetails) {
+		newDocumentDTO.setUsername(userDetails.getUsername());
 		return documentService.createDocument(newDocumentDTO);
 	}
 
@@ -60,9 +64,12 @@ public class DocumentController {
 
 	@PostMapping("/batch")
 	@ResponseStatus(value = HttpStatus.CREATED)
-	public List<DmsDocumentDTO> createNewDocumentInBatch(@Valid @RequestBody List<NewDocumentDTO> newDocumentDTOList) {
-		return newDocumentDTOList.stream()
-				.map(documentDTO -> documentService.createDocument(documentDTO)).collect(Collectors.toList());
+	public List<DmsDocumentDTO> createNewDocumentInBatch(@Valid @RequestBody List<NewDocumentDTO> newDocumentDTOList,
+			@AuthenticationPrincipal DmsUserDetails userDetails) {
+		return newDocumentDTOList.stream().map(documentDTO -> {
+			documentDTO.setUsername(userDetails.getUsername());
+			return documentService.createDocument(documentDTO);
+		}).collect(Collectors.toList());
 	}
 
 	@PostMapping("/upload/{id}")
@@ -72,7 +79,8 @@ public class DocumentController {
 		documentService.uploadFile(id, file);
 		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
 				.path("/api/v1/documents/download" + id).toUriString();
-		return new DocumentFileDTO(id, fileDownloadUri, file.getContentType(), file.getSize(), file.getOriginalFilename());
+		return new DocumentFileDTO(id, fileDownloadUri, file.getContentType(), file.getSize(),
+				file.getOriginalFilename());
 	}
 
 	@GetMapping("/{id}")
@@ -101,7 +109,7 @@ public class DocumentController {
 	public void deleteDocumentById(@PathVariable UUID id) {
 		documentService.deleteById(id);
 	}
-	
+
 	@DeleteMapping
 	public void deleteMultipleDocuments(@RequestParam List<UUID> ids) {
 		documentService.deleteInBatch(ids);

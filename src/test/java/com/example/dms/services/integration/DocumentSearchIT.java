@@ -30,7 +30,8 @@ import com.example.dms.services.search.document.DocumentSpecification;
 
 @SpringBootTest
 @ContextConfiguration
-@WithMockUser(authorities = {"ROLE_ADMIN","CREATE_PRIVILEGE","VERSION_PRIVILEGE","READ_PRIVILEGE","WRITE_PRIVILEGE","DELETE_PRIVILEGE"})
+@WithMockUser(authorities = { "ROLE_ADMIN", "CREATE_PRIVILEGE", "VERSION_PRIVILEGE", "READ_PRIVILEGE",
+		"WRITE_PRIVILEGE", "DELETE_PRIVILEGE" })
 class DocumentSearchIT {
 
 	@Autowired
@@ -41,13 +42,13 @@ class DocumentSearchIT {
 
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	DocumentRepository documentRepository;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	TypeRepository typeRepository;
 
@@ -56,16 +57,16 @@ class DocumentSearchIT {
 	DmsDocumentDTO updatedDocument;
 	DmsType type;
 	String typeName = "testni-tip";
-	
+
 	@BeforeEach
 	void setUp() {
 		type = typeRepository.save(DmsType.builder().typeName(typeName).build());
-		newDocument = documentService.createDocument(
-				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").typeName(typeName).build());
-		newDocument2 = documentService.createDocument(
-				NewDocumentDTO.builder().objectName("Test2").description("Ovo je test u testu 2").typeName(typeName).build());
-		newDocument3 = documentService.createDocument(
-				NewDocumentDTO.builder().objectName("Test3").description("Ovo je test u testu 3").typeName(typeName).build());
+		newDocument = documentService.createDocument(NewDocumentDTO.builder().objectName("TestTest")
+				.description("Ovo je test u testu").typeName(typeName).username("creator").build());
+		newDocument2 = documentService.createDocument(NewDocumentDTO.builder().objectName("Test2")
+				.description("Ovo je test u testu 2").typeName(typeName).username("creator").build());
+		newDocument3 = documentService.createDocument(NewDocumentDTO.builder().objectName("Test3")
+				.description("Ovo je test u testu 3").typeName(typeName).username("creator").build());
 	}
 
 	@AfterEach
@@ -78,9 +79,9 @@ class DocumentSearchIT {
 			documentRepository.deleteById(newDocument3.getId());
 		if (newVersion != null && documentRepository.existsById(newVersion.getId()))
 			documentRepository.deleteById(newVersion.getId());
-		if (updatedDocument != null && documentRepository.existsById(updatedDocument.getId())) 
+		if (updatedDocument != null && documentRepository.existsById(updatedDocument.getId()))
 			documentRepository.deleteById(updatedDocument.getId());
-		if (type != null && typeRepository.existsById(type.getId())) 
+		if (type != null && typeRepository.existsById(type.getId()))
 			typeRepository.delete(type);
 	}
 
@@ -88,49 +89,52 @@ class DocumentSearchIT {
 	@DisplayName("Test search with search criteria.")
 	@WithUserDetails("creator")
 	void testSearchCriteria() {
-		DocumentSpecification spec1 = new DocumentSpecification(new SearchCriteria("object_name", ":", "TestTest", ","));
+		DocumentSpecification spec1 = new DocumentSpecification(
+				new SearchCriteria("object_name", ":", "TestTest", ","));
 		DocumentSpecification spec2 = new DocumentSpecification(new SearchCriteria("creator", ":", "creator", ","));
-		
+
 		assertEquals(1, documentRepository.findAll(Specification.where(spec1).and(spec2)).size());
 	}
-	
+
 	@Test
 	@DisplayName("Test search with search criteria - no results found.")
 	@WithUserDetails("creator")
 	void testSearchCriteriaNotFound() {
-		DocumentSpecification spec1 = new DocumentSpecification(new SearchCriteria("object_name", ":", "TestTestaaa", ","));
-		DocumentSpecification spec2 = new DocumentSpecification(new SearchCriteria("description", ":", "testaaaaa", ","));
-		
+		DocumentSpecification spec1 = new DocumentSpecification(
+				new SearchCriteria("object_name", ":", "TestTestaaa", ","));
+		DocumentSpecification spec2 = new DocumentSpecification(
+				new SearchCriteria("description", ":", "testaaaaa", ","));
+
 		assertEquals(0, documentRepository.findAll(Specification.where(spec1).and(spec2)).size());
 	}
-	
+
 	@Test
 	@DisplayName("Test specification builder.")
 	@WithUserDetails("creator")
 	void testSpecificationBuilder() {
 		SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
 		Specification<DmsDocument> spec = builder.parse("object_name:TestTest,creator:creator");
-		
+
 		assertEquals(1, documentRepository.findAll(spec).size());
 	}
-	
+
 	@Test
 	@DisplayName("Test specification builder with more documents.")
 	@WithUserDetails("creator")
 	void testSpecificationBuilderMoreDocuments() {
 		SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
 		Specification<DmsDocument> spec = builder.parse("object_name:Test3,creator:creator~object_name:Test2");
-		
+
 		assertEquals(2, documentRepository.findAll(spec).size());
 	}
-	
+
 	@Test
 	@DisplayName("Test specification builder with type.")
 	@WithUserDetails("creator")
 	void testSpecificationBuilderType() {
 		SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
 		Specification<DmsDocument> spec = builder.parse("type:testni-tip");
-		
+
 		assertEquals(3, documentRepository.findAll(spec).size());
 	}
 }

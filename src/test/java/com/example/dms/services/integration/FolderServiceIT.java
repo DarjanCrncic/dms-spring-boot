@@ -42,10 +42,10 @@ import com.example.dms.utils.exceptions.DmsNotFoundException;
 
 @SpringBootTest
 @ContextConfiguration
-@WithMockUser(authorities = {"ROLE_ADMIN","CREATE_PRIVILEGE"})
-@TestInstance(Lifecycle.PER_CLASS) // DEBUGGING WITH H2 
+@WithMockUser(authorities = { "ROLE_ADMIN", "CREATE_PRIVILEGE" })
+@TestInstance(Lifecycle.PER_CLASS) // DEBUGGING WITH H2
 class FolderServiceIT {
-	
+
 	@Autowired
 	FolderMapper folderMapper;
 
@@ -60,17 +60,17 @@ class FolderServiceIT {
 
 	@Autowired
 	DocumentService documentService;
-	
+
 	@Autowired
 	DocumentRepository documentRepository;
 
 //  DEBUGGING WITH H2 
 	@Autowired
 	DataSource dataSource;
+
 	@BeforeAll
 	public void initTest() throws SQLException {
-	    Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082")
-	    .start();
+		Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082").start();
 	}
 
 	DmsUser user;
@@ -87,10 +87,9 @@ class FolderServiceIT {
 		folder = folderService.createFolder("/test");
 		subFolder = folderService.createFolder("/test/inside");
 		folderObject = folderRepository.findById(folder.getId()).orElse(null);
-		newDocument = documentRepository.save(
-				DmsDocument.builder().objectName("TestTest").description("Ovo je test u testu").creator(user)
-					.parentFolder(folderObject).build());
-		
+		newDocument = documentRepository.save(DmsDocument.builder().objectName("TestTest")
+				.description("Ovo je test u testu").creator(user).parentFolder(folderObject).build());
+
 	}
 
 	@AfterEach
@@ -130,10 +129,10 @@ class FolderServiceIT {
 		assertEquals(folder.getPath(), newDocument.getParentFolder());
 
 		folderService.deleteById(folder.getId());
-		
+
 		UUID subFolderId = subFolder.getId();
 		UUID newDocumentId = newDocument.getId();
-		
+
 		assertThrows(DmsNotFoundException.class, () -> folderService.findById(subFolderId));
 		assertThrows(DmsNotFoundException.class, () -> documentService.findById(newDocumentId));
 	}
@@ -157,33 +156,35 @@ class FolderServiceIT {
 		subFolder = folderService.findById(subFolder.getId());
 		assertEquals("/renamed", subFolder.getParentFolder().getPath());
 	}
-	
+
 	@Test
 	@DisplayName("Test moving documents from folder to folder.")
 	void moveDocumentToDifferentFolder() {
 		folder = folderService.findById(folder.getId());
 		assertEquals(1, folder.getDocuments().size());
-		
+
 		subFolder = folderService.moveFilesToFolder(subFolder.getId(), Arrays.asList(newDocument.getId()));
 		folder = folderService.findById(folder.getId());
 
 		assertEquals(0, folder.getDocuments().size());
 		assertEquals(1, subFolder.getDocuments().size());
 	}
-	
+
 	@Test
 	@DisplayName("Test moving documents from folder to folder with security.")
 	@WithUserDetails("creator")
 	void moveDocumentToDifferentFolderSecurityTest() {
 		DmsFolderDTO subFolderPerm = folderService.createFolder("/test/perm");
-		documentWithPermissions = documentService.createDocument(NewDocumentDTO.builder().objectName("Permissions").description("Test with permission").build());
-		subFolderPerm = folderService.moveFilesToFolder(subFolderPerm.getId(), Arrays.asList(documentWithPermissions.getId()));
-		
+		documentWithPermissions = documentService.createDocument(
+				NewDocumentDTO.builder().objectName("Permissions").description("Test with permission").username("creator").build());
+		subFolderPerm = folderService.moveFilesToFolder(subFolderPerm.getId(),
+				Arrays.asList(documentWithPermissions.getId()));
+
 		folder = folderService.findById(folder.getId());
-		
+
 		assertEquals(1, subFolderPerm.getDocuments().size());
 	}
-	
+
 	@Test
 	@DisplayName("Test delete folder with security.")
 	@WithUserDetails("creator")
