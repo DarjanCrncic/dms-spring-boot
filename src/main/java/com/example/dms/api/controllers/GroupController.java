@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,12 +23,14 @@ import com.example.dms.api.dtos.group.NewGroupDTO;
 import com.example.dms.services.GroupService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/v1/groups")
+@RequiredArgsConstructor
 public class GroupController {
 
-	@Autowired
-	GroupService groupService;
+	private final GroupService groupService;
 
 	@GetMapping
 	public List<DmsGroupDTO> getAllGroups() {

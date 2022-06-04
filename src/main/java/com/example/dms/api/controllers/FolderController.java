@@ -24,17 +24,15 @@ import com.example.dms.api.dtos.folder.NewFolderDTO;
 import com.example.dms.services.FolderService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/v1/folders")
+@RequiredArgsConstructor
 public class FolderController {
 
-	FolderService folderService;
+	private final FolderService folderService;
 
-	public FolderController(FolderService folderService) {
-		super();
-		this.folderService = folderService;
-	}
-	
 	@GetMapping
 	public List<DmsFolderDTO> getAllFolders() {
 		return folderService.findAll();

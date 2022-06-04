@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,15 +31,16 @@ import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.services.DocumentService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @RestController
 @RequestMapping("/api/v1/documents")
+@RequiredArgsConstructor
 @Log4j2
 public class DocumentController {
 
-	@Autowired
-	DocumentService documentService;
+	private final DocumentService documentService;
 
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
