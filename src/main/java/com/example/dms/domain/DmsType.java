@@ -10,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.example.dms.utils.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -29,7 +30,7 @@ import lombok.NoArgsConstructor;
 public class DmsType extends BaseEntity{
 	
 	@NotEmpty
-	@Length(min = 5, max = 32)
+	@Length(min = Constants.MINLENGTH, max = Constants.MAXLENGTH)
 	@Column(unique = true)
 	private String typeName;
 	

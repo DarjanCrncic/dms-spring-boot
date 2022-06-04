@@ -77,6 +77,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
 		
 		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getTypeName()).orElse(null);
+		// TODO: REplace with throws
 		DmsUser creator = userRepository.findByUsername("creator").orElseThrow(() -> new DmsNotFoundException("Invalid creator user."));
 		DmsFolder folder = folderRepository.findByPath("/").orElseThrow(() -> new InternalException("Root folder not set up."));
 		

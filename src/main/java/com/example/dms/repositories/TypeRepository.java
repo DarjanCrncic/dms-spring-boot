@@ -10,4 +10,6 @@ import com.example.dms.domain.DmsType;
 public interface TypeRepository extends JpaRepository<DmsType, UUID> {
  
 	Optional<DmsType> findByTypeName(String typeName);
+
+	boolean existsByTypeName(String typeName);
 }
