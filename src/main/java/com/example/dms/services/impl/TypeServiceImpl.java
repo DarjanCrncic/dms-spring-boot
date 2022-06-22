@@ -15,7 +15,7 @@ import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @Service
 @Transactional
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 public class TypeServiceImpl extends EntityCrudServiceImpl<DmsType, DmsTypeDTO> implements TypeService {
 
 	private final TypeRepository typeRepository;

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
@@ -30,8 +29,7 @@ import com.example.dms.services.search.document.DocumentSpecification;
 
 @SpringBootTest
 @ContextConfiguration
-@WithMockUser(authorities = { "ROLE_ADMIN", "CREATE_PRIVILEGE", "VERSION_PRIVILEGE", "READ_PRIVILEGE",
-		"WRITE_PRIVILEGE", "DELETE_PRIVILEGE" })
+@WithMockUser(username = "user", authorities = {"CREATE_PRIVILEGE", "READ_PRIVILEGE", "WRITE_PRIVILEGE"})
 class DocumentSearchIT {
 
 	@Autowired
@@ -62,11 +60,11 @@ class DocumentSearchIT {
 	void setUp() {
 		type = typeRepository.save(DmsType.builder().typeName(typeName).build());
 		newDocument = documentService.createDocument(NewDocumentDTO.builder().objectName("TestTest")
-				.description("Ovo je test u testu").type(typeName).username("creator").build());
+				.description("Ovo je test u testu").type(typeName).username("user").build());
 		newDocument2 = documentService.createDocument(NewDocumentDTO.builder().objectName("Test2")
-				.description("Ovo je test u testu 2").type(typeName).username("creator").build());
+				.description("Ovo je test u testu 2").type(typeName).username("user").build());
 		newDocument3 = documentService.createDocument(NewDocumentDTO.builder().objectName("Test3")
-				.description("Ovo je test u testu 3").type(typeName).username("creator").build());
+				.description("Ovo je test u testu 3").type(typeName).username("user").build());
 	}
 
 	@AfterEach
@@ -87,18 +85,16 @@ class DocumentSearchIT {
 
 	@Test
 	@DisplayName("Test search with search criteria.")
-	@WithUserDetails("creator")
 	void testSearchCriteria() {
 		DocumentSpecification spec1 = new DocumentSpecification(
 				new SearchCriteria("object_name", ":", "TestTest", ","));
-		DocumentSpecification spec2 = new DocumentSpecification(new SearchCriteria("creator", ":", "creator", ","));
+		DocumentSpecification spec2 = new DocumentSpecification(new SearchCriteria("creator", ":", "user", ","));
 
 		assertEquals(1, documentRepository.findAll(Specification.where(spec1).and(spec2)).size());
 	}
 
 	@Test
 	@DisplayName("Test search with search criteria - no results found.")
-	@WithUserDetails("creator")
 	void testSearchCriteriaNotFound() {
 		DocumentSpecification spec1 = new DocumentSpecification(
 				new SearchCriteria("object_name", ":", "TestTestaaa", ","));
@@ -110,27 +106,24 @@ class DocumentSearchIT {
 
 	@Test
 	@DisplayName("Test specification builder.")
-	@WithUserDetails("creator")
 	void testSpecificationBuilder() {
 		SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
-		Specification<DmsDocument> spec = builder.parse("object_name:TestTest,creator:creator");
+		Specification<DmsDocument> spec = builder.parse("object_name:TestTest,creator:user");
 
 		assertEquals(1, documentRepository.findAll(spec).size());
 	}
 
 	@Test
 	@DisplayName("Test specification builder with more documents.")
-	@WithUserDetails("creator")
 	void testSpecificationBuilderMoreDocuments() {
 		SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
-		Specification<DmsDocument> spec = builder.parse("object_name:Test3,creator:creator~object_name:Test2");
+		Specification<DmsDocument> spec = builder.parse("object_name:Test3,creator:user~object_name:Test2");
 
 		assertEquals(2, documentRepository.findAll(spec).size());
 	}
 
 	@Test
 	@DisplayName("Test specification builder with type.")
-	@WithUserDetails("creator")
 	void testSpecificationBuilderType() {
 		SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
 		Specification<DmsDocument> spec = builder.parse("type:testni-tip");

@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,7 +68,7 @@ class DocumentServiceIT {
 	void setUp() {
 		type = typeRepository.save(DmsType.builder().typeName(typeName).build());
 		newDocument = documentService.createDocument(
-				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").type(typeName).username("creator").build());
+				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").type(typeName).username("user").build());
 	}
 
 	@AfterEach
@@ -134,7 +133,7 @@ class DocumentServiceIT {
 
 	@Test
 	@DisplayName("Test modifying document with put HTTP request.")
-	@WithUserDetails("creator")
+	@WithMockUser(username = "user", authorities = {"CREATE_PRIVILEGE", "READ_PRIVILEGE", "WRITE_PRIVILEGE"})
 	void testDocumentPut() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").description("updated")
 				.keywords(Arrays.asList(new String[] { "foo", "bar" })).build();
@@ -148,7 +147,7 @@ class DocumentServiceIT {
 	
 	@Test
 	@DisplayName("Test modifying document with patch HTTP request.")
-	@WithUserDetails("creator")
+	@WithMockUser(username = "user", authorities = {"CREATE_PRIVILEGE", "READ_PRIVILEGE", "WRITE_PRIVILEGE"})
 	void testDocumentPatch() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);

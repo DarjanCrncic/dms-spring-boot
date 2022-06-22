@@ -49,7 +49,7 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends Base
 	}
 
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#object.id,'com.example.dms.domain.DmsDocument','DELETE') "
+	@PreAuthorize("hasRole('ADMIN') or hasPermission(#object.id,'com.example.dms.domain.DmsDocument','DELETE') "
 			+ "or hasPermission(#object.id,'com.example.dms.domain.DmsFolder','DELETE')")
 	public void delete(T object) {
 		aclService.removeEntriesOnDelete(checkPresent(object.getId()));
@@ -57,7 +57,7 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends Base
 	}
 
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#id,'com.example.dms.domain.DmsDocument','DELETE') "
+	@PreAuthorize("hasRole('ADMIN') or hasPermission(#id,'com.example.dms.domain.DmsDocument','DELETE') "
 			+ "or hasPermission(#id,'com.example.dms.domain.DmsFolder','DELETE')")
 	public void deleteById(UUID id) {
 		aclService.removeEntriesOnDelete(checkPresent(id));

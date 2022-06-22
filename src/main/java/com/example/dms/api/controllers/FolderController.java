@@ -7,6 +7,7 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.dtos.folder.FolderTreeDTO;
 import com.example.dms.api.dtos.folder.NewFolderDTO;
+import com.example.dms.security.DmsUserDetails;
 import com.example.dms.services.FolderService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
@@ -57,8 +59,9 @@ public class FolderController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public DmsFolderDTO createNewFolder(@RequestBody @Valid NewFolderDTO newFolderDTO) {
-		return folderService.createFolder(newFolderDTO.getPath());
+	public DmsFolderDTO createNewFolder(@RequestBody @Valid NewFolderDTO newFolderDTO,
+			@AuthenticationPrincipal DmsUserDetails userDetails) {
+		return folderService.createFolder(newFolderDTO.getPath(), userDetails.getUsername());
 	}
 	
 	@PutMapping("/{id}")

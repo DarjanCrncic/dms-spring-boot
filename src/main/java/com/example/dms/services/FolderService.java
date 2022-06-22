@@ -11,12 +11,12 @@ public interface FolderService extends CrudService<DmsFolder, DmsFolderDTO, UUID
 	
 	DmsFolderDTO findByPath(String path);
 
-	DmsFolderDTO createFolder(String path);
-
 	DmsFolderDTO updateFolder(UUID id, String path);
 
 	DmsFolderDTO moveFilesToFolder(UUID folderId, List<UUID> documentIdList);
 
 	FolderTreeDTO getSubfolderTree(String path);
+
+	DmsFolderDTO createFolder(String path, String username);
 	
 }

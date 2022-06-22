@@ -36,7 +36,7 @@ import com.example.dms.utils.Utils;
 
 @WebMvcTest(FolderController.class)
 @AutoConfigureRestDocs(outputDir = "target/snippets")
-@WithMockUser(roles = { "ADMIN" })
+@WithMockUser(username = "admin", roles = { "ADMIN" })
 class FolderControllerTest {
 
 	@Autowired
@@ -102,7 +102,7 @@ class FolderControllerTest {
 
 	@Test
 	void testSaveNewFolder() throws Exception {
-		BDDMockito.given(folderService.createFolder(Mockito.anyString())).willReturn(validFolderDTO);
+		BDDMockito.given(folderService.createFolder(Mockito.anyString(), Mockito.anyString())).willReturn(validFolderDTO);
 		mockMvc.perform(post(BASE_URL).content(Utils.stringify(new NewFolderDTO("/test"))).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.path", is(validFolderDTO.getPath())))

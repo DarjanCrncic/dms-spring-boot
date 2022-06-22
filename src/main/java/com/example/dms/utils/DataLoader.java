@@ -59,10 +59,7 @@ public class DataLoader implements ApplicationRunner {
     		grandchild2 = folderRepository.save(DmsFolder.builder().path("/child1/grandchild2").parentFolder(child1).build());
     	
     	// create privileges
-    	DmsPrivilege delete = privilegeRepository.findByName(Privileges.DELETE_PRIVILEGE.name()).orElse(null);
-    	if (delete == null) {
-    		delete = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.DELETE_PRIVILEGE.name()).build());
-    	}
+    	
     	DmsPrivilege read = privilegeRepository.findByName(Privileges.READ_PRIVILEGE.name()).orElse(null);
     	if (read == null) {
     		read = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.READ_PRIVILEGE.name()).build());
@@ -71,32 +68,28 @@ public class DataLoader implements ApplicationRunner {
     	if (write == null) {
     		write = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.WRITE_PRIVILEGE.name()).build());
     	}
+    	DmsPrivilege create = privilegeRepository.findByName(Privileges.CREATE_PRIVILEGE.name()).orElse(null);
+    	if (create == null) {
+    		create = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.CREATE_PRIVILEGE.name()).build());
+    	}
     	DmsPrivilege version = privilegeRepository.findByName(Privileges.VERSION_PRIVILEGE.name()).orElse(null);
     	if (version == null) {
     		version = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.VERSION_PRIVILEGE.name()).build());
     	}
-    	DmsPrivilege create = privilegeRepository.findByName(Privileges.CREATE_PRIVILEGE.name()).orElse(null);
-    	if (create == null) {
-    		create = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.CREATE_PRIVILEGE.name()).build());
+    	DmsPrivilege permission = privilegeRepository.findByName(Privileges.PERMISSION_PRIVILEGE.name()).orElse(null);
+    	if (permission == null) {
+    		permission = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.PERMISSION_PRIVILEGE.name()).build());
+    	}
+    	DmsPrivilege delete = privilegeRepository.findByName(Privileges.DELETE_PRIVILEGE.name()).orElse(null);
+    	if (delete == null) {
+    		delete = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.DELETE_PRIVILEGE.name()).build());
     	}
     	
     	// create roles
     	DmsRole adminRole = null;
     	if (roleRepository.findByName(Roles.ROLE_ADMIN.name()).isEmpty()) {
     		adminRole = roleRepository.save(DmsRole.builder().name(Roles.ROLE_ADMIN.name()).privileges(
-    				Arrays.asList(delete,read,write,version,create)
-    				).build());
-    	}
-    	DmsRole creatorRole = null;
-    	if (roleRepository.findByName(Roles.ROLE_CREATOR.name()).isEmpty()) {
-    		creatorRole = roleRepository.save(DmsRole.builder().name(Roles.ROLE_CREATOR.name()).privileges(
-    				Arrays.asList(read,write,version,create)
-    				).build());
-    	}
-    	DmsRole editorRole = null;
-    	if (roleRepository.findByName(Roles.ROLE_EDITOR.name()).isEmpty()) {
-    		editorRole = roleRepository.save(DmsRole.builder().name(Roles.ROLE_EDITOR.name()).privileges(
-    				Arrays.asList(read,write)
+    				Arrays.asList(delete,read,write,version,create,permission)
     				).build());
     	}
     	DmsRole userRole = null;
@@ -112,16 +105,6 @@ public class DataLoader implements ApplicationRunner {
     			.roles(Arrays.asList(userRole)).build();	
     	if (userRepository.findByUsername("user").isEmpty()) {
     		userRepository.save(user);
-    	} 
-    	DmsUser editor = DmsUser.builder().username("editor").password(dummyPassword).firstName("editorF").lastName("editorL").email("editor.editor@gmail.com")
-    			.roles(Arrays.asList(editorRole)).build();	
-    	if (userRepository.findByUsername("editor").isEmpty()) {
-    		userRepository.save(editor);
-    	} 
-    	DmsUser creator = DmsUser.builder().username("creator").password(dummyPassword).firstName("creatorF").lastName("creatorL").email("creator.creator@gmail.com")
-    			.roles(Arrays.asList(creatorRole)).build();	
-    	if (userRepository.findByUsername("creator").isEmpty()) {
-    		userRepository.save(creator);
     	} 
     	DmsUser admin = DmsUser.builder().username("admin").password(dummyPassword).firstName("adminF").lastName("adminL").email("admin.admin@gmail.com")
     			.roles(Arrays.asList(adminRole)).build();	

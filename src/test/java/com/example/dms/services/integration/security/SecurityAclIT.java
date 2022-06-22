@@ -19,7 +19,6 @@ import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.model.MutableAcl;
 import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
@@ -62,7 +61,7 @@ class SecurityAclIT {
 	@BeforeEach
 	void setUp() {
 		newDocument = documentService.createDocument(
-				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").username("creator").build());
+				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").username("user").build());
 		doc = documentRepository.findById(newDocument.getId()).orElse(null);
 	}
 	
@@ -75,7 +74,7 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithUserDetails("creator")
+	@WithMockUser(username = "user", authorities = {"CREATE_PRIVILEGE","ROLE_ADMIN", "WRITE_PRIVILEGE"})
 	void testModifyWithAcl() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
@@ -84,7 +83,7 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", authorities = {"CREATE_PRIVILEGE","ROLE_ADMIN", "WRITE_PRIVILEGE"})
+	@WithMockUser(username = "user", authorities = {"CREATE_PRIVILEGE","ROLE_ADMIN", "WRITE_PRIVILEGE"})
 	void testModifyWithAclWithAdmin() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
@@ -93,7 +92,7 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", roles = "USER", authorities = "CREATE_PRIVILEGE")
+	@WithMockUser(username = "user", roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithAclInvalidUser() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		UUID docId = newDocument.getId();
@@ -132,7 +131,7 @@ class SecurityAclIT {
 		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(docId, modifyDTO, true));
 	}
 	@Test
-	@WithMockUser(username = "testUser", roles = "ADMIN")
+	@WithMockUser(username = "testUser", authorities = {"ROLE_ADMIN", "CREATE_PRIVILEGE"})
 	void testDeleteingAcls() {
 		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
 		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid("testUser")), null);
@@ -142,7 +141,7 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", roles = "ADMIN")
+	@WithMockUser(username = "testUser", authorities = {"ROLE_ADMIN", "CREATE_PRIVILEGE"})
 	void testDeleteingAclsOnDelete() {
 		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
 		documentService.deleteById(doc.getId());

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.example.dms.domain.DmsDocumentColumnPreference;
@@ -18,6 +19,7 @@ import com.example.dms.utils.exceptions.DmsNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@PreAuthorize("hasRole('USER') || hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class PreferenceServiceImpl implements PreferenceService {
 

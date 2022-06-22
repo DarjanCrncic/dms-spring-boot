@@ -22,7 +22,6 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +29,6 @@ import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.mappers.FolderMapper;
-import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsFolder;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.DocumentRepository;
@@ -42,7 +40,7 @@ import com.example.dms.utils.exceptions.DmsNotFoundException;
 
 @SpringBootTest
 @ContextConfiguration
-@WithMockUser(authorities = { "ROLE_ADMIN", "CREATE_PRIVILEGE" })
+@WithMockUser(username = "user", authorities = { "CREATE_PRIVILEGE", "DELETE_PRIVILEGE", "READ_PRIVILEGE", "WRITE_PRIVILEGE" })
 @TestInstance(Lifecycle.PER_CLASS) // DEBUGGING WITH H2
 class FolderServiceIT {
 
@@ -77,18 +75,16 @@ class FolderServiceIT {
 	DmsFolderDTO folder;
 	DmsFolder folderObject;
 	DmsFolderDTO subFolder;
-	DmsDocument newDocument;
+	DmsDocumentDTO newDocument;
 	DmsDocumentDTO documentWithPermissions;
 
 	@BeforeEach
 	void setUp() {
-		user = userRepository.save(DmsUser.builder().username("dcrncictest").password("12345").firstName("Darjan")
-				.lastName("Crnčić").email("darjan.crncic.test@gmail.com").build());
-		folder = folderService.createFolder("/test");
-		subFolder = folderService.createFolder("/test/inside");
+		folder = folderService.createFolder("/test", "user");
+		subFolder = folderService.createFolder("/test/inside", "user");
 		folderObject = folderRepository.findById(folder.getId()).orElse(null);
-		newDocument = documentRepository.save(DmsDocument.builder().objectName("TestTest")
-				.description("Ovo je test u testu").creator(user).parentFolder(folderObject).build());
+		newDocument = documentService.createDocument(NewDocumentDTO.builder().objectName("TestTest")
+				.description("Ovo je test u testu").username("user").parentFolder(folderObject.getPath()).build());
 
 	}
 
@@ -122,9 +118,8 @@ class FolderServiceIT {
 	@Test
 	@DisplayName("Test deleting folder and documents within.")
 	void deleteFolderTest() {
-		DmsDocumentDTO newDocument = documentService
-				.save(DmsDocument.builder().creator(user).objectName("TestTest").description("Ovo je test u testu")
-						.parentFolder(folderRepository.findById(folder.getId()).orElse(null)).build());
+		DmsDocumentDTO newDocument = documentService.createDocument(NewDocumentDTO.builder().username("user")
+				.objectName("TestTest").description("Ovo je test u testu").parentFolder(folder.getPath()).build());
 
 		assertEquals(folder.getPath(), newDocument.getParentFolder());
 
@@ -140,13 +135,10 @@ class FolderServiceIT {
 	@Test
 	@DisplayName("Test deletion of subfolder.")
 	void deleteChildrenTest() {
-		DmsDocumentDTO newDocument = documentService.save(DmsDocument.builder().creator(user).objectName("TestTest")
-				.parentFolder(folderRepository.findById(folder.getId()).orElse(null)).build());
-
 		folderService.deleteById(subFolder.getId());
-		documentService.deleteById(newDocument.getId());
+		UUID subFolderId = subFolder.getId();
 
-		assertDoesNotThrow(() -> folderService.findById(folder.getId()));
+		assertTrue(folderRepository.findById(subFolderId).isEmpty());
 	}
 
 	@Test
@@ -172,11 +164,10 @@ class FolderServiceIT {
 
 	@Test
 	@DisplayName("Test moving documents from folder to folder with security.")
-	@WithUserDetails("creator")
 	void moveDocumentToDifferentFolderSecurityTest() {
-		DmsFolderDTO subFolderPerm = folderService.createFolder("/test/perm");
-		documentWithPermissions = documentService.createDocument(
-				NewDocumentDTO.builder().objectName("Permissions").description("Test with permission").username("creator").build());
+		DmsFolderDTO subFolderPerm = folderService.createFolder("/test/perm", "user");
+		documentWithPermissions = documentService.createDocument(NewDocumentDTO.builder().objectName("Permissions")
+				.description("Test with permission").username("user").build());
 		subFolderPerm = folderService.moveFilesToFolder(subFolderPerm.getId(),
 				Arrays.asList(documentWithPermissions.getId()));
 
@@ -187,7 +178,6 @@ class FolderServiceIT {
 
 	@Test
 	@DisplayName("Test delete folder with security.")
-	@WithUserDetails("creator")
 	void deleteFolderWithDocuments() {
 		assertDoesNotThrow(() -> folderService.delete(folderObject));
 	}

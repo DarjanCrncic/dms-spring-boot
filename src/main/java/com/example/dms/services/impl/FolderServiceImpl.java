@@ -67,7 +67,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 
 	@Override
 	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
-	public DmsFolderDTO createFolder(String path) {
+	public DmsFolderDTO createFolder(String path, String username) {
 		checkPath(path);
 		DmsFolder parentFolder = folderRepository.findByPath(getParentFolderPath(path))
 				.orElseThrow(DmsNotFoundException::new);
@@ -76,12 +76,12 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		newFolder.addParentFolder(parentFolder);
 		newFolder = folderRepository.save(newFolder);
 		
-		super.aclService.grantCreatorRights(newFolder, "creator"); // TODO: change to principal
+		super.aclService.grantCreatorRights(newFolder, username);
 		return folderMapper.entityToDto(newFolder);
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','WRITE')")
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','WRITE') && hasAuthority('WRITE_PRIVILEGE')")
 	public DmsFolderDTO updateFolder(UUID id, String path) {
 		// TODO: when updating folder it could cause the folder structure to change, 
 		// add check to make sure only the folder name is changed
@@ -113,7 +113,8 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 
 	@Override
 	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','WRITE') "
-			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication)")
+			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication) "
+			+ "&& hasAuthority('WRITE_PRIVILEGE')")
 	public DmsFolderDTO moveFilesToFolder(UUID folderId, List<UUID> documentIdList) {
 		DmsFolder folder = folderRepository.findById(folderId)
 				.orElseThrow(() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));

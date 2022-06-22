@@ -71,7 +71,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE') || hasRole('ADMIN')")
+	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
 	public DmsDocumentDTO createDocument(NewDocumentDTO newDocumentDTO) {
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
 		
