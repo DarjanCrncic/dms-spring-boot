@@ -13,7 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.jdbc.JdbcMutableAclService;
+import org.springframework.security.acls.model.MutableAcl;
+import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
@@ -39,6 +43,9 @@ class SecurityAclIT {
 	
 	@Autowired
 	DocumentRepository documentRepository;
+	
+	@Autowired
+	JdbcMutableAclService aclService;
 	
 //  DEBUGGING WITH H2 
 //	@Autowired
@@ -123,5 +130,23 @@ class SecurityAclIT {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		UUID docId = newDocument.getId();
 		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(docId, modifyDTO, true));
+	}
+	@Test
+	@WithMockUser(username = "testUser", roles = "ADMIN")
+	void testDeleteingAcls() {
+		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
+		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid("testUser")), null);
+		
+		MutableAcl acl = (MutableAcl) aclService.readAclById(new ObjectIdentityImpl(doc));
+		assertEquals(0, acl.getEntries().size());
+	}
+	
+	@Test
+	@WithMockUser(username = "testUser", roles = "ADMIN")
+	void testDeleteingAclsOnDelete() {
+		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
+		documentService.deleteById(doc.getId());
+		
+		assertThrows(NotFoundException.class, () -> aclService.readAclById(new ObjectIdentityImpl(doc)));
 	}
 }

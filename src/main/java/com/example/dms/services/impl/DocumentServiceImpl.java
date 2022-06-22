@@ -71,7 +71,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
+	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE') || hasRole('ADMIN')")
 	public DmsDocumentDTO createDocument(NewDocumentDTO newDocumentDTO) {
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
 		
@@ -217,11 +217,9 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN') or @permissionEvaluator.hasPermission(#ids,'com.example.dms.domain.DmsDocument','WRITE',authentication)")
 	public void deleteInBatch(List<UUID> ids) {
 		ids.stream().forEach(id -> {
-			aclService.removeEntriesOnDelete(checkPresent(id)); 
-			documentRepository.deleteById(id);
+			deleteById(id);
 		});
 	}
 }
