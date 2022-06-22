@@ -64,6 +64,7 @@ class FolderServiceTest {
 		assertTrue(FolderServiceImpl.validateFolderPath("/test/test2/test1"));
 		assertFalse(FolderServiceImpl.validateFolderPath("test"));
 		assertFalse(FolderServiceImpl.validateFolderPath("/test/"));
+		assertFalse(FolderServiceImpl.validateFolderPath("//test"));
 	}
 
 	@Test
