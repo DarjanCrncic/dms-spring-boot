@@ -17,7 +17,6 @@ import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.repositories.security.PrivilegeRepository;
 import com.example.dms.repositories.security.RoleRepository;
-import com.example.dms.services.DocumentService;
 import com.example.dms.services.FolderService;
 
 import lombok.RequiredArgsConstructor;
@@ -30,36 +29,16 @@ public class DataLoader implements ApplicationRunner {
 	private final FolderRepository folderRepository;
 	private final RoleRepository roleRepository;
 	private final PrivilegeRepository privilegeRepository;
-	private final DocumentService documentService;
-	private final FolderService folderService;
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final TypeRepository typeRepository;
 	
     @Override
 	public void run(ApplicationArguments args) {
     	
-    	DmsFolder root = null;
     	if (folderRepository.findByPath("/").isEmpty())
-    		root = folderRepository.save(DmsFolder.builder().path("/").build());
-    	
-    	// frontend test required
-    	DmsFolder child1 = null;
-    	if (folderRepository.findByPath("/child1").isEmpty())
-    		child1 = folderRepository.save(DmsFolder.builder().path("/child1").parentFolder(root).build());
-    	DmsFolder child2 = null;
-    	if (folderRepository.findByPath("/child2").isEmpty())
-    		child2 = folderRepository.save(DmsFolder.builder().path("/child2").parentFolder(root).build());
-    	
-    	DmsFolder grandchild1 = null;
-    	if (folderRepository.findByPath("/child1/grandchild1").isEmpty())
-    		grandchild1 = folderRepository.save(DmsFolder.builder().path("/child1/grandchild1").parentFolder(child1).build());
-    	
-    	DmsFolder grandchild2 = null;
-    	if (folderRepository.findByPath("/child1/grandchild2").isEmpty())
-    		grandchild2 = folderRepository.save(DmsFolder.builder().path("/child1/grandchild2").parentFolder(child1).build());
+    		folderRepository.save(DmsFolder.builder().path("/").build());
     	
     	// create privileges
-    	
     	DmsPrivilege read = privilegeRepository.findByName(Privileges.READ_PRIVILEGE.name()).orElse(null);
     	if (read == null) {
     		read = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.READ_PRIVILEGE.name()).build());
