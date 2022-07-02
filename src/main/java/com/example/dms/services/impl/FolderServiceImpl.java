@@ -20,6 +20,7 @@ import com.example.dms.domain.DmsFolder;
 import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.DmsAclService;
+import com.example.dms.services.DocumentService;
 import com.example.dms.services.FolderService;
 import com.example.dms.utils.Constants;
 import com.example.dms.utils.exceptions.BadRequestException;
@@ -33,13 +34,15 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	FolderRepository folderRepository;
 	FolderMapper folderMapper;
 	DocumentRepository documentRepository;
+	DocumentService documentService;
 
 	public FolderServiceImpl(FolderRepository folderRepository, FolderMapper folderMapper,
-			DocumentRepository documentRepository, DmsAclService aclService) {
+			DocumentRepository documentRepository, DmsAclService aclService, DocumentService documentService) {
 		super(folderRepository, folderMapper, aclService);
 		this.folderRepository = folderRepository;
 		this.folderMapper = folderMapper;
 		this.documentRepository = documentRepository;
+		this.documentService = documentService;
 	}
 	
 	@Override
@@ -125,6 +128,14 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 			folder = folderRepository.save(folder);
 		}
 		return folderMapper.entityToDto(folder);
+	}
+
+	@Override
+	public void deleteFolder(UUID id) {
+		DmsFolder folder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
+		folder.getSubfolders().stream().forEach(sub -> deleteFolder(sub.getId()));
+		folder.getDocuments().stream().forEach(doc -> documentService.deleteById(doc.getId()));
+		this.deleteById(id);
 	}
 	
 	// TODO: no checking permissions for documents when deleting folder

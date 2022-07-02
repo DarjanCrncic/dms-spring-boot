@@ -40,8 +40,11 @@ class FolderServiceTest {
 	@Mock
 	DmsAclService aclService;
 	
+	@Mock
+	DocumentService documentService;
+	
 	@InjectMocks
-	FolderService folderService = new FolderServiceImpl(folderRepository, folderMapper, documentRepository, aclService);
+	FolderService folderService = new FolderServiceImpl(folderRepository, folderMapper, documentRepository, aclService, documentService);
 
 	Optional<DmsFolder> emptyFolder = Optional.empty();
 	Optional<DmsFolder> rootFolder = Optional.of(DmsFolder.builder().path("/").build());

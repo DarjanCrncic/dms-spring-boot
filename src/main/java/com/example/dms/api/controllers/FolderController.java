@@ -71,7 +71,7 @@ public class FolderController {
 	
 	@DeleteMapping("/{id}")
 	public void deleteFolderById(@PathVariable UUID id) {
-		folderService.deleteById(id);
+		folderService.deleteFolder(id);
 	}
 	
 	@PostMapping("/move/{id}")
