@@ -2,6 +2,7 @@ package com.example.dms.api.controllers;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,9 @@ public class AuthController {
 	
 	private final AuthenticationManager authenticationManager;
 	private final JwtUtils jwtUtils;
+	
+	@Value("${dms.jwt.expiration}")
+	private int jwtExpirationMs;
 
 	@PostMapping("/login")
 	public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -35,9 +39,9 @@ public class AuthController {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generateJwtToken(authentication);
 		
-		DmsUserDetails userDetails = (DmsUserDetails) authentication.getPrincipal();		
-
-		return new LoginResponse(userDetails.getUsername(), jwt);
+		DmsUserDetails userDetails = (DmsUserDetails) authentication.getPrincipal();	
+		
+		return new LoginResponse(userDetails.getUsername(), jwt, System.currentTimeMillis() + jwtExpirationMs);
 	}
 
 //	@PostMapping("/signup")
