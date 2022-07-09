@@ -41,8 +41,8 @@ public class FolderController {
 	}
 	
 	@GetMapping("/tree")
-	public FolderTreeDTO getFolderTreeDTO(@RequestParam String path) {
-		return folderService.getSubfolderTree(path);
+	public FolderTreeDTO getFolderTreeDTO(@RequestParam String path, @AuthenticationPrincipal DmsUserDetails userDetails) {
+		return folderService.getSubfolderTree(path, userDetails.getUsername());
 	}
 
 	@GetMapping("/search")

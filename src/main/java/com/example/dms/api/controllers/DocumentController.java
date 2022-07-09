@@ -112,7 +112,7 @@ public class DocumentController {
 
 	@DeleteMapping
 	public void deleteMultipleDocuments(@RequestParam List<UUID> ids) {
-		documentService.deleteInBatch(ids);
+		ids.forEach(documentService::deleteById);
 	}
 
 }

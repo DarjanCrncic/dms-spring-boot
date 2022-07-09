@@ -15,10 +15,10 @@ public interface FolderService extends CrudService<DmsFolder, DmsFolderDTO, UUID
 
 	DmsFolderDTO moveFilesToFolder(UUID folderId, List<UUID> documentIdList);
 
-	FolderTreeDTO getSubfolderTree(String path);
-
 	DmsFolderDTO createFolder(String path, String username);
 
 	void deleteFolder(UUID id);
+
+	FolderTreeDTO getSubfolderTree(String path, String username);
 	
 }

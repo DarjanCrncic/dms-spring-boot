@@ -33,6 +33,4 @@ public interface DocumentService extends CrudService<DmsDocument, DmsDocumentDTO
 
 	List<DmsDocumentDTO> searchAll(String search, Optional<SortDTO> sort);
 
-	void deleteInBatch(List<UUID> ids);
-
 }

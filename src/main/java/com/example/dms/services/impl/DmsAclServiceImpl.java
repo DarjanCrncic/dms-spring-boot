@@ -1,8 +1,10 @@
 package com.example.dms.services.impl;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
@@ -31,7 +33,7 @@ public class DmsAclServiceImpl implements DmsAclService {
 	}
 
 	@Override
-	public <T extends AclAllowedClass> void grantCreatorRights(T object, String username) {
+	public <T extends AclAllowedClass> void grantRightsOnObject(T object, String username, Collection<Permission> permissions) {
 		ObjectIdentity oi = new ObjectIdentityImpl(object);
 		Sid sid = new PrincipalSid(username);
 
@@ -41,17 +43,16 @@ public class DmsAclServiceImpl implements DmsAclService {
 		} catch (NotFoundException nfe) {
 			acl = aclService.createAcl(oi);
 		}
-		log.debug("granting creator '{}' rights on object (" + object.getClass() + "): {}, {}, {}", sid, BasePermission.DELETE,
-				BasePermission.WRITE, BasePermission.READ);
+		log.debug("granting creator '{}' rights on object (" + object.getClass() + "): {}", sid, Arrays.toString(permissions.toArray()));
 
-		acl.insertAce(acl.getEntries().size(), BasePermission.DELETE, sid, true);
-		acl.insertAce(acl.getEntries().size(), BasePermission.WRITE, sid, true);
-		acl.insertAce(acl.getEntries().size(), BasePermission.READ, sid, true);
+		for (Permission permission : permissions) {
+			acl.insertAce(acl.getEntries().size(), permission, sid, true);
+		}
 		aclService.updateAcl(acl);
 	}
 
 	@Override
-	public <T extends AclAllowedClass> void grantRightsOnObject(T object, Sid sid, List<Permission> permissions) {
+	public <T extends AclAllowedClass> void grantRightsOnObject(T object, Sid sid, Collection<Permission> permissions) {
 		ObjectIdentity oi = new ObjectIdentityImpl(object);
 
 		MutableAcl acl = null;
@@ -105,5 +106,26 @@ public class DmsAclServiceImpl implements DmsAclService {
 		
 		aclService.deleteAcl(acl.getObjectIdentity(), true);
 	}
+	
+	@Override
+	public <T extends AclAllowedClass> boolean hasRight(T object, String username, Collection<Permission> permissions) {
+		ObjectIdentity oi = new ObjectIdentityImpl(object);
+		Sid sid = new PrincipalSid(username);
+
+		MutableAcl acl = null;
+		try {
+			acl = (MutableAcl) aclService.readAclById(oi);
+		} catch (NotFoundException nfe) {
+			return false;
+		}
+		boolean isGranted = false;
+		try {
+			isGranted = acl.isGranted(permissions.stream().collect(Collectors.toList()), Arrays.asList(sid), false);
+		} catch (Exception e) {
+			isGranted = false;
+		}
+		return isGranted;
+	}
+	
 
 }

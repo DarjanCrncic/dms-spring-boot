@@ -1,6 +1,7 @@
 package com.example.dms.services.impl;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -38,6 +40,7 @@ import com.example.dms.utils.Utils;
 import com.example.dms.utils.exceptions.BadRequestException;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.InternalException;
+import com.example.dms.utils.exceptions.NotPermitedException;
 
 @Service
 @Transactional
@@ -84,6 +87,10 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		if(path != null && !path.isEmpty()) {
 			folder = folderRepository.findByPath(path).orElseThrow(() -> new DmsNotFoundException("Invalid parent folder."));
 		}
+		if (!super.aclService.hasRight(folder, newDocumentDTO.getUsername(), Arrays.asList(BasePermission.CREATE))) {
+			throw new NotPermitedException("Inssuficient permissions for creating a document in this folder.");
+		}
+		
 		newDocumentObject.addParentFolder(folder);
 		newDocumentObject.addCreator(creator);
 		newDocumentObject.addType(type);
@@ -92,7 +99,8 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		newDocumentObject.setRootId(newDocumentObject.getId());
 		newDocumentObject.setPredecessorId(newDocumentObject.getId());
 		
-		super.aclService.grantCreatorRights(newDocumentObject, creator.getUsername());
+		super.aclService.grantRightsOnObject(newDocumentObject, creator.getUsername(), 
+				Arrays.asList(BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE));
 		
 		return save(newDocumentObject);
 	}
@@ -216,10 +224,4 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		return documentMapper.entityListToDtoList(documentRepository.findAll(builder.parse(search), Utils.toSort(sort)));
 	}
 
-	@Override
-	public void deleteInBatch(List<UUID> ids) {
-		ids.stream().forEach(id -> {
-			deleteById(id);
-		});
-	}
 }
