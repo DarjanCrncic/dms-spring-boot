@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dms.domain.DmsUser;
+import com.example.dms.domain.security.DmsPrivilege;
 import com.example.dms.domain.security.DmsRole;
 import com.example.dms.repositories.UserRepository;
 
@@ -30,17 +31,19 @@ public class DmsUserDetailsService implements UserDetailsService {
 			throw new UsernameNotFoundException("User with username: " + username + " is not found.");
 		}
 		
-		return new DmsUserDetails(user, getPrivileges(user.getRoles()));
+		return new DmsUserDetails(user, getPrivileges(user));
 	}
 	
 
-	private List<GrantedAuthority> getPrivileges(List<DmsRole> roles) {
-		List<GrantedAuthority> privileges = new ArrayList<>();
-		for (DmsRole role : roles) {
-			privileges.add(role);
-			privileges.addAll(role.getPrivileges());
+	private List<GrantedAuthority> getPrivileges(DmsUser user) {
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		for (DmsRole role : user.getRoles()) {
+			authorities.add(role);
 		}
-		return privileges;
+		for (DmsPrivilege privilege : user.getPrivileges()) {
+			authorities.add(privilege);
+		}
+		return authorities;
 	}
 
 }

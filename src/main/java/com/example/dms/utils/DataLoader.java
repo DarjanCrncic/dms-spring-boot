@@ -17,7 +17,6 @@ import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.repositories.security.PrivilegeRepository;
 import com.example.dms.repositories.security.RoleRepository;
-import com.example.dms.services.FolderService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -67,26 +66,27 @@ public class DataLoader implements ApplicationRunner {
     	// create roles
     	DmsRole adminRole = null;
     	if (roleRepository.findByName(Roles.ROLE_ADMIN.name()).isEmpty()) {
-    		adminRole = roleRepository.save(DmsRole.builder().name(Roles.ROLE_ADMIN.name()).privileges(
-    				Arrays.asList(delete,read,write,version,create,permission)
-    				).build());
+    		adminRole = roleRepository.save(DmsRole.builder().name(Roles.ROLE_ADMIN.name()).build());
     	}
     	DmsRole userRole = null;
     	if (roleRepository.findByName(Roles.ROLE_USER.name()).isEmpty()) {
-    		userRole = roleRepository.save(DmsRole.builder().name(Roles.ROLE_USER.name()).privileges(
-    				Arrays.asList(read)
-    				).build());
+    		userRole = roleRepository.save(DmsRole.builder().name(Roles.ROLE_USER.name()).build());
     	}
     	
     	// test and admin users
     	String dummyPassword = passwordEncoder.encode("12345");
     	DmsUser user = DmsUser.builder().username("user").password(dummyPassword).firstName("userF").lastName("userL").email("user.user@gmail.com")
-    			.roles(Arrays.asList(userRole)).build();	
+    			.roles(Arrays.asList(userRole)).privileges(Arrays.asList(read)).build();	
     	if (userRepository.findByUsername("user").isEmpty()) {
     		userRepository.save(user);
     	} 
+    	DmsUser test = DmsUser.builder().username("test").password(dummyPassword).firstName("testF").lastName("testL").email("test.test@gmail.com")
+    			.roles(Arrays.asList(userRole)).privileges(Arrays.asList(read, write, create)).build();	
+    	if (userRepository.findByUsername("test").isEmpty()) {
+    		userRepository.save(test);
+    	} 
     	DmsUser admin = DmsUser.builder().username("admin").password(dummyPassword).firstName("adminF").lastName("adminL").email("admin.admin@gmail.com")
-    			.roles(Arrays.asList(adminRole)).build();	
+    			.roles(Arrays.asList(adminRole)).privileges(Arrays.asList(read, write, create, version, permission, delete)).build();	
     	if (userRepository.findByUsername("admin").isEmpty()) {
     		userRepository.save(admin);
     	} 

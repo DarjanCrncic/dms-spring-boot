@@ -10,6 +10,7 @@ import javax.persistence.MappedSuperclass;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.EqualsAndHashCode;
@@ -23,9 +24,10 @@ import lombok.Setter;
 public class BaseEntity {
 
 	@Id
-	@Column(length=16)
+	@Column(length=36)
 	@GeneratedValue(generator = "uuid")
 	@GenericGenerator(name = "uuid", strategy = "uuid2")
+	@Type(type = "uuid-char")
 	private UUID id;
 	
 	@CreationTimestamp

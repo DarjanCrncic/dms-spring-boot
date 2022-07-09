@@ -16,6 +16,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.example.dms.domain.security.DmsPrivilege;
 import com.example.dms.domain.security.DmsRole;
 import com.example.dms.utils.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -89,6 +90,13 @@ public class DmsUser extends BaseEntity {
 		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), 
 		inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private List<DmsRole> roles = new ArrayList<>();
+	
+	@ManyToMany
+    @JoinTable(
+        name = "users_privileges", 
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), 
+        inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
+    private List<DmsPrivilege> privileges;
 	
 	@Default
 	boolean enabled = true;
