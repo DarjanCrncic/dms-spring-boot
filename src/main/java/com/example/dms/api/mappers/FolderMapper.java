@@ -16,6 +16,7 @@ public interface FolderMapper extends MapperInterface<DmsFolder, DmsFolderDTO>  
 	FolderMapper INSTANCE = Mappers.getMapper(FolderMapper.class);
 	
 	@Override
+	@Mapping(source = "parentFolder.path", target = "parentFolder")
 	DmsFolderDTO entityToDto(DmsFolder folder);
 	
 	List<String> foldersToPaths(List<DmsFolder> folders);

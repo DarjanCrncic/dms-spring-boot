@@ -68,7 +68,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
+	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') && hasAuthority('READ_PRIVILEGE')")
 	public List<DmsDocumentDTO> findAll() {
 		return documentMapper.entityListToDtoList(documentRepository.findAll());
 	}
@@ -87,7 +87,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		if(path != null && !path.isEmpty()) {
 			folder = folderRepository.findByPath(path).orElseThrow(() -> new DmsNotFoundException("Invalid parent folder."));
 		}
-		if (!super.aclService.hasRight(folder, newDocumentDTO.getUsername(), Arrays.asList(BasePermission.CREATE))) {
+		if (!folder.getPath().equals("/") && !super.aclService.hasRight(folder, newDocumentDTO.getUsername(), Arrays.asList(BasePermission.CREATE))) {
 			throw new NotPermitedException("Inssuficient permissions for creating a document in this folder.");
 		}
 		
@@ -187,7 +187,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
+	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') && hasAuthority('READ_PRIVILEGE')")
 	public List<DmsDocumentDTO> getAllVersions(UUID id) {
 		return documentMapper.entityListToDtoList(documentRepository.getAllVersions(id));
 	}
@@ -199,7 +199,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
+	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') && hasAuthority('READ_PRIVILEGE')")
 	public List<DmsDocumentDTO> getAllDocuments(Optional<SortDTO> sort) {
 		return documentMapper.entityListToDtoList(documentRepository.findAll(Utils.toSort(sort)));
 	}
@@ -218,7 +218,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
+	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') && hasAuthority('READ_PRIVILEGE')")
 	public List<DmsDocumentDTO> searchAll(String search, Optional<SortDTO> sort) {
 		SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
 		return documentMapper.entityListToDtoList(documentRepository.findAll(builder.parse(search), Utils.toSort(sort)));

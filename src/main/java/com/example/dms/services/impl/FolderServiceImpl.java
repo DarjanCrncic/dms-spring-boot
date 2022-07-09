@@ -50,9 +50,9 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 	
 	@Override
-	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE') || filterObject.path == '/'")
+	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsFolder','READ') && hasAuthority('READ_PRIVILEGE') || filterObject.path == '/'")
 	public List<DmsFolderDTO> findAll() {
-		return folderMapper.entityListToDtoList(getAllFoldersWithPermission());
+		return folderMapper.entityListToDtoList(folderRepository.findAll());
 	}
 	
 	@Override
@@ -71,11 +71,6 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		}
 	}
 	
-	@PostFilter("hasPermission(filterObject,'READ') && hasAuthority('READ_PRIVILEGE')")
-	private List<DmsFolder> getAllFoldersWithPermission() {
-		return folderRepository.findAll();
-	}
-
 	@Override
 	@PostAuthorize("hasPermission(returnObject.id,'com.example.dms.domain.DmsFolder','READ')")
 	public DmsFolderDTO findByPath(String path) {
@@ -92,7 +87,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		checkPath(path);
 		DmsFolder parentFolder = folderRepository.findByPath(getParentFolderPath(path))
 				.orElseThrow(DmsNotFoundException::new);
-		if (!super.aclService.hasRight(parentFolder, username, Arrays.asList(BasePermission.CREATE))) {
+		if (!parentFolder.getPath().equals("/") && !super.aclService.hasRight(parentFolder, username, Arrays.asList(BasePermission.CREATE))) {
 			throw new NotPermitedException("Inssuficient permissions for creating a folder at this path.");
 		}
 		

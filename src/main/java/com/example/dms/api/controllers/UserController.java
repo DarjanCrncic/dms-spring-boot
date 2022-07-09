@@ -36,6 +36,11 @@ public class UserController {
 	public List<DmsUserDTO> getAllUsers() {
 		return userService.findAll();
 	}
+	
+	@GetMapping("/details")
+	public DmsUserDTO getUserData(@RequestParam String username) {
+		return userService.findByUsername(username);
+	}
 
 	@GetMapping("/search")
 	public DmsUserDTO findUserUnique(@RequestParam Optional<String> username, @RequestParam Optional<String> email) {

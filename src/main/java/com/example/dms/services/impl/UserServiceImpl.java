@@ -32,6 +32,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 	}
 
 	@Override
+	@PreAuthorize("hasAuthority('READ_PRIVILEGE')")
 	public DmsUserDTO findByUsername(String username) {
 		Optional<DmsUser> foundUser = userRepository.findByUsername(username);
 		if(foundUser.isPresent()) {
@@ -41,6 +42,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 	}
 
 	@Override
+	@PreAuthorize("hasAuthority('READ_PRIVILEGE')")
 	public DmsUserDTO findByEmail(String email) {
 		Optional<DmsUser> foundUser = userRepository.findByEmail(email);
 		if(foundUser.isPresent()) {
