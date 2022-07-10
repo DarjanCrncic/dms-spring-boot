@@ -80,13 +80,13 @@ public class DataLoader implements ApplicationRunner {
     	if (userRepository.findByUsername("user").isEmpty()) {
     		userRepository.save(user);
     	} 
-    	DmsUser test = DmsUser.builder().username("test").password(dummyPassword).firstName("testF").lastName("testL").email("test.test@gmail.com")
+    	DmsUser test = DmsUser.builder().username("tester").password(dummyPassword).firstName("testF").lastName("testL").email("tester.tester@gmail.com")
     			.roles(Arrays.asList(userRole)).privileges(Arrays.asList(read, write, create)).build();	
-    	if (userRepository.findByUsername("test").isEmpty()) {
+    	if (userRepository.findByUsername("tester").isEmpty()) {
     		userRepository.save(test);
     	} 
     	DmsUser admin = DmsUser.builder().username("admin").password(dummyPassword).firstName("adminF").lastName("adminL").email("admin.admin@gmail.com")
-    			.roles(Arrays.asList(adminRole)).privileges(Arrays.asList(read, write, create, version, permission, delete)).build();	
+    			.roles(Arrays.asList(adminRole, userRole)).privileges(Arrays.asList(read, write, create, version, permission, delete)).build();	
     	if (userRepository.findByUsername("admin").isEmpty()) {
     		userRepository.save(admin);
     	} 

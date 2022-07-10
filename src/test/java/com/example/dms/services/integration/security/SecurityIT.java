@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.example.dms.api.dtos.user.DmsUserDTO;
@@ -38,18 +37,9 @@ class SecurityIT {
 	}
 	
 	@Test
-	@WithUserDetails("admin")
-	void testSecurityWithUserDetails() {
-		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
-		userService.deleteById(user.getId());
-		
-		assertTrue(userRepository.findByUsername("test").isEmpty());
-	}
-	
-	@Test
 	@WithMockUser(username = "testuser", authorities = { "ROLE_ADMIN" })
 	void testSecurityWithMockUser() {
-		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
+		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test","testtest.test@gmail.com"));
 		userService.deleteById(user.getId());
 		
 		assertTrue(userRepository.findByUsername("test").isEmpty());
@@ -58,7 +48,7 @@ class SecurityIT {
 	@Test
 	@WithMockUser(username = "testuser", roles = { "ADMIN" })
 	void testSecurityWithMockUserRple() {
-		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
+		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test","testtest.test@gmail.com"));
 		userService.deleteById(user.getId());
 		
 		assertTrue(userRepository.findByUsername("test").isEmpty());
@@ -67,7 +57,7 @@ class SecurityIT {
 	@Test
 	@WithMockUser(username = "testuser", authorities = { "ROLE_USER" })
 	void testSecurityException() {
-		NewUserDTO dto = new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com");
+		NewUserDTO dto = new NewUserDTO("testuser", "12345", "test", "test","testtest.test@gmail.com");
 		assertThrows(AccessDeniedException.class, () -> userService.createUser(dto));
 	}
 	

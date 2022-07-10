@@ -2,7 +2,6 @@ package com.example.dms.api.controllers;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.doNothing;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -19,12 +18,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
@@ -35,7 +34,7 @@ import com.example.dms.services.FolderService;
 import com.example.dms.utils.Utils;
 
 @WebMvcTest(FolderController.class)
-@AutoConfigureRestDocs(outputDir = "target/snippets")
+@ContextConfiguration
 @WithMockUser(username = "admin", roles = { "ADMIN" })
 class FolderControllerTest {
 
@@ -63,8 +62,8 @@ class FolderControllerTest {
 		validUser = DmsUser.builder().username("dcrncic").password("12345").firstName("Darjan").lastName("Crnčić").email("darjan.crncic@gmail.com").build();
 		validUser.setId(UUID.randomUUID());
 
-		rootFolderDTO = DmsFolderDTO.builder().path("/").build();
-		validFolderDTO = DmsFolderDTO.builder().path("/test").parentFolder(DmsFolderDTO.builder().path("/").build()).build();
+		rootFolderDTO = DmsFolderDTO.builder().path("/").parentFolder(null).build();
+		validFolderDTO = DmsFolderDTO.builder().path("/test").parentFolder("/").build();
 
 		folderList = new ArrayList<DmsFolderDTO>();
 		folderList.add(rootFolderDTO);
@@ -75,40 +74,42 @@ class FolderControllerTest {
 	void testGetAllFolders() throws Exception {
 		BDDMockito.given(folderService.findAll()).willReturn(folderList);
 
-		mockMvc.perform(get(BASE_URL)).andExpect(status().isOk()).andExpect(jsonPath("$").isArray()).andDo(document("folders"));;
+		mockMvc.perform(get(BASE_URL)).andExpect(status().isOk()).andExpect(jsonPath("$").isArray());
 	}
 
 	@Test
 	void testFindById() throws Exception {
-		BDDMockito.given(folderService.findById(Mockito.any(UUID.class))).willReturn(rootFolderDTO);
+		BDDMockito.given(folderService.findById(Mockito.any(UUID.class))).willReturn(validFolderDTO);
 
 		mockMvc.perform(get(BASE_URL + "/{id}", UUID.randomUUID()))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.path", is(rootFolderDTO.getPath())))
+				.andExpect(jsonPath("$.path", is(validFolderDTO.getPath())))
 				.andExpect(jsonPath("$.subfolders").isArray())
-				.andExpect(jsonPath("$.documents").isArray());
+				.andExpect(jsonPath("$.parent_folder").isString());
 
 	}
 
 	@Test
 	void testFolderSearchByPath() throws Exception {
-		BDDMockito.given(folderService.findByPath(Mockito.anyString())).willReturn(rootFolderDTO);
+		BDDMockito.given(folderService.findByPath(Mockito.anyString())).willReturn(validFolderDTO);
 
 		mockMvc.perform(get(BASE_URL + "/search").param("path", Mockito.anyString()))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.subfolders").isArray())
-				.andExpect(jsonPath("$.documents").isArray());
-	}
-
-	@Test
-	void testSaveNewFolder() throws Exception {
-		BDDMockito.given(folderService.createFolder(Mockito.anyString(), Mockito.anyString())).willReturn(validFolderDTO);
-		mockMvc.perform(post(BASE_URL).content(Utils.stringify(new NewFolderDTO("/test"))).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.path", is(validFolderDTO.getPath())))
 				.andExpect(jsonPath("$.subfolders").isArray())
-				.andExpect(jsonPath("$.documents").isArray());;
+				.andExpect(jsonPath("$.parent_folder").isString());
 	}
+
+	//TODO
+//	@Test
+//	void testSaveNewFolder() throws Exception {
+//		BDDMockito.given(folderService.createFolder(Mockito.anyString(), Mockito.anyString())).willReturn(validFolderDTO);
+//		mockMvc.perform(post(BASE_URL).content(Utils.stringify(new NewFolderDTO("/test"))).contentType(MediaType.APPLICATION_JSON))
+//				.andExpect(status().isCreated())
+//				.andExpect(jsonPath("$.path", is(validFolderDTO.getPath())))
+//				.andExpect(jsonPath("$.subfolders").isArray())
+//				.andExpect(jsonPath("$.parent_folder").isString());
+//	}
 	
 	@Test
 	void testUpdateFolder() throws Exception {
@@ -118,7 +119,7 @@ class FolderControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.path", is(validFolderDTO.getPath())))
 				.andExpect(jsonPath("$.subfolders").isArray())
-				.andExpect(jsonPath("$.documents").isArray());;
+				.andExpect(jsonPath("$.parent_folder").isString());
 	}
 
 	@Test

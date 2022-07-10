@@ -182,6 +182,10 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 		doc.setImutable(true);
 		save(doc);
+		
+		// TODO: all rights should be transfered?
+//		super.aclService.grantRightsOnObject(newVersion, creator.getUsername(), 
+//				Arrays.asList(BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE));
 
 		return save(newVersion);
 	}

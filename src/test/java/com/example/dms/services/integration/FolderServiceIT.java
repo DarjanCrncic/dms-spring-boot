@@ -149,6 +149,7 @@ class FolderServiceIT {
 	}
 
 	@Test
+	// TODO
 	@DisplayName("Test moving documents from folder to folder.")
 	void moveDocumentToDifferentFolder() {
 		folder = folderService.findById(folder.getId());
@@ -162,6 +163,7 @@ class FolderServiceIT {
 	}
 
 	@Test
+	// TODO
 	@DisplayName("Test moving documents from folder to folder with security.")
 	void moveDocumentToDifferentFolderSecurityTest() {
 		DmsFolderDTO subFolderPerm = folderService.createFolder("/test/perm", "user");

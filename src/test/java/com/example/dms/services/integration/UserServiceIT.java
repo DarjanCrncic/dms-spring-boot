@@ -23,7 +23,7 @@ import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 
 @SpringBootTest
 @ContextConfiguration
-@WithMockUser(roles = "ADMIN")
+@WithMockUser(authorities = {"READ_PRIVILEGE", "ROLE_ADMIN", "ROLE_USER"})
 class UserServiceIT {
 
 	@Autowired
@@ -39,7 +39,7 @@ class UserServiceIT {
 	
 	@BeforeEach
 	void setUp() {
-		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test","test.test@gmail.com"));
+		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test","testtest.test@gmail.com"));
 	}
 	
 	@AfterEach
@@ -55,7 +55,7 @@ class UserServiceIT {
 		NewUserDTO userDTO = new NewUserDTO("testuser", "12345", "test", "test","test1.test@gmail.com");
 		assertThrows(UniqueConstraintViolatedException.class, () -> userService.createUser(userDTO));
 		
-		NewUserDTO secondUserDTO = new NewUserDTO("testuser1", "12345", "test", "test","test.test@gmail.com");
+		NewUserDTO secondUserDTO = new NewUserDTO("testuser1", "12345", "test", "test","testtest.test@gmail.com");
 		assertThrows(UniqueConstraintViolatedException.class, () -> userService.createUser(secondUserDTO));
 	}
 	

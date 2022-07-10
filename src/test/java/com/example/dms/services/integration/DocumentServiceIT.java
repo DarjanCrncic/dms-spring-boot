@@ -114,6 +114,7 @@ class DocumentServiceIT {
 
 	@Test
 	@DisplayName("Test document versioning and previous version imutability.")
+	//TODO
 	void testVersioning() {
 		newVersion = documentService.createNewVersion(newDocument.getId());
 		newDocument = documentService.findById(newDocument.getId());
