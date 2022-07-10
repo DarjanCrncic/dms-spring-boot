@@ -97,7 +97,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		newFolder = folderRepository.save(newFolder);
 		
 		super.aclService.grantRightsOnObject(newFolder, username, 
-				Arrays.asList(BasePermission.READ, BasePermission.WRITE, BasePermission.CREATE, BasePermission.DELETE));
+				Arrays.asList(BasePermission.READ, BasePermission.WRITE, BasePermission.CREATE, BasePermission.DELETE, BasePermission.ADMINISTRATION));
 		return folderMapper.entityToDto(newFolder);
 	}
 

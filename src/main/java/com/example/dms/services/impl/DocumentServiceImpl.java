@@ -100,7 +100,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		newDocumentObject.setPredecessorId(newDocumentObject.getId());
 		
 		super.aclService.grantRightsOnObject(newDocumentObject, creator.getUsername(), 
-				Arrays.asList(BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE));
+				Arrays.asList(BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE, BasePermission.ADMINISTRATION));
 		
 		return save(newDocumentObject);
 	}
@@ -136,6 +136,10 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (doc.isImutable()) {
 			throw new BadRequestException("Object is immutable and you cannot add content to it.");
+		}
+		if (doc.getContent() != null) {
+			throw new BadRequestException("Object already has content.");
+			// TODO create new version?
 		}
 		String path = file.getOriginalFilename();
 		if (path == null) {

@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,7 @@ import com.example.dms.security.DmsUserDetails;
 import com.example.dms.security.JwtUtils;
 import com.example.dms.security.LoginRequest;
 import com.example.dms.security.LoginResponse;
+import com.example.dms.utils.exceptions.BadRequestException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,10 +34,15 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
+		
+		Authentication authentication = null;
+		try {
+			authentication = authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+		} catch (BadCredentialsException e) {
+			throw new BadRequestException("Invalid username or password");
+		}
+		
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generateJwtToken(authentication);
 		
