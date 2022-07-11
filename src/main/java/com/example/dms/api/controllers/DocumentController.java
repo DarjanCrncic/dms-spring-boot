@@ -34,12 +34,10 @@ import com.example.dms.services.DocumentService;
 import com.example.dms.utils.exceptions.BadRequestException;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @RestController
 @RequestMapping("/api/v1/documents")
 @RequiredArgsConstructor
-@Log4j2
 public class DocumentController {
 
 	private final DocumentService documentService;
@@ -54,12 +52,7 @@ public class DocumentController {
 
 	@GetMapping
 	public List<DmsDocumentDTO> getAllDocuments(@RequestParam Optional<String> search, Optional<SortDTO> sort) {
-		log.debug("sort data: {}", sort.toString());
-		if (search.isPresent()) {
-			log.debug("search: {}", search.get());
-			return documentService.searchAll(search.get(), sort);
-		}
-		return documentService.getAllDocuments(sort);
+		return documentService.searchAll(search, sort);
 	}
 
 	@PostMapping("/batch")

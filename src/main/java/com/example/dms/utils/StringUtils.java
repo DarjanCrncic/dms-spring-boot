@@ -25,4 +25,8 @@ public class StringUtils {
 		}
 		return builder.toString();
 	}
+	
+	public static long extractNumOfChars(String word, char c) {
+		return word.chars().filter(a -> a == c).count();
+	}
 }

@@ -27,10 +27,8 @@ public interface DocumentService extends CrudService<DmsDocument, DmsDocumentDTO
 
 	DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch);
 
-	List<DmsDocumentDTO> getAllDocuments(Optional<SortDTO> sort);
-
 	ResponseEntity<byte[]> downloadContent(UUID id);
 
-	List<DmsDocumentDTO> searchAll(String search, Optional<SortDTO> sort);
+	List<DmsDocumentDTO> searchAll(Optional<String> search, Optional<SortDTO> sort);
 
 }

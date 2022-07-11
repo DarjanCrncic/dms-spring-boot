@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -25,7 +23,7 @@ import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.services.DocumentService;
 import com.example.dms.services.FolderService;
-import com.example.dms.utils.Constants;
+import com.example.dms.utils.FolderUtils;
 import com.example.dms.utils.exceptions.BadRequestException;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.NotPermitedException;
@@ -35,10 +33,10 @@ import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 @Transactional
 public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolderDTO> implements FolderService {
 
-	FolderRepository folderRepository;
-	FolderMapper folderMapper;
-	DocumentRepository documentRepository;
-	DocumentService documentService;
+	private final FolderRepository folderRepository;
+	private final FolderMapper folderMapper;
+	private final DocumentRepository documentRepository;
+	private final DocumentService documentService;
 
 	public FolderServiceImpl(FolderRepository folderRepository, FolderMapper folderMapper,
 			DocumentRepository documentRepository, DmsAclService aclService, DocumentService documentService) {
@@ -85,7 +83,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
 	public DmsFolderDTO createFolder(String path, String username) {
 		checkPath(path);
-		DmsFolder parentFolder = folderRepository.findByPath(getParentFolderPath(path))
+		DmsFolder parentFolder = folderRepository.findByPath(FolderUtils.getParentFolderPath(path))
 				.orElseThrow(DmsNotFoundException::new);
 		if (!parentFolder.getPath().equals("/") && !super.aclService.hasRight(parentFolder, username, Arrays.asList(BasePermission.CREATE))) {
 			throw new NotPermitedException("Inssuficient permissions for creating a folder at this path.");
@@ -108,30 +106,22 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		// add check to make sure only the folder name is changed
 		checkPath(path);
 		DmsFolder oldFolder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
+		if (!FolderUtils.isSameParentFolder(oldFolder.getPath(), path))
+			throw new BadRequestException("Folder path invalid, folder position does not match.");
+		
 		oldFolder.setPath(path);
 		return save(oldFolder);
 	}
 
 	private void checkPath(String path) {
-		if (!validateFolderPath(path)) {
+		if (!FolderUtils.validateFolderPath(path)) {
 			throw new BadRequestException("Folder path: '" + path + "' does not match required parameters.");
 		}
 		if (folderRepository.findByPath(path).isPresent()) {
 			throw new UniqueConstraintViolatedException("Folder with path: '" + path + "' already exists.");
 		}
 	}
-
-	public static boolean validateFolderPath(String path) {
-		Pattern p = Pattern.compile(Constants.FOLDER_PATH_REGEX);
-		Matcher m = p.matcher(path);
-		return m.matches();
-	}
-
-	public static String getParentFolderPath(String path) {
-		int i = path.lastIndexOf("/");
-		return i == 0 ? "/" : path.substring(0, i);
-	}
-
+	
 	// TODO: still not used, needs a check
 	@Override
 	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','WRITE') "

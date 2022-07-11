@@ -12,11 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.dms.api.dtos.BaseEntityDTO;
 import com.example.dms.api.mappers.MapperInterface;
 import com.example.dms.domain.BaseEntity;
-import com.example.dms.services.CrudService;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 @Transactional
-public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends BaseEntityDTO> implements CrudService<T, D, UUID>{
+public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends BaseEntityDTO> {
 
 	JpaRepository<T, UUID> repository;
 	MapperInterface<T, D> mapper;
@@ -29,35 +28,30 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends Base
 		this.aclService = aclService;
 	}
 
-	@Override
 	@PostFilter("hasAuthority('READ_PRIVILEGE')")
 	public List<D> findAll() {
 		return mapper.entityListToDtoList(repository.findAll());
 	}
 
-	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ') "
 			+ "or hasPermission(#id,'com.example.dms.domain.DmsFolder','READ')")
 	public D findById(UUID id) {
 		return mapper.entityToDto(checkPresent(id));
 	}
 
-	@Override
 	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
 	public D save(T object) {
 		return mapper.entityToDto(repository.saveAndFlush(object));
 	}
 
-	@Override
-	@PreAuthorize("hasRole('ADMIN') or hasPermission(#object.id,'com.example.dms.domain.DmsDocument','DELETE') "
+	@PreAuthorize("hasPermission(#object.id,'com.example.dms.domain.DmsDocument','DELETE') "
 			+ "or hasPermission(#object.id,'com.example.dms.domain.DmsFolder','DELETE')")
 	public void delete(T object) {
 		aclService.removeEntriesOnDelete(checkPresent(object.getId()));
 		repository.delete(object);
 	}
 
-	@Override
-	@PreAuthorize("hasRole('ADMIN') or hasPermission(#id,'com.example.dms.domain.DmsDocument','DELETE') "
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','DELETE') "
 			+ "or hasPermission(#id,'com.example.dms.domain.DmsFolder','DELETE')")
 	public void deleteById(UUID id) {
 		aclService.removeEntriesOnDelete(checkPresent(id));

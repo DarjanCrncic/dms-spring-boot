@@ -25,9 +25,9 @@ import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 @PreAuthorize("hasRole('ADMIN')")
 public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDTO> implements GroupService{
 
-	GroupRepository groupRepository;
-	UserRepository userRepository;
-	GroupMapper groupMapper;
+	private final GroupRepository groupRepository;
+	private final UserRepository userRepository;
+	private final GroupMapper groupMapper;
 	
 	public GroupServiceImpl(GroupRepository groupRepository, UserRepository userRepository, GroupMapper groupMapper, DmsAclService aclService) {
 		super(groupRepository, groupMapper, aclService);

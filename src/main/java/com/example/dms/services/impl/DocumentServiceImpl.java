@@ -46,13 +46,12 @@ import com.example.dms.utils.exceptions.NotPermitedException;
 @Transactional
 public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsDocumentDTO> implements DocumentService {
 
-	UserRepository userRepository;
-	DocumentRepository documentRepository;
-	DocumentMapper documentMapper;
-	TypeRepository typeRepository;
-	ContentRepository contentRepository;
-	FolderRepository folderRepository;
-	DmsAclService aclService;
+	private final UserRepository userRepository;
+	private final DocumentRepository documentRepository;
+	private final DocumentMapper documentMapper;
+	private final TypeRepository typeRepository;
+	private final ContentRepository contentRepository;
+	private final FolderRepository folderRepository;
 
 	public DocumentServiceImpl(UserRepository userRepository, DocumentRepository documentRepository,
 			DocumentMapper documentMapper, TypeRepository typeRepository, DmsAclService aclService,
@@ -64,7 +63,6 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		this.typeRepository = typeRepository;
 		this.contentRepository = contentRepository;
 		this.folderRepository = folderRepository;
-		this.aclService = aclService;
 	}
 
 	@Override
@@ -78,8 +76,8 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	public DmsDocumentDTO createDocument(NewDocumentDTO newDocumentDTO) {
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
 		
-		// TODO: REplace with throws
-		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getType()).orElse(null);
+		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getType())
+				.orElseThrow(() -> new DmsNotFoundException("Given type does not exist."));
 		DmsUser creator = userRepository.findByUsername(newDocumentDTO.getUsername()).orElseThrow(() -> new DmsNotFoundException("Invalid user."));
 		DmsFolder folder = folderRepository.findByPath("/").orElseThrow(() -> new InternalException("Root folder not set up."));
 		
@@ -109,8 +107,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') && hasAuthority('WRITE_PRIVILEGE')")
 	public DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
-		// TODO: replace with throws
-		DmsType type = typeRepository.findByTypeName(modifyDocumentDTO.getType()).orElse(null);
+		
 		if (doc.isImutable()) {
 			throw new BadRequestException("This version of the document is immutable and cannot be modified.");
 		}
@@ -118,13 +115,11 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 			documentMapper.updateDocumentPatch(modifyDocumentDTO, doc);
 		} else {
 			documentMapper.updateDocumentPut(modifyDocumentDTO, doc);
-			if (type == null) {
-				doc.setType(null);
-			}
 		}
-		if (type != null) {
-			doc.addType(type);
-			doc = documentRepository.save(doc);
+		if (modifyDocumentDTO.getType() != null) {
+			DmsType newType = typeRepository.findByTypeName(modifyDocumentDTO.getType())
+					.orElseThrow(() -> new DmsNotFoundException("Given type does not exist."));
+			doc.addType(newType);
 		}
 
 		return save(doc);
@@ -203,14 +198,9 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	private DmsDocument copyDocument(DmsDocument original) {
 		return DmsDocument.builder().content(original.getContent()).creator(original.getCreator())
 				.description(original.getDescription()).parentFolder(original.getParentFolder())
-				.objectName(original.getObjectName()).build();
+				.objectName(original.getObjectName()).type(original.getType()).build();
 	}
 
-	@Override
-	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') && hasAuthority('READ_PRIVILEGE')")
-	public List<DmsDocumentDTO> getAllDocuments(Optional<SortDTO> sort) {
-		return documentMapper.entityListToDtoList(documentRepository.findAll(Utils.toSort(sort)));
-	}
 
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ') && hasAuthority('READ_PRIVILEGE')")
@@ -227,9 +217,12 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') && hasAuthority('READ_PRIVILEGE')")
-	public List<DmsDocumentDTO> searchAll(String search, Optional<SortDTO> sort) {
-		SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
-		return documentMapper.entityListToDtoList(documentRepository.findAll(builder.parse(search), Utils.toSort(sort)));
+	public List<DmsDocumentDTO> searchAll(Optional<String> search, Optional<SortDTO> sort) {
+		if (search.isPresent()) {
+			SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
+			return documentMapper.entityListToDtoList(documentRepository.findAll(builder.parse(search.get()), Utils.toSort(sort)));
+		}
+		return documentMapper.entityListToDtoList(documentRepository.findAll(Utils.toSort(sort)));
 	}
 
 }

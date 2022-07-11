@@ -22,6 +22,7 @@ import com.example.dms.domain.DmsFolder;
 import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.impl.FolderServiceImpl;
+import com.example.dms.utils.FolderUtils;
 import com.example.dms.utils.exceptions.BadRequestException;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 
@@ -44,7 +45,7 @@ class FolderServiceTest {
 	DocumentService documentService;
 	
 	@InjectMocks
-	FolderService folderService = new FolderServiceImpl(folderRepository, folderMapper, documentRepository, aclService, documentService);
+	FolderServiceImpl folderService;
 
 	Optional<DmsFolder> emptyFolder = Optional.empty();
 	Optional<DmsFolder> rootFolder = Optional.of(DmsFolder.builder().path("/").build());
@@ -57,30 +58,35 @@ class FolderServiceTest {
 	@Test
 	void folderFindByPathTest() {
 		BDDMockito.given(folderRepository.findByPath(Mockito.anyString())).willReturn(emptyFolder);
-		String path = Mockito.anyString();
-		assertThrows(DmsNotFoundException.class, () -> folderService.findByPath(path));
+		assertThrows(DmsNotFoundException.class, () -> folderService.findByPath("/test"));
 	}
 
 	@Test
 	void testFolderRegex() {
-		assertTrue(FolderServiceImpl.validateFolderPath("/test"));
-		assertTrue(FolderServiceImpl.validateFolderPath("/test/test2/test1"));
-		assertFalse(FolderServiceImpl.validateFolderPath("test"));
-		assertFalse(FolderServiceImpl.validateFolderPath("/test/"));
-		assertFalse(FolderServiceImpl.validateFolderPath("//test"));
+		assertTrue(FolderUtils.validateFolderPath("/test"));
+		assertTrue(FolderUtils.validateFolderPath("/test/test2/test1"));
+		assertFalse(FolderUtils.validateFolderPath("test"));
+		assertFalse(FolderUtils.validateFolderPath("/test/"));
+		assertFalse(FolderUtils.validateFolderPath("//test"));
 	}
 
 	@Test
 	void testParentFolderExtraction() {
-		assertEquals("/test1", FolderServiceImpl.getParentFolderPath("/test1/test2"));
-		assertEquals("/test1/test2", FolderServiceImpl.getParentFolderPath("/test1/test2/test3"));
+		assertEquals("/test1", FolderUtils.getParentFolderPath("/test1/test2"));
+		assertEquals("/test1/test2", FolderUtils.getParentFolderPath("/test1/test2/test3"));
 
-		assertEquals("/", FolderServiceImpl.getParentFolderPath("/test1"));
+		assertEquals("/", FolderUtils.getParentFolderPath("/test1"));
 	}
 
 	@Test
 	void testIvalidFolderPathWhenCreating() {
 		assertThrows(BadRequestException.class, () -> folderService.createFolder("notStartingWithFrontSlash", "admin"));
 		assertThrows(BadRequestException.class, () -> folderService.createFolder("/endingWithFrontSlash/", "admin"));
+	}
+	
+	@Test 
+	void testSameParentFolderPath() {
+		assertTrue(FolderUtils.isSameParentFolder("/prvi/drugi/old", "/prvi/drugi/new"));
+		assertFalse(FolderUtils.isSameParentFolder("/prvi/treci/old", "/prvi/drugi/new"));
 	}
 }

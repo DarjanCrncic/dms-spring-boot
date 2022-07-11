@@ -61,7 +61,7 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass{
 	@ToString.Exclude
 	private List<String> keywords = new ArrayList<>();
 	
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name="type_id")
 	@Default
 	@JsonBackReference

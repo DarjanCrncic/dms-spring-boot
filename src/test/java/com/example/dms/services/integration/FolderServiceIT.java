@@ -84,7 +84,7 @@ class FolderServiceIT {
 		subFolder = folderService.createFolder("/test/inside", "user");
 		folderObject = folderRepository.findById(folder.getId()).orElse(null);
 		newDocument = documentService.createDocument(NewDocumentDTO.builder().objectName("TestTest")
-				.description("Ovo je test u testu").username("user").parentFolder(folderObject.getPath()).build());
+				.description("Ovo je test u testu").username("user").parentFolder(folderObject.getPath()).type("document").build());
 
 	}
 
@@ -118,7 +118,7 @@ class FolderServiceIT {
 	@DisplayName("Test deleting folder and documents within.")
 	void deleteFolderTest() {
 		DmsDocumentDTO newDocument = documentService.createDocument(NewDocumentDTO.builder().username("user")
-				.objectName("TestTest").description("Ovo je test u testu").parentFolder(folder.getPath()).build());
+				.objectName("TestTest").description("Ovo je test u testu").parentFolder(folder.getPath()).type("document").build());
 
 		assertEquals(folder.getPath(), newDocument.getParentFolder());
 
@@ -168,7 +168,7 @@ class FolderServiceIT {
 	void moveDocumentToDifferentFolderSecurityTest() {
 		DmsFolderDTO subFolderPerm = folderService.createFolder("/test/perm", "user");
 		documentWithPermissions = documentService.createDocument(NewDocumentDTO.builder().objectName("Permissions")
-				.description("Test with permission").username("user").build());
+				.description("Test with permission").username("user").type("document").build());
 		subFolderPerm = folderService.moveFilesToFolder(subFolderPerm.getId(),
 				Arrays.asList(documentWithPermissions.getId()));
 
