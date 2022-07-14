@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 
+import com.example.dms.api.dtos.administration.GrantDTO;
 import com.example.dms.domain.security.AclAllowedClass;
 
 public interface DmsAclService {
@@ -20,5 +21,9 @@ public interface DmsAclService {
 			Collection<Permission> permissions);
 
 	<T extends AclAllowedClass> boolean hasRight(T object, String username, Collection<Permission> permissions);
+
+	<T extends AclAllowedClass> void revokeRightsOnObject(T object, String username, List<Permission> permissions);
+
+	<T extends AclAllowedClass> List<GrantDTO> getRights(T object);
 
 }

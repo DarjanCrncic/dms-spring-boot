@@ -43,7 +43,6 @@ public class SpecificationBuilder<T> {
         	else
         		result = Specification.where(result).and(specs.get(i));
         }       
-        log.debug(result);
         return result;
     }
     
