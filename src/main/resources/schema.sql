@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS acl_entry (
     audit_success BOOLEAN NOT NULL,
     audit_failure BOOLEAN NOT NULL,
     UNIQUE KEY unique_acl_entry (acl_object_identity, ace_order),
+    UNIQUE KEY unique_acl_entry_custom (acl_object_identity, sid, mask),
     CONSTRAINT fk_acl_entry_object FOREIGN KEY (acl_object_identity) REFERENCES acl_object_identity (id),
     CONSTRAINT fk_acl_entry_acl FOREIGN KEY (sid) REFERENCES acl_sid (id)
 ) ENGINE=InnoDB;

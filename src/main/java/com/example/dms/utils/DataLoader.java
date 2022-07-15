@@ -1,6 +1,7 @@
 package com.example.dms.utils;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -54,9 +55,9 @@ public class DataLoader implements ApplicationRunner {
     	if (version == null) {
     		version = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.VERSION_PRIVILEGE.name()).build());
     	}
-    	DmsPrivilege permission = privilegeRepository.findByName(Privileges.PERMISSION_PRIVILEGE.name()).orElse(null);
-    	if (permission == null) {
-    		permission = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.PERMISSION_PRIVILEGE.name()).build());
+    	DmsPrivilege administration = privilegeRepository.findByName(Privileges.ADMINISTRATION_PRIVILEGE.name()).orElse(null);
+    	if (administration == null) {
+    		administration = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.ADMINISTRATION_PRIVILEGE.name()).build());
     	}
     	DmsPrivilege delete = privilegeRepository.findByName(Privileges.DELETE_PRIVILEGE.name()).orElse(null);
     	if (delete == null) {
@@ -76,7 +77,7 @@ public class DataLoader implements ApplicationRunner {
     	// test and admin users
     	String dummyPassword = passwordEncoder.encode("12345");
     	DmsUser user = DmsUser.builder().username("user").password(dummyPassword).firstName("userF").lastName("userL").email("user.user@gmail.com")
-    			.roles(Arrays.asList(userRole)).privileges(Arrays.asList(read)).build();	
+    			.roles(Arrays.asList(userRole)).privileges(Collections.emptyList()).build();	
     	if (userRepository.findByUsername("user").isEmpty()) {
     		userRepository.save(user);
     	} 
@@ -86,7 +87,7 @@ public class DataLoader implements ApplicationRunner {
     		userRepository.save(test);
     	} 
     	DmsUser admin = DmsUser.builder().username("admin").password(dummyPassword).firstName("adminF").lastName("adminL").email("admin.admin@gmail.com")
-    			.roles(Arrays.asList(adminRole, userRole)).privileges(Arrays.asList(read, write, create, version, permission, delete)).build();	
+    			.roles(Arrays.asList(adminRole, userRole)).privileges(Arrays.asList(read, write, create, version, administration, delete)).build();	
     	if (userRepository.findByUsername("admin").isEmpty()) {
     		userRepository.save(admin);
     	} 

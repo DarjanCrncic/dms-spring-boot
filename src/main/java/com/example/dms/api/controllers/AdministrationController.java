@@ -22,15 +22,26 @@ public class AdministrationController {
 	
 	private final AdministrationService administrationService;
 	
-	@PostMapping("/grant/{id}")
-	public List<GrantDTO> grantPermissions(@RequestBody List<GrantDTO> grantDTOs, @PathVariable UUID id) {
-		administrationService.grantRightsToUsers(grantDTOs, id);
+	@PostMapping("/documents/grant/{id}")
+	public List<GrantDTO> grantPermissionsDocuments(@RequestBody List<GrantDTO> grantDTOs, @PathVariable UUID id) {
+		administrationService.grantRightsForDocument(grantDTOs, id);
+		return grantDTOs;
+	}
+	
+	@PostMapping("/folders/grant/{id}")
+	public List<GrantDTO> grantPermissionsFolders(@RequestBody List<GrantDTO> grantDTOs, @PathVariable UUID id) {
+		administrationService.grantRightsForFolder(grantDTOs, id);
 		return grantDTOs;
 	}
 	
 	@GetMapping("/documents/{id}")
 	public List<GrantDTO> getPermissionsForDocument(@PathVariable UUID id) {
 		return administrationService.getRightsForDocument(id);
+	}
+	
+	@GetMapping("/folders/{id}")
+	public List<GrantDTO> getPermissionsForFolder(@PathVariable UUID id) {
+		return administrationService.getRightsForFolder(id);
 	}
 
 }

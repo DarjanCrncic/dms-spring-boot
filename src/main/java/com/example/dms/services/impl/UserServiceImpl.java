@@ -1,5 +1,6 @@
 package com.example.dms.services.impl;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,9 +31,15 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 		this.userRepository = userRepository;
 		this.userMapper = userMapper;
 	}
-
+	
 	@Override
-	@PreAuthorize("hasAuthority('READ_PRIVILEGE')")
+	@PreAuthorize("hasRole('USER')")
+	public List<DmsUserDTO> findAll() {
+		return userMapper.entityListToDtoList(userRepository.findAll());
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('USER')")
 	public DmsUserDTO findByUsername(String username) {
 		Optional<DmsUser> foundUser = userRepository.findByUsername(username);
 		if(foundUser.isPresent()) {
@@ -42,7 +49,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 	}
 
 	@Override
-	@PreAuthorize("hasAuthority('READ_PRIVILEGE')")
+	@PreAuthorize("hasRole('USER')")
 	public DmsUserDTO findByEmail(String email) {
 		Optional<DmsUser> foundUser = userRepository.findByEmail(email);
 		if(foundUser.isPresent()) {

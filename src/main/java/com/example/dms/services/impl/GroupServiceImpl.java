@@ -35,6 +35,11 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 		this.groupRepository = groupRepository;
 		this.userRepository = userRepository;
 	}
+	
+	@Override
+	public List<DmsGroupDTO> findAll() {
+		return groupMapper.entityListToDtoList(groupRepository.findAll());
+	}
 
 	@Override
 	public DmsGroupDTO addUserToGroup(UUID groupId, UUID userId) {

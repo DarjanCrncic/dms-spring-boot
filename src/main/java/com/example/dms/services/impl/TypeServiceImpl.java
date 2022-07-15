@@ -1,5 +1,7 @@
 package com.example.dms.services.impl;
 
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,16 +22,21 @@ public class TypeServiceImpl extends EntityCrudServiceImpl<DmsType, DmsTypeDTO> 
 
 	private final TypeRepository typeRepository;
 	private final TypeMapper typeMapper;
-	private final DmsAclService aclService;
 
 	protected TypeServiceImpl(TypeRepository repository, TypeMapper mapper, DmsAclService aclService) {
 		super(repository, mapper, aclService);
 		this.typeMapper = mapper;
 		this.typeRepository = repository;
-		this.aclService = aclService;
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('USER')")
+	public List<DmsTypeDTO> findAll() {
+		return this.typeMapper.entityListToDtoList(typeRepository.findAll());
 	}
 
 	@Override
+	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
 	public DmsTypeDTO createType(NewTypeDTO dmsTypeDTO) {
 		if (typeRepository.existsByTypeName(dmsTypeDTO.getTypeName())) {
 			throw new UniqueConstraintViolatedException(

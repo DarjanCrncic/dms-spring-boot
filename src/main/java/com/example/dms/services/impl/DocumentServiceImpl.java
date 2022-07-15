@@ -66,7 +66,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') && hasAuthority('READ_PRIVILEGE')")
+	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
 	public List<DmsDocumentDTO> findAll() {
 		return documentMapper.entityListToDtoList(documentRepository.findAll());
 	}
@@ -104,7 +104,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') && hasAuthority('WRITE_PRIVILEGE')")
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') || hasAuthority('WRITE_PRIVILEGE')")
 	public DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		
@@ -126,7 +126,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') && hasAuthority('WRITE_PRIVILEGE')")
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') || hasAuthority('WRITE_PRIVILEGE')")
 	public void uploadFile(UUID id, MultipartFile file) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (doc.isImutable()) {
@@ -157,7 +157,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasAuthority('READ_PRIVILEGE')")
+	@PreAuthorize("hasPermission(#document,'READ')")
 	public boolean checkIsDocumentValidForDownload(DmsDocument document) {
 		if (document.getContent() == null || document.getContent().getContentType() == null
 				|| document.getContent().getOriginalFileName() == null || document.getContent().getContentSize() == 0)
@@ -190,7 +190,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') && hasAuthority('READ_PRIVILEGE')")
+	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
 	public List<DmsDocumentDTO> getAllVersions(UUID id) {
 		return documentMapper.entityListToDtoList(documentRepository.getAllVersions(id));
 	}
@@ -203,7 +203,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ') && hasAuthority('READ_PRIVILEGE')")
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
 	public ResponseEntity<byte[]> downloadContent(UUID id) {
 		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		checkIsDocumentValidForDownload(document);
@@ -216,7 +216,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') && hasAuthority('READ_PRIVILEGE')")
+	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
 	public List<DmsDocumentDTO> searchAll(Optional<String> search, Optional<SortDTO> sort) {
 		if (search.isPresent()) {
 			SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());

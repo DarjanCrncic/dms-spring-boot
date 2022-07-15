@@ -48,7 +48,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 	
 	@Override
-	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsFolder','READ') && hasAuthority('READ_PRIVILEGE') || filterObject.path == '/'")
+	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsFolder','READ') || hasAuthority('READ_PRIVILEGE') || filterObject.path == '/'")
 	public List<DmsFolderDTO> findAll() {
 		return folderMapper.entityListToDtoList(folderRepository.findAll());
 	}
@@ -70,7 +70,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 	
 	@Override
-	@PostAuthorize("hasPermission(returnObject.id,'com.example.dms.domain.DmsFolder','READ')")
+	@PostAuthorize("hasPermission(returnObject.id,'com.example.dms.domain.DmsFolder','READ') || hasAuthority('READ_PRIVILEGE')")
 	public DmsFolderDTO findByPath(String path) {
 		Optional<DmsFolder> folder = folderRepository.findByPath(path);
 		if (folder.isEmpty()) {
@@ -100,7 +100,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','WRITE') && hasAuthority('WRITE_PRIVILEGE')")
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','WRITE') || hasAuthority('WRITE_PRIVILEGE')")
 	public DmsFolderDTO updateFolder(UUID id, String path) {
 		// TODO: when updating folder it could cause the folder structure to change, 
 		// add check to make sure only the folder name is changed
@@ -126,7 +126,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	@Override
 	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','WRITE') "
 			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication) "
-			+ "&& hasAuthority('WRITE_PRIVILEGE')")
+			+ "|| hasAuthority('WRITE_PRIVILEGE')")
 	public DmsFolderDTO moveFilesToFolder(UUID folderId, List<UUID> documentIdList) {
 		DmsFolder folder = folderRepository.findById(folderId)
 				.orElseThrow(() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));
@@ -140,7 +140,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 
 	@Override
-	@PreAuthorize("hasRole('ADMIN') or hasPermission(#id,'com.example.dms.domain.DmsFolder','DELETE')")
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','DELETE') || hasAuthority('DELETE_PRIVILEGE')")
 	public void deleteFolder(UUID id) {
 		DmsFolder folder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		folder.getSubfolders().stream().forEach(sub -> deleteFolder(sub.getId()));

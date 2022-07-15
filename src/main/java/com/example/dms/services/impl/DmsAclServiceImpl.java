@@ -86,6 +86,7 @@ public class DmsAclServiceImpl implements DmsAclService {
 				acl.deleteAce(i);
 			}
 		}
+		aclService.updateAcl(acl);
 	}
 
 	@Override

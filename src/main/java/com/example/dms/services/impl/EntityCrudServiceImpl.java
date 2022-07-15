@@ -1,11 +1,9 @@
 package com.example.dms.services.impl;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +26,9 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends Base
 		this.aclService = aclService;
 	}
 
-	@PostFilter("hasAuthority('READ_PRIVILEGE')")
-	public List<D> findAll() {
-		return mapper.entityListToDtoList(repository.findAll());
-	}
-
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ') "
-			+ "or hasPermission(#id,'com.example.dms.domain.DmsFolder','READ')")
+			+ "or hasPermission(#id,'com.example.dms.domain.DmsFolder','READ') "
+			+ "or hasAuthority('READ_PRIVILEGE')")
 	public D findById(UUID id) {
 		return mapper.entityToDto(checkPresent(id));
 	}
@@ -45,14 +39,16 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends Base
 	}
 
 	@PreAuthorize("hasPermission(#object.id,'com.example.dms.domain.DmsDocument','DELETE') "
-			+ "or hasPermission(#object.id,'com.example.dms.domain.DmsFolder','DELETE')")
+			+ "or hasPermission(#object.id,'com.example.dms.domain.DmsFolder','DELETE') "
+			+ "or hasAuthority('DELETE_PRIVILEGE')")
 	public void delete(T object) {
 		aclService.removeEntriesOnDelete(checkPresent(object.getId()));
 		repository.delete(object);
 	}
 
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','DELETE') "
-			+ "or hasPermission(#id,'com.example.dms.domain.DmsFolder','DELETE')")
+			+ "or hasPermission(#id,'com.example.dms.domain.DmsFolder','DELETE') " 
+			+ "or hasAuthority('DELETE_PRIVILEGE')")
 	public void deleteById(UUID id) {
 		aclService.removeEntriesOnDelete(checkPresent(id));
 		repository.deleteById(id);
