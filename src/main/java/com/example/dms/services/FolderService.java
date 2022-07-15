@@ -19,6 +19,6 @@ public interface FolderService extends CrudService<DmsFolder, DmsFolderDTO, UUID
 
 	void deleteFolder(UUID id);
 
-	FolderTreeDTO getSubfolderTree(String path, String username);
+	FolderTreeDTO getSubfolderTree(String path, String username, boolean hasRead);
 	
 }

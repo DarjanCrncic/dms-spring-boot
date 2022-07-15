@@ -54,10 +54,10 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 	
 	@Override
-	public FolderTreeDTO getSubfolderTree(String path, String username) {
+	public FolderTreeDTO getSubfolderTree(String path, String username, boolean hasRead) {
 		List<UUID> vissibleFolders = folderRepository.getVissibleFolderIds(username);
 		FolderTreeDTO root = folderMapper.dmsFolderToFolderTree(folderRepository.findByPath("/").orElseThrow(DmsNotFoundException::new));
-		removeUnauthorizedFolders(root, vissibleFolders);
+		if (!hasRead) removeUnauthorizedFolders(root, vissibleFolders);
 		return root;
 	}
 	
