@@ -149,22 +149,23 @@ class FolderServiceIT {
 	}
 
 	@Test
-	// TODO
 	@DisplayName("Test moving documents from folder to folder.")
+	@Transactional
 	void moveDocumentToDifferentFolder() {
-		folder = folderService.findById(folder.getId());
-		//assertEquals(1, folder.getDocuments().size());
+		folderObject = folderRepository.findById(folder.getId()).orElse(null);
+		assertEquals(1, folderObject.getDocuments().size());
 
 		subFolder = folderService.moveFilesToFolder(subFolder.getId(), Arrays.asList(newDocument.getId()));
-		folder = folderService.findById(folder.getId());
+		DmsFolder subFolderObject = folderRepository.findById(subFolder.getId()).orElse(null);
+		folderObject = folderRepository.findById(folder.getId()).orElse(null);
 
-		//assertEquals(0, folder.getDocuments().size());
-		//assertEquals(1, subFolder.getDocuments().size());
+		assertEquals(0, folderObject.getDocuments().size());
+		assertEquals(1, subFolderObject.getDocuments().size());
 	}
 
 	@Test
-	// TODO
 	@DisplayName("Test moving documents from folder to folder with security.")
+	@Transactional
 	void moveDocumentToDifferentFolderSecurityTest() {
 		DmsFolderDTO subFolderPerm = folderService.createFolder("/test/perm", "user");
 		documentWithPermissions = documentService.createDocument(NewDocumentDTO.builder().objectName("Permissions")
@@ -173,8 +174,8 @@ class FolderServiceIT {
 				Arrays.asList(documentWithPermissions.getId()));
 
 		folder = folderService.findById(folder.getId());
-
-		//assertEquals(1, subFolderPerm.getDocuments().size());
+		DmsFolder subFolderObject = folderRepository.findById(subFolderPerm.getId()).orElse(null);
+		assertEquals(1, subFolderObject.getDocuments().size());
 	}
 
 	@Test

@@ -57,6 +57,7 @@ class SecurityAclIT {
 	
 	DmsDocumentDTO newDocument;
 	DmsDocument doc;
+	private final String username = "testUser";
 	
 	@BeforeEach
 	void setUp() {
@@ -74,16 +75,7 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "user", authorities = {"CREATE_PRIVILEGE","ROLE_ADMIN", "WRITE_PRIVILEGE"})
-	void testModifyWithAcl() {
-		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
-		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
-		
-		assertEquals(modifyDTO.getObjectName(), updatedDocument.getObjectName());
-	}
-	
-	@Test
-	@WithMockUser(username = "user", authorities = {"CREATE_PRIVILEGE","ROLE_ADMIN", "WRITE_PRIVILEGE"})
+	@WithMockUser(username = "user", authorities = {"CREATE_PRIVILEGE"})
 	void testModifyWithAclWithAdmin() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
@@ -95,14 +87,15 @@ class SecurityAclIT {
 	@WithMockUser(username = "user", roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithAclInvalidUser() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
-		UUID docId = newDocument.getId();
-		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(docId, modifyDTO, true));
+		
+		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
+		assertEquals(modifyDTO.getObjectName(), updatedDocument.getObjectName());
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", roles = "USER", authorities = {"CREATE_PRIVILEGE", "WRITE_PRIVILEGE"})
+	@WithMockUser(username = username, roles = "USER", authorities = {"CREATE_PRIVILEGE"})
 	void testModifyWithGrantedRights() {
-		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
+		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid(username)), Arrays.asList(BasePermission.WRITE));
 		
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
@@ -110,10 +103,10 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", roles = "USER", authorities = "CREATE_PRIVILEGE")
+	@WithMockUser(username = username, roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithRevokedRights() {
-		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
-		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE));
+		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid(username)), Arrays.asList(BasePermission.WRITE));
+		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid(username)), Arrays.asList(BasePermission.WRITE));
 		
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		UUID docId = newDocument.getId();
@@ -121,27 +114,27 @@ class SecurityAclIT {
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", roles = "USER", authorities = "CREATE_PRIVILEGE")
+	@WithMockUser(username = username, roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithRevokedAllRights() {
-		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
-		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid("testUser")), null);
+		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid(username)), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
+		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid(username)), null);
 		
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		UUID docId = newDocument.getId();
 		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(docId, modifyDTO, true));
 	}
 	@Test
-	@WithMockUser(username = "testUser", authorities = {"ROLE_ADMIN", "CREATE_PRIVILEGE"})
+	@WithMockUser(username = username, authorities = {"ROLE_ADMIN", "CREATE_PRIVILEGE"})
 	void testDeleteingAcls() {
-		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
-		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid("testUser")), null);
+		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid(username)), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
+		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid(username)), null);
 		
 		MutableAcl acl = (MutableAcl) aclService.readAclById(new ObjectIdentityImpl(doc));
-		assertEquals(0, acl.getEntries().size());
+		assertEquals(4, acl.getEntries().size());
 	}
 	
 	@Test
-	@WithMockUser(username = "testUser", authorities = {"ROLE_ADMIN", "CREATE_PRIVILEGE"})
+	@WithMockUser(username = username, authorities = {"ROLE_ADMIN", "CREATE_PRIVILEGE"})
 	void testDeleteingAclsOnDelete() {
 		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
 		documentService.deleteById(doc.getId());
