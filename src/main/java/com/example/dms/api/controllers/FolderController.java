@@ -3,12 +3,10 @@ package com.example.dms.api.controllers;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,11 +41,8 @@ public class FolderController {
 	}
 
 	@GetMapping("/tree")
-	public FolderTreeDTO getFolderTreeDTO(@RequestParam String path,
-			@AuthenticationPrincipal DmsUserDetails userDetails) {
-		boolean hasRead = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-				.collect(Collectors.toList()).contains("READ_PRIVILEGE");
-		return folderService.getSubfolderTree(path, userDetails.getUsername(), hasRead);
+	public List<FolderTreeDTO> getFolderTreeDTO() {
+		return folderService.getFolderTreeNew();
 	}
 
 	@GetMapping("/search")

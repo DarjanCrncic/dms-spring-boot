@@ -23,5 +23,9 @@ public class FolderUtils {
 	public static boolean isSameParentFolder(String oldPath, String newPath) {
 		return FolderUtils.getParentFolderPath(oldPath).equals(FolderUtils.getParentFolderPath(newPath));
 	}
+	
+	public static String updateChildPath(String newParentPath, String oldParentPath, String childPath) {
+		return childPath.replaceAll(oldParentPath, newParentPath);
+	}
 
 }

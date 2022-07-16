@@ -55,4 +55,8 @@ public class DmsUserDetails implements UserDetails{
 		return authorities;
 	}
 	
+	public DmsUser getUser() {
+		return this.dmsUser;
+	}
+	
 } 

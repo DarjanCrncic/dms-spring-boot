@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
@@ -46,29 +45,19 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		this.documentRepository = documentRepository;
 		this.documentService = documentService;
 	}
-	
+
 	@Override
 	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsFolder','READ') || hasAuthority('READ_PRIVILEGE') || filterObject.path == '/'")
 	public List<DmsFolderDTO> findAll() {
 		return folderMapper.entityListToDtoList(folderRepository.findAll());
 	}
-	
+
 	@Override
-	public FolderTreeDTO getSubfolderTree(String path, String username, boolean hasRead) {
-		List<UUID> vissibleFolders = folderRepository.getVissibleFolderIds(username);
-		FolderTreeDTO root = folderMapper.dmsFolderToFolderTree(folderRepository.findByPath("/").orElseThrow(DmsNotFoundException::new));
-		if (!hasRead) removeUnauthorizedFolders(root, vissibleFolders);
-		return root;
+	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsFolder','READ') || hasAuthority('READ_PRIVILEGE') || filterObject.path == '/'")
+	public List<FolderTreeDTO> getFolderTreeNew() {
+		return folderMapper.dmsFolderListToFolderTreeList(folderRepository.findAll());
 	}
-	
-	private void removeUnauthorizedFolders(FolderTreeDTO treeNode, List<UUID> vissibleIds) {
-		List<FolderTreeDTO> subfolders = treeNode.getSubfolders();
-		if (!subfolders.isEmpty()) {
-			treeNode.setSubfolders(subfolders.stream().filter(folder -> vissibleIds.contains(folder.getId())).collect(Collectors.toList()));
-			treeNode.getSubfolders().stream().forEach(node -> removeUnauthorizedFolders(node, vissibleIds));
-		}
-	}
-	
+
 	@Override
 	@PostAuthorize("hasPermission(returnObject.id,'com.example.dms.domain.DmsFolder','READ') || hasAuthority('READ_PRIVILEGE')")
 	public DmsFolderDTO findByPath(String path) {
@@ -85,31 +74,34 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		checkPath(path);
 		DmsFolder parentFolder = folderRepository.findByPath(FolderUtils.getParentFolderPath(path))
 				.orElseThrow(DmsNotFoundException::new);
-		if (!parentFolder.getPath().equals("/") && !super.aclService.hasRight(parentFolder, username, Arrays.asList(BasePermission.CREATE))) {
+		if (!parentFolder.getPath().equals("/")
+				&& !super.aclService.hasRight(parentFolder, username, Arrays.asList(BasePermission.CREATE))) {
 			throw new NotPermitedException("Inssuficient permissions for creating a folder at this path.");
 		}
-		
+
 		DmsFolder newFolder = DmsFolder.builder().path(path).build();
 
 		newFolder.addParentFolder(parentFolder);
 		newFolder = folderRepository.save(newFolder);
-		
-		super.aclService.grantRightsOnObject(newFolder, username, 
-				Arrays.asList(BasePermission.READ, BasePermission.WRITE, BasePermission.CREATE, BasePermission.DELETE, BasePermission.ADMINISTRATION));
+
+		super.aclService.grantRightsOnObject(newFolder, username, Arrays.asList(BasePermission.READ,
+				BasePermission.WRITE, BasePermission.CREATE, BasePermission.DELETE, BasePermission.ADMINISTRATION));
 		return folderMapper.entityToDto(newFolder);
 	}
 
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','WRITE') || hasAuthority('WRITE_PRIVILEGE')")
 	public DmsFolderDTO updateFolder(UUID id, String path) {
-		// TODO: when updating folder it could cause the folder structure to change, 
-		// add check to make sure only the folder name is changed
 		checkPath(path);
 		DmsFolder oldFolder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (!FolderUtils.isSameParentFolder(oldFolder.getPath(), path))
 			throw new BadRequestException("Folder path invalid, folder position does not match.");
-		
+
+		oldFolder.getSubfolders().stream().forEach(folder -> {
+			folder.setPath(FolderUtils.updateChildPath(path, oldFolder.getPath(), folder.getPath()));
+		});
 		oldFolder.setPath(path);
+
 		return save(oldFolder);
 	}
 
@@ -121,15 +113,15 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 			throw new UniqueConstraintViolatedException("Folder with path: '" + path + "' already exists.");
 		}
 	}
-	
+
 	// TODO: still not used, needs a check
 	@Override
 	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','WRITE') "
 			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication) "
 			+ "|| hasAuthority('WRITE_PRIVILEGE')")
 	public DmsFolderDTO moveFilesToFolder(UUID folderId, List<UUID> documentIdList) {
-		DmsFolder folder = folderRepository.findById(folderId)
-				.orElseThrow(() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));
+		DmsFolder folder = folderRepository.findById(folderId).orElseThrow(
+				() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));
 		for (UUID documentId : documentIdList) {
 			DmsDocument doc = documentRepository.findById(documentId)
 					.orElseThrow(() -> new BadRequestException("Ivalid document id: " + documentId + "."));
@@ -147,9 +139,9 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		folder.getDocuments().stream().forEach(doc -> documentService.deleteById(doc.getId()));
 		this.deleteById(id);
 	}
-	
+
 	// TODO: no checking permissions for documents when deleting folder
-	// TODO: copy file to folder 
+	// TODO: copy file to folder
 	// TODO: move subfolder to other folder
 	// TODO: copy folder to another folder
 }

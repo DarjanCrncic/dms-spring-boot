@@ -1,7 +1,5 @@
 package com.example.dms.api.dtos.folder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -15,6 +13,6 @@ public class FolderTreeDTO {
 
 	private UUID id;
 	private String path;
-	private List<FolderTreeDTO> subfolders = new ArrayList<>();
+	private String parentFolder;
 	private int numOfDocuments;
 }

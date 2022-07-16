@@ -28,8 +28,9 @@ public interface FolderMapper extends MapperInterface<DmsFolder, DmsFolderDTO>  
 	@Override
 	List<DmsFolderDTO> entityListToDtoList(List<DmsFolder> folders);
 
-	@Mapping(target="numOfDocuments", expression = "java(folder.getDocuments().size())")
+	@Mapping(target = "numOfDocuments", ignore = true)
+	@Mapping(source = "parentFolder.path", target = "parentFolder")
 	FolderTreeDTO dmsFolderToFolderTree(DmsFolder folder);
-
+	
 	List<FolderTreeDTO> dmsFolderListToFolderTreeList(List<DmsFolder> folders);
 }

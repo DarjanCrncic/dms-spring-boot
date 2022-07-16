@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS acl_object_identity (
     owner_sid BIGINT UNSIGNED,
     entries_inheriting BOOLEAN NOT NULL,
     UNIQUE KEY uk_acl_object_identity (object_id_class, object_id_identity),
-    CONSTRAINT fk_acl_object_identity_parent FOREIGN KEY (parent_object) REFERENCES acl_object_identity (id),
+    CONSTRAINT fk_acl_object_identity_parent FOREIGN KEY (parent_object) REFERENCES acl_object_identity (id) ON DELETE CASCADE,
     CONSTRAINT fk_acl_object_identity_class FOREIGN KEY (object_id_class) REFERENCES acl_class (id),
     CONSTRAINT fk_acl_object_identity_owner FOREIGN KEY (owner_sid) REFERENCES acl_sid (id)
 ) ENGINE=InnoDB;
@@ -37,6 +37,6 @@ CREATE TABLE IF NOT EXISTS acl_entry (
     audit_failure BOOLEAN NOT NULL,
     UNIQUE KEY unique_acl_entry (acl_object_identity, ace_order),
     UNIQUE KEY unique_acl_entry_custom (acl_object_identity, sid, mask),
-    CONSTRAINT fk_acl_entry_object FOREIGN KEY (acl_object_identity) REFERENCES acl_object_identity (id),
+    CONSTRAINT fk_acl_entry_object FOREIGN KEY (acl_object_identity) REFERENCES acl_object_identity (id) ON DELETE CASCADE,
     CONSTRAINT fk_acl_entry_acl FOREIGN KEY (sid) REFERENCES acl_sid (id)
 ) ENGINE=InnoDB;

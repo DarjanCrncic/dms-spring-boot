@@ -25,16 +25,16 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-	
+
 	private final AuthenticationManager authenticationManager;
 	private final JwtUtils jwtUtils;
-	
+
 	@Value("${dms.jwt.expiration}")
 	private int jwtExpirationMs;
 
 	@PostMapping("/login")
 	public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-		
+
 		Authentication authentication = null;
 		try {
 			authentication = authenticationManager.authenticate(
@@ -42,13 +42,14 @@ public class AuthController {
 		} catch (BadCredentialsException e) {
 			throw new BadRequestException("Invalid username or password");
 		}
-		
+
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generateJwtToken(authentication);
-		
-		DmsUserDetails userDetails = (DmsUserDetails) authentication.getPrincipal();	
-		
-		return new LoginResponse(userDetails.getUsername(), jwt, System.currentTimeMillis() + jwtExpirationMs);
+
+		DmsUserDetails userDetails = (DmsUserDetails) authentication.getPrincipal();
+
+		return new LoginResponse(userDetails.getUsername(), jwt, System.currentTimeMillis() + jwtExpirationMs,
+				userDetails.getUser().getFirstName(), userDetails.getUser().getLastName());
 	}
 
 //	@PostMapping("/signup")
