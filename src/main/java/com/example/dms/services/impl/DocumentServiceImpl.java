@@ -79,13 +79,10 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getType())
 				.orElseThrow(() -> new DmsNotFoundException("Given type does not exist."));
 		DmsUser creator = userRepository.findByUsername(newDocumentDTO.getUsername()).orElseThrow(() -> new DmsNotFoundException("Invalid user."));
-		DmsFolder folder = folderRepository.findByPath("/").orElseThrow(() -> new InternalException("Root folder not set up."));
+		DmsFolder folder = folderRepository.findById(newDocumentDTO.getParentFolderId())
+				.orElseThrow(() -> new DmsNotFoundException("Invalid parent folder."));
 		
-		String path = newDocumentDTO.getParentFolder();
-		if(path != null && !path.isEmpty()) {
-			folder = folderRepository.findByPath(path).orElseThrow(() -> new DmsNotFoundException("Invalid parent folder."));
-		}
-		if (!folder.getPath().equals("/") && !super.aclService.hasRight(folder, newDocumentDTO.getUsername(), Arrays.asList(BasePermission.CREATE))) {
+		if (!folder.getName().equals("/") && !super.aclService.hasRight(folder, newDocumentDTO.getUsername(), Arrays.asList(BasePermission.CREATE))) {
 			throw new NotPermitedException("Inssuficient permissions for creating a document in this folder.");
 		}
 		

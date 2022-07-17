@@ -35,8 +35,8 @@ public class DataLoader implements ApplicationRunner {
     @Override
 	public void run(ApplicationArguments args) {
     	
-    	if (folderRepository.findByPath("/").isEmpty())
-    		folderRepository.save(DmsFolder.builder().path("/").build());
+    	if (folderRepository.findByName("/").isEmpty())
+    		folderRepository.save(DmsFolder.builder().name("/").build());
     	
     	// create privileges
     	DmsPrivilege read = privilegeRepository.findByName(Privileges.READ_PRIVILEGE.name()).orElse(null);

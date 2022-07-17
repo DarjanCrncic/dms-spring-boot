@@ -11,8 +11,6 @@ import com.example.dms.domain.DmsFolder;
 
 public interface FolderRepository extends JpaRepository<DmsFolder, UUID>{
 	
-	Optional<DmsFolder> findByPath(String path);
-
 	@Query(nativeQuery = true, value = "SELECT folder.id FROM dms_folder folder "
 			+ "JOIN acl_object_identity aoi on aoi.object_id_identity = folder.id "
 			+ "JOIN acl_entry entry on entry.acl_object_identity = aoi.id "
@@ -20,4 +18,8 @@ public interface FolderRepository extends JpaRepository<DmsFolder, UUID>{
 			+ "JOIN acl_sid sid on sid.id = entry.sid "
 			+ "WHERE class.class = 'com.example.dms.domain.DmsFolder' and sid.sid = ?1 and entry.mask = 1 and entry.granting = true")
 	List<UUID> getVissibleFolderIds(String username);
+	
+	Optional<DmsFolder> findByNameAndParentFolderId(String name, UUID parentFolderId);
+	
+	Optional<DmsFolder> findByName(String name);
 }

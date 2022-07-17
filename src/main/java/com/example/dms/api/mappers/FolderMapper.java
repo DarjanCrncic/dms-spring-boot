@@ -1,6 +1,7 @@
 package com.example.dms.api.mappers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,20 +17,20 @@ public interface FolderMapper extends MapperInterface<DmsFolder, DmsFolderDTO>  
 	FolderMapper INSTANCE = Mappers.getMapper(FolderMapper.class);
 	
 	@Override
-	@Mapping(source = "parentFolder.path", target = "parentFolder")
+	@Mapping(source = "parentFolder.id", target = "parentFolderId")
 	DmsFolderDTO entityToDto(DmsFolder folder);
 	
-	List<String> foldersToPaths(List<DmsFolder> folders);
+	List<UUID> foldersToIds(List<DmsFolder> folders);
 	
-	default String folderToPath(DmsFolder folder) {
-		return folder.getPath();
+	default UUID folderToId(DmsFolder folder) {
+		return folder.getId();
 	}
 	
 	@Override
 	List<DmsFolderDTO> entityListToDtoList(List<DmsFolder> folders);
 
 	@Mapping(target = "numOfDocuments", ignore = true)
-	@Mapping(source = "parentFolder.path", target = "parentFolder")
+	@Mapping(source = "parentFolder.id", target = "parentFolderId")
 	FolderTreeDTO dmsFolderToFolderTree(DmsFolder folder);
 	
 	List<FolderTreeDTO> dmsFolderListToFolderTreeList(List<DmsFolder> folders);

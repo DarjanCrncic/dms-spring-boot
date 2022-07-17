@@ -5,12 +5,18 @@ import java.util.regex.Pattern;
 
 public class FolderUtils {
 	
-	public static boolean validateFolderPath(String path) {
-		Pattern p = Pattern.compile(Constants.FOLDER_PATH_REGEX);
-		Matcher m = p.matcher(path);
+//	public static boolean validateFolderPath(String path) {
+//		Pattern p = Pattern.compile(Constants.FOLDER_PATH_REGEX);
+//		Matcher m = p.matcher(path);
+//		return m.matches();
+//	}
+	
+	public static boolean validateFolderName(String name) {
+		Pattern p = Pattern.compile(Constants.FOLDER_NAME_REGEX);
+		Matcher m = p.matcher(name);
 		return m.matches();
 	}
-
+ 
 	public static String getParentFolderPath(String path) {
 		int i = path.lastIndexOf("/");
 		return i == 0 ? "/" : path.substring(0, i);

@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
@@ -32,13 +33,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false, exclude = {"parentFolder", "subfolders"})
 @Builder
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "parent_folder_id" }) })
 @Entity
 public class DmsFolder extends BaseEntity implements AclAllowedClass{
 
 	@NotEmpty
-	@Column(unique = true)
-	@Pattern(regexp = Constants.FOLDER_PATH_REGEX)
-	private String path;
+	@Pattern(regexp = Constants.FOLDER_NAME_REGEX)
+	private String name;
 
 	@ManyToOne
 	@JoinColumn(name = "parent_folder_id")

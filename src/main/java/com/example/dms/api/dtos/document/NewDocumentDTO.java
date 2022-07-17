@@ -1,8 +1,10 @@
 package com.example.dms.api.dtos.document;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
@@ -25,7 +27,8 @@ public class NewDocumentDTO {
 	
 	private String type;
 	
-	private String parentFolder;
+	@NotNull
+	private UUID parentFolderId;
 	
 	private String username;
 }

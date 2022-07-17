@@ -31,7 +31,7 @@ public class DmsDocumentDTO implements BaseEntityDTO {
 	private String type;
 	@Default
 	private List<String> keywords = new ArrayList<>();
-	private String parentFolder;
+	private UUID parentFolderId;
 	
 	private DmsContentDTO content;
 	

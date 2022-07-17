@@ -9,16 +9,14 @@ import com.example.dms.domain.DmsFolder;
 
 public interface FolderService extends CrudService<DmsFolder, DmsFolderDTO, UUID>{
 	
-	DmsFolderDTO findByPath(String path);
-
 	DmsFolderDTO updateFolder(UUID id, String path);
 
 	DmsFolderDTO moveFilesToFolder(UUID folderId, List<UUID> documentIdList);
 
-	DmsFolderDTO createFolder(String path, String username);
-
 	void deleteFolder(UUID id);
 
 	List<FolderTreeDTO> getFolderTreeNew();
+
+	DmsFolderDTO createFolder(String path, String username, UUID parentFolderId);
 	
 }

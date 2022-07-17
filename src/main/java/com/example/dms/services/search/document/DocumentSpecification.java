@@ -1,5 +1,7 @@
 package com.example.dms.services.search.document;
 
+import java.util.UUID;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -36,7 +38,7 @@ public class DocumentSpecification extends BasicSearchSpecification implements S
         	} else if (root.get(criteria.getKey()).getJavaType() == DmsType.class) {
         		return builder.like(root.<DmsType>get("type").<String>get("typeName"), "%" + criteria.getValue() + "%");
         	} else if (root.get(criteria.getKey()).getJavaType() == DmsFolder.class) {
-        		return builder.equal(root.<DmsFolder>get("parentFolder").<String>get("path"), criteria.getValue());
+        		return builder.equal(root.<DmsFolder>get("parentFolder").<UUID>get("id"), UUID.fromString((String) criteria.getValue()));
         	}
         }
         return super.toPredicateBasic(root, query, builder, criteria);

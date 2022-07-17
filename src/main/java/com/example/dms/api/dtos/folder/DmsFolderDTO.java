@@ -22,8 +22,8 @@ public class DmsFolderDTO implements BaseEntityDTO {
 	private LocalDateTime creationDate;
 	private LocalDateTime modifyDate;
 	
-	private String path;
-	private String parentFolder;
+	private String name;
+	private UUID parentFolderId;
 	@Default
-	private List<String> subfolders = new ArrayList<>();
+	private List<UUID> subfolders = new ArrayList<>();
 }

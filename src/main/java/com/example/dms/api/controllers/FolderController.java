@@ -1,7 +1,6 @@
 package com.example.dms.api.controllers;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -15,16 +14,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.dtos.folder.FolderTreeDTO;
 import com.example.dms.api.dtos.folder.NewFolderDTO;
+import com.example.dms.api.dtos.folder.UpdateFolderDTO;
 import com.example.dms.security.DmsUserDetails;
 import com.example.dms.services.FolderService;
-import com.example.dms.utils.exceptions.BadRequestException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -45,13 +43,6 @@ public class FolderController {
 		return folderService.getFolderTreeNew();
 	}
 
-	@GetMapping("/search")
-	public DmsFolderDTO getFolderBySearch(@RequestParam Optional<String> path) {
-		if (path.isPresent())
-			return folderService.findByPath(path.get());
-		throw new BadRequestException("Request prameters for search are invalid.");
-	}
-
 	@GetMapping("/{id}")
 	public DmsFolderDTO getFolderById(@PathVariable UUID id) {
 		return folderService.findById(id);
@@ -61,12 +52,12 @@ public class FolderController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public DmsFolderDTO createNewFolder(@RequestBody @Valid NewFolderDTO newFolderDTO,
 			@AuthenticationPrincipal DmsUserDetails userDetails) {
-		return folderService.createFolder(newFolderDTO.getPath(), userDetails.getUsername());
+		return folderService.createFolder(newFolderDTO.getName(), userDetails.getUsername(), newFolderDTO.getParentFolderId());
 	}
 
 	@PutMapping("/{id}")
-	public DmsFolderDTO updateFolder(@PathVariable UUID id, @RequestBody @Valid NewFolderDTO newFolderDTO) {
-		return folderService.updateFolder(id, newFolderDTO.getPath());
+	public DmsFolderDTO updateFolder(@PathVariable UUID id, @RequestBody @Valid UpdateFolderDTO updateFolderDTO) {
+		return folderService.updateFolder(id, updateFolderDTO.getName());
 	}
 
 	@DeleteMapping("/{id}")

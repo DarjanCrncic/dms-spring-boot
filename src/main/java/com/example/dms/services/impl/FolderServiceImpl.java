@@ -2,10 +2,8 @@ package com.example.dms.services.impl;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
@@ -47,39 +45,30 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsFolder','READ') || hasAuthority('READ_PRIVILEGE') || filterObject.path == '/'")
+	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsFolder','READ') || hasAuthority('READ_PRIVILEGE') || filterObject.name == '/'")
 	public List<DmsFolderDTO> findAll() {
 		return folderMapper.entityListToDtoList(folderRepository.findAll());
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsFolder','READ') || hasAuthority('READ_PRIVILEGE') || filterObject.path == '/'")
+	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsFolder','READ') || hasAuthority('READ_PRIVILEGE') || filterObject.name == '/'")
 	public List<FolderTreeDTO> getFolderTreeNew() {
 		return folderMapper.dmsFolderListToFolderTreeList(folderRepository.findAll());
 	}
 
 	@Override
-	@PostAuthorize("hasPermission(returnObject.id,'com.example.dms.domain.DmsFolder','READ') || hasAuthority('READ_PRIVILEGE')")
-	public DmsFolderDTO findByPath(String path) {
-		Optional<DmsFolder> folder = folderRepository.findByPath(path);
-		if (folder.isEmpty()) {
-			throw new DmsNotFoundException("Folder with specified path: '" + path + "' was not found.");
-		}
-		return folderMapper.entityToDto(folder.get());
-	}
-
-	@Override
 	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
-	public DmsFolderDTO createFolder(String path, String username) {
-		checkPath(path);
-		DmsFolder parentFolder = folderRepository.findByPath(FolderUtils.getParentFolderPath(path))
+	public DmsFolderDTO createFolder(String name, String username, UUID parentFolderId) {
+		DmsFolder parentFolder = folderRepository.findById(parentFolderId)
 				.orElseThrow(DmsNotFoundException::new);
-		if (!parentFolder.getPath().equals("/")
+		checkConstraints(name, parentFolderId);
+		
+		if (!parentFolder.getName().equals("/")
 				&& !super.aclService.hasRight(parentFolder, username, Arrays.asList(BasePermission.CREATE))) {
 			throw new NotPermitedException("Inssuficient permissions for creating a folder at this path.");
 		}
 
-		DmsFolder newFolder = DmsFolder.builder().path(path).build();
+		DmsFolder newFolder = DmsFolder.builder().name(name).build();
 
 		newFolder.addParentFolder(parentFolder);
 		newFolder = folderRepository.save(newFolder);
@@ -91,27 +80,30 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','WRITE') || hasAuthority('WRITE_PRIVILEGE')")
-	public DmsFolderDTO updateFolder(UUID id, String path) {
-		checkPath(path);
+	public DmsFolderDTO updateFolder(UUID id, String newName) {
 		DmsFolder oldFolder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
-		if (!FolderUtils.isSameParentFolder(oldFolder.getPath(), path))
-			throw new BadRequestException("Folder path invalid, folder position does not match.");
-
-		oldFolder.getSubfolders().stream().forEach(folder -> {
-			folder.setPath(FolderUtils.updateChildPath(path, oldFolder.getPath(), folder.getPath()));
-		});
-		oldFolder.setPath(path);
-
+		checkConstraints(newName, oldFolder.getParentFolder().getId());
+		
+		oldFolder.setName(newName);
 		return save(oldFolder);
 	}
 
-	private void checkPath(String path) {
-		if (!FolderUtils.validateFolderPath(path)) {
-			throw new BadRequestException("Folder path: '" + path + "' does not match required parameters.");
+	private void checkConstraints(String name, UUID parentFolderId) {
+		if (!FolderUtils.validateFolderName(name)) {
+			throw new BadRequestException("Folder name: '" + name + "' does not match required parameters.");
 		}
-		if (folderRepository.findByPath(path).isPresent()) {
-			throw new UniqueConstraintViolatedException("Folder with path: '" + path + "' already exists.");
+		if (folderRepository.findByNameAndParentFolderId(name, parentFolderId).isPresent()) {
+			throw new UniqueConstraintViolatedException("Folder with name: '" + name + "' already exists.");
 		}
+	}
+	
+	@Override
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','DELETE') || hasAuthority('DELETE_PRIVILEGE')")
+	public void deleteFolder(UUID id) {
+		DmsFolder folder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
+		folder.getSubfolders().stream().forEach(sub -> deleteFolder(sub.getId()));
+		folder.getDocuments().stream().forEach(doc -> documentService.deleteById(doc.getId()));
+		this.deleteById(id);
 	}
 
 	// TODO: still not used, needs a check
@@ -131,14 +123,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		return folderMapper.entityToDto(folder);
 	}
 
-	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','DELETE') || hasAuthority('DELETE_PRIVILEGE')")
-	public void deleteFolder(UUID id) {
-		DmsFolder folder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
-		folder.getSubfolders().stream().forEach(sub -> deleteFolder(sub.getId()));
-		folder.getDocuments().stream().forEach(doc -> documentService.deleteById(doc.getId()));
-		this.deleteById(id);
-	}
+	
 
 	// TODO: no checking permissions for documents when deleting folder
 	// TODO: copy file to folder

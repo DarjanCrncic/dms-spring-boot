@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class FolderTreeDTO {
 
 	private UUID id;
-	private String path;
-	private String parentFolder;
+	private String name;
+	private UUID parentFolderId;
 	private int numOfDocuments;
 }
