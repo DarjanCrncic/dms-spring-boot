@@ -1,5 +1,7 @@
 package com.example.dms.security;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -12,4 +14,6 @@ public class LoginResponse {
 	private long expiresAt;
 	private String firstName;
 	private String lastName;
+	private List<String> privileges;
+	private List<String> roles;
 }

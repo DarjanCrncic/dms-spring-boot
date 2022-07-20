@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.dms.domain.DmsUser;
 import com.example.dms.security.DmsUserDetails;
 import com.example.dms.security.JwtUtils;
 import com.example.dms.security.LoginRequest;
@@ -47,9 +48,10 @@ public class AuthController {
 		String jwt = jwtUtils.generateJwtToken(authentication);
 
 		DmsUserDetails userDetails = (DmsUserDetails) authentication.getPrincipal();
+		DmsUser user = userDetails.getUser();
 
 		return new LoginResponse(userDetails.getUsername(), jwt, System.currentTimeMillis() + jwtExpirationMs,
-				userDetails.getUser().getFirstName(), userDetails.getUser().getLastName());
+				user.getFirstName(), user.getLastName(), userDetails.getPrivileges(), userDetails.getRoles());
 	}
 
 //	@PostMapping("/signup")

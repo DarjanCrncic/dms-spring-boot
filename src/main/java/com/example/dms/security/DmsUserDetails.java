@@ -1,11 +1,15 @@
 package com.example.dms.security;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.dms.domain.DmsUser;
+import com.example.dms.domain.security.DmsPrivilege;
+import com.example.dms.domain.security.DmsRole;
 
 public class DmsUserDetails implements UserDetails{
 
@@ -59,4 +63,11 @@ public class DmsUserDetails implements UserDetails{
 		return this.dmsUser;
 	}
 	
+	public List<String> getPrivileges() {
+		return dmsUser.getPrivileges().stream().map(DmsPrivilege::getAuthority).collect(Collectors.toList());
+	}
+	
+	public List<String> getRoles() {
+		return dmsUser.getRoles().stream().map(DmsRole::getAuthority).collect(Collectors.toList());
+	}
 } 
