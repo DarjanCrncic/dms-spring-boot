@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.dms.api.dtos.SortDTO;
+import com.example.dms.api.dtos.document.CopyDocumentsDTO;
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.DocumentFileDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
@@ -106,6 +107,11 @@ public class DocumentController {
 	@DeleteMapping
 	public void deleteMultipleDocuments(@RequestParam List<UUID> ids) {
 		ids.forEach(documentService::deleteById);
+	}
+	
+	@PostMapping("/copy")
+	public List<DmsDocumentDTO> copyDocuments(@RequestBody CopyDocumentsDTO dto) {
+		return documentService.copyDocuments(dto.getFolderId(), dto.getDocuments());
 	}
 
 }

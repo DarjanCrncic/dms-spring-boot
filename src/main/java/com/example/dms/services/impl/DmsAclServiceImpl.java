@@ -159,5 +159,32 @@ public class DmsAclServiceImpl implements DmsAclService {
 		}
 		return grants;
 	}
+	
+	@Override
+	public <T extends AclAllowedClass> void copyRightsToAnotherEntity(T original, T copy) {
+		ObjectIdentity originalOI = new ObjectIdentityImpl(original);
+		
+		MutableAcl acl = null;
+		try {
+			acl = (MutableAcl) aclService.readAclById(originalOI);
+		} catch (NotFoundException nfe) {
+			log.warn("object invalid, no acls found...");
+			return;
+		}
+		
+		List<AccessControlEntry> entries = acl.getEntries();
+		Map<Sid, Set<Permission>> map = new HashMap<>();
+		for (AccessControlEntry entry : entries) {
+			Sid sid = entry.getSid();
+			if (!map.containsKey(sid)) {
+				map.put(sid, new HashSet<>());
+			}
+			map.get(sid).add(entry.getPermission());
+		}
+		
+		for (Sid sid : map.keySet()) {
+			grantRightsOnObject(copy, sid, map.get(sid));
+		}
+	}
 
 }

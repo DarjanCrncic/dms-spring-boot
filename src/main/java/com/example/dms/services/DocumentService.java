@@ -31,4 +31,6 @@ public interface DocumentService extends CrudService<DmsDocument, DmsDocumentDTO
 
 	List<DmsDocumentDTO> searchAll(Optional<String> search, Optional<SortDTO> sort);
 
+	List<DmsDocumentDTO> copyDocuments(UUID folderId, List<UUID> documentIdList);
+
 }

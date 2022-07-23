@@ -26,4 +26,6 @@ public interface DmsAclService {
 
 	<T extends AclAllowedClass> List<GrantDTO> getRights(T object);
 
+	<T extends AclAllowedClass> void copyRightsToAnotherEntity(T original, T copy);
+
 }

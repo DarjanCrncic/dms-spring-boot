@@ -1,10 +1,12 @@
 package com.example.dms.services.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -75,28 +77,30 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
 	public DmsDocumentDTO createDocument(NewDocumentDTO newDocumentDTO) {
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
-		
+
 		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getType())
 				.orElseThrow(() -> new DmsNotFoundException("Given type does not exist."));
-		DmsUser creator = userRepository.findByUsername(newDocumentDTO.getUsername()).orElseThrow(() -> new DmsNotFoundException("Invalid user."));
+		DmsUser creator = userRepository.findByUsername(newDocumentDTO.getUsername())
+				.orElseThrow(() -> new DmsNotFoundException("Invalid user."));
 		DmsFolder folder = folderRepository.findById(newDocumentDTO.getParentFolderId())
 				.orElseThrow(() -> new DmsNotFoundException("Invalid parent folder."));
-		
-		if (!folder.getName().equals("/") && !super.aclService.hasRight(folder, newDocumentDTO.getUsername(), Arrays.asList(BasePermission.CREATE))) {
+
+		if (!folder.getName().equals("/") && !super.aclService.hasRight(folder, newDocumentDTO.getUsername(),
+				Arrays.asList(BasePermission.CREATE))) {
 			throw new NotPermitedException("Inssuficient permissions for creating a document in this folder.");
 		}
-		
+
 		newDocumentObject.addParentFolder(folder);
 		newDocumentObject.addCreator(creator);
 		newDocumentObject.addType(type);
-		
+
 		newDocumentObject = documentRepository.save(newDocumentObject);
 		newDocumentObject.setRootId(newDocumentObject.getId());
 		newDocumentObject.setPredecessorId(newDocumentObject.getId());
-		
-		super.aclService.grantRightsOnObject(newDocumentObject, creator.getUsername(), 
-				Arrays.asList(BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE, BasePermission.ADMINISTRATION));
-		
+
+		super.aclService.grantRightsOnObject(newDocumentObject, creator.getUsername(), Arrays.asList(
+				BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE, BasePermission.ADMINISTRATION));
+
 		return save(newDocumentObject);
 	}
 
@@ -104,7 +108,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') || hasAuthority('WRITE_PRIVILEGE')")
 	public DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
-		
+
 		if (doc.isImutable()) {
 			throw new BadRequestException("This version of the document is immutable and cannot be modified.");
 		}
@@ -178,7 +182,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 		doc.setImutable(true);
 		save(doc);
-		
+
 		// TODO: all rights should be transfered?
 //		super.aclService.grantRightsOnObject(newVersion, creator.getUsername(), 
 //				Arrays.asList(BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE));
@@ -193,11 +197,15 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	private DmsDocument copyDocument(DmsDocument original) {
-		return DmsDocument.builder().content(original.getContent()).creator(original.getCreator())
+		return DmsDocument.builder().creator(original.getCreator())
 				.description(original.getDescription()).parentFolder(original.getParentFolder())
 				.objectName(original.getObjectName()).type(original.getType()).build();
 	}
 
+	private DmsContent copyContent(DmsContent original) {
+		return DmsContent.builder().content(original.getContent()).contentSize(original.getContentSize())
+				.contentType(original.getContentType()).originalFileName(original.getOriginalFileName()).build();
+	}
 
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
@@ -217,9 +225,45 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	public List<DmsDocumentDTO> searchAll(Optional<String> search, Optional<SortDTO> sort) {
 		if (search.isPresent()) {
 			SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
-			return documentMapper.entityListToDtoList(documentRepository.findAll(builder.parse(search.get()), Utils.toSort(sort)));
+			return documentMapper
+					.entityListToDtoList(documentRepository.findAll(builder.parse(search.get()), Utils.toSort(sort)));
 		}
 		return documentMapper.entityListToDtoList(documentRepository.findAll(Utils.toSort(sort)));
+	}
+
+	@Override
+	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','WRITE') "
+			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication) "
+			+ "|| hasAuthority('WRITE_PRIVILEGE')")
+	public List<DmsDocumentDTO> copyDocuments(UUID folderId, List<UUID> documentIdList) {
+		DmsFolder folder = folderRepository.findById(folderId).orElseThrow(
+				() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));
+		List<UUID> existingDocs = folder.getDocuments().stream().map(DmsDocument::getId).collect(Collectors.toList());
+
+		List<DmsDocument> documents = documentRepository.findAllById(documentIdList);
+		List<DmsDocument> retVal = new ArrayList<>();
+
+		for (DmsDocument doc : documents) {
+			DmsDocument copy = copyDocument(doc);
+			copy.addParentFolder(folder);
+			
+			if (existingDocs.contains(doc.getId())) {
+				copy.setObjectName(copy.getObjectName() + " (copy)");
+			}
+			copy = documentRepository.save(copy);
+			aclService.copyRightsToAnotherEntity(doc, copy);
+			
+			DmsContent copyContent = null;
+			if (doc.getContent() != null) {
+				copyContent = copyContent(doc.getContent());
+				copyContent.setDocument(copy);
+				copyContent = contentRepository.save(copyContent);
+				copy.setContent(copyContent);
+			}
+			retVal.add(copy);
+		}
+
+		return mapper.entityListToDtoList(retVal);
 	}
 
 }
