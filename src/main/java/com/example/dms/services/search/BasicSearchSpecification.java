@@ -34,7 +34,9 @@ public abstract class BasicSearchSpecification {
             if (root.get(criteria.getKey()).getJavaType() == String.class) {
                 return builder.like(
                   root.<String>get(criteria.getKey()), "%" + criteria.getValue() + "%");
-            } else {
+            } else if (root.get(criteria.getKey()).getJavaType().getTypeName().equals("boolean")) {
+				return builder.equal(root.get(criteria.getKey()), Boolean.parseBoolean(criteria.getValue().toString()));
+			} else {
                 return builder.equal(root.get(criteria.getKey()), criteria.getValue());
             }
         } 

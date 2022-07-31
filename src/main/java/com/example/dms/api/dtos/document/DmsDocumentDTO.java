@@ -37,6 +37,6 @@ public class DmsDocumentDTO implements BaseEntityDTO {
 	
 	private UUID rootId;
 	private UUID predecessorId;
-	private boolean imutable;
+	private boolean immutable;
 	private int version;
 }

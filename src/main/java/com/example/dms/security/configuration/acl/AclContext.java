@@ -13,11 +13,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
-import org.springframework.security.acls.domain.AclAuthorizationStrategy;
-import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
-import org.springframework.security.acls.domain.ConsoleAuditLogger;
-import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
-import org.springframework.security.acls.domain.SpringCacheBasedAclCache;
+import org.springframework.security.acls.AclPermissionEvaluator;
+import org.springframework.security.acls.domain.*;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.jdbc.LookupStrategy;
@@ -77,7 +74,9 @@ public class AclContext {
     
     @Bean
     public PermissionEvaluator permissionEvaluator() {
-    	return new DmsAclPermissionEvaluator(aclService());
+		AclPermissionEvaluator permissionEvaluator = new DmsAclPermissionEvaluator(aclService());
+		permissionEvaluator.setPermissionFactory(permissionFactory());
+		return permissionEvaluator;
     }
 
     @Bean 
@@ -89,14 +88,19 @@ public class AclContext {
           new ConsoleAuditLogger()
         ); 
         basicLookupStrategy.setAclClassIdSupported(true);
+		basicLookupStrategy.setPermissionFactory(permissionFactory());
         return basicLookupStrategy;
     }
+
+	@Bean
+	public PermissionFactory permissionFactory() {
+		return new DefaultPermissionFactory(CustomBasePermission.class);
+	}
     
     @Bean
     public MethodSecurityExpressionHandler 
       defaultMethodSecurityExpressionHandler() {
         DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
-//        AclPermissionEvaluator permissionEvaluator = new AclPermissionEvaluator(aclService());
         expressionHandler.setPermissionEvaluator(permissionEvaluator());
         return expressionHandler;
     }

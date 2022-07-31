@@ -46,7 +46,7 @@ public class DocumentController {
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public DmsDocumentDTO createNewDocument(@Valid @RequestBody NewDocumentDTO newDocumentDTO,
-			@AuthenticationPrincipal DmsUserDetails userDetails) {
+											@AuthenticationPrincipal DmsUserDetails userDetails) {
 		newDocumentDTO.setUsername(userDetails.getUsername());
 		return documentService.createDocument(newDocumentDTO);
 	}
@@ -59,7 +59,7 @@ public class DocumentController {
 	@PostMapping("/batch")
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public List<DmsDocumentDTO> createNewDocumentInBatch(@Valid @RequestBody List<NewDocumentDTO> newDocumentDTOList,
-			@AuthenticationPrincipal DmsUserDetails userDetails) {
+														 @AuthenticationPrincipal DmsUserDetails userDetails) {
 		return newDocumentDTOList.stream().map(documentDTO -> {
 			documentDTO.setUsername(userDetails.getUsername());
 			return documentService.createDocument(documentDTO);
@@ -89,13 +89,13 @@ public class DocumentController {
 
 	@PutMapping("/{id}")
 	public DmsDocumentDTO updateDocumentPut(@PathVariable UUID id,
-			@RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
+											@RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
 		return documentService.updateDocument(id, modifyDocumentDTO, false);
 	}
 
 	@PatchMapping("/{id}")
 	public DmsDocumentDTO updateDocumentPatch(@PathVariable UUID id,
-			@RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
+											  @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
 		return documentService.updateDocument(id, modifyDocumentDTO, true);
 	}
 
@@ -108,10 +108,14 @@ public class DocumentController {
 	public void deleteMultipleDocuments(@RequestParam List<UUID> ids) {
 		ids.forEach(documentService::deleteById);
 	}
-	
+
 	@PostMapping("/copy")
 	public List<DmsDocumentDTO> copyDocuments(@RequestBody CopyDocumentsDTO dto) {
 		return documentService.copyDocuments(dto.getFolderId(), dto.getDocuments());
 	}
 
+	@PostMapping("/version/{id}")
+	public DmsDocumentDTO versionDocument(@PathVariable UUID id) {
+		return documentService.createNewVersion(id);
+	}
 }

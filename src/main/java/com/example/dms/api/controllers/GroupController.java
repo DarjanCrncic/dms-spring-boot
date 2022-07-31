@@ -36,37 +36,37 @@ public class GroupController {
 	public List<DmsGroupDTO> getAllGroups() {
 		return groupService.findAll();
 	}
-	
-	@GetMapping("/search") 
+
+	@GetMapping("/search")
 	public DmsGroupDTO getGroupByReqParam(@RequestParam Optional<String> name) {
 		if (name.isPresent()) {
 			return groupService.findGroupByGroupName(name.get());
 		}
-		throw new BadRequestException("Request prameters for search are invalid.");
+		throw new BadRequestException("Request parameters for search are invalid.");
 	}
-	
+
 	@GetMapping("/{id}")
 	public DmsGroupDTO getGroupById(@PathVariable UUID id) {
 		return groupService.findById(id);
 	}
-	
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public DmsGroupDTO createNewGroup(@RequestBody @Valid NewGroupDTO groupDTO){
+	public DmsGroupDTO createNewGroup(@RequestBody @Valid NewGroupDTO groupDTO) {
 		return groupService.createGroup(groupDTO);
 	}
-	
+
 
 	@PutMapping("/{id}")
 	public DmsGroupDTO updateGroup(@PathVariable UUID id, @RequestBody @Valid NewGroupDTO groupDTO) {
-		return groupService.updateGroup(id, groupDTO); 
+		return groupService.updateGroup(id, groupDTO);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public void deleteGroupById(@PathVariable UUID id) {
 		groupService.deleteById(id);
 	}
-	
+
 	@PostMapping("/users/{id}")
 	public DmsGroupDTO addUsersToGroup(@PathVariable UUID id, @RequestBody List<UUID> idList) {
 		return groupService.addUsersToGroup(id, idList);

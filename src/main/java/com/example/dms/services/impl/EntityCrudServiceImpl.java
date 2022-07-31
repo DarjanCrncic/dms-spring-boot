@@ -38,14 +38,6 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends Base
 		return mapper.entityToDto(repository.saveAndFlush(object));
 	}
 
-	@PreAuthorize("hasPermission(#object.id,'com.example.dms.domain.DmsDocument','DELETE') "
-			+ "or hasPermission(#object.id,'com.example.dms.domain.DmsFolder','DELETE') "
-			+ "or hasAuthority('DELETE_PRIVILEGE')")
-	public void delete(T object) {
-		aclService.removeEntriesOnDelete(checkPresent(object.getId()));
-		repository.delete(object);
-	}
-
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','DELETE') "
 			+ "or hasPermission(#id,'com.example.dms.domain.DmsFolder','DELETE') " 
 			+ "or hasAuthority('DELETE_PRIVILEGE')")

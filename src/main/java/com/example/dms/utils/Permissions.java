@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.example.dms.security.configuration.acl.CustomBasePermission;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.Permission;
 
@@ -13,6 +14,7 @@ public enum Permissions {
 	READ("READ", BasePermission.READ),
 	WRITE("WRITE", BasePermission.WRITE),
 	CREATE("CREATE", BasePermission.CREATE),
+	VERSION("VERSION", CustomBasePermission.VERSION),
 	DELETE("DELETE", BasePermission.DELETE),
 	ADMINISTRATION("ADMINISTRATION", BasePermission.ADMINISTRATION);
 

@@ -25,7 +25,7 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 	DmsDocumentDTO entityToDto(DmsDocument document);
 	
 	@Mapping(target = "type", ignore = true)
-	@Mapping(target = "imutable", ignore = true)
+	@Mapping(target = "immutable", ignore = true)
 	@Mapping(target = "parentFolder", ignore = true)
 	@Mapping(target = "predecessorId", ignore = true)
 	@Mapping(target = "rootId", ignore = true)
@@ -43,7 +43,7 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 	@Mapping(target = "modifyDate", ignore = true)
 	@Mapping(target = "content", ignore = true)
 	@Mapping(target = "creator", ignore = true)
-	@Mapping(target = "imutable", ignore = true)
+	@Mapping(target = "immutable", ignore = true)
 	@Mapping(target = "parentFolder", ignore = true)
 	@Mapping(target = "predecessorId", ignore = true)
 	@Mapping(target = "rootId", ignore = true)
@@ -56,7 +56,7 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 	@Mapping(target = "modifyDate", ignore = true)
 	@Mapping(target = "content", ignore = true)
 	@Mapping(target = "creator", ignore = true)
-	@Mapping(target = "imutable", ignore = true)
+	@Mapping(target = "immutable", ignore = true)
 	@Mapping(target = "parentFolder", ignore = true)
 	@Mapping(target = "predecessorId", ignore = true)
 	@Mapping(target = "rootId", ignore = true)

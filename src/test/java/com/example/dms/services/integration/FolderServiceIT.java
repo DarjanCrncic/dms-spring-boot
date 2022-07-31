@@ -180,7 +180,7 @@ class FolderServiceIT {
 	@Test
 	@DisplayName("Test delete folder with security.")
 	void deleteFolderWithDocuments() {
-		assertDoesNotThrow(() -> folderService.delete(folderObject));
+		assertDoesNotThrow(() -> folderService.deleteById(folderObject.getId()));
 	}
 
 }

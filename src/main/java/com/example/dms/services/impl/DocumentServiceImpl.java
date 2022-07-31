@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.example.dms.security.configuration.acl.CustomBasePermission;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -99,7 +100,8 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		newDocumentObject.setPredecessorId(newDocumentObject.getId());
 
 		super.aclService.grantRightsOnObject(newDocumentObject, creator.getUsername(), Arrays.asList(
-				BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE, BasePermission.ADMINISTRATION));
+				BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE, BasePermission.ADMINISTRATION,
+				CustomBasePermission.VERSION));
 
 		return save(newDocumentObject);
 	}
@@ -109,7 +111,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	public DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 
-		if (doc.isImutable()) {
+		if (doc.isImmutable()) {
 			throw new BadRequestException("This version of the document is immutable and cannot be modified.");
 		}
 		if (patch) {
@@ -130,7 +132,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') || hasAuthority('WRITE_PRIVILEGE')")
 	public void uploadFile(UUID id, MultipartFile file) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
-		if (doc.isImutable()) {
+		if (doc.isImmutable()) {
 			throw new BadRequestException("Object is immutable and you cannot add content to it.");
 		}
 		if (doc.getContent() != null) {
@@ -167,10 +169,10 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') AND hasAuthority('VERSION_PRIVILEGE')")
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','VERSION') || hasAuthority('VERSION_PRIVILEGE')")
 	public DmsDocumentDTO createNewVersion(UUID id) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
-		if (doc.isImutable()) {
+		if (doc.isImmutable()) {
 			throw new BadRequestException("This version of the document is immutable and cannot be versioned. "
 					+ "Currently you can only version the latest version of the document.");
 		}
@@ -180,14 +182,12 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		newVersion.setPredecessorId(doc.getId());
 		newVersion.setVersion(doc.getVersion() + 1);
 
-		doc.setImutable(true);
+		doc.setImmutable(true);
 		save(doc);
+		newVersion = documentRepository.save(newVersion);
+		aclService.copyRightsToAnotherEntity(doc, newVersion);
 
-		// TODO: all rights should be transfered?
-//		super.aclService.grantRightsOnObject(newVersion, creator.getUsername(), 
-//				Arrays.asList(BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE));
-
-		return save(newVersion);
+		return documentMapper.entityToDto(newVersion);
 	}
 
 	@Override
@@ -199,7 +199,8 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	private DmsDocument copyDocument(DmsDocument original) {
 		return DmsDocument.builder().creator(original.getCreator())
 				.description(original.getDescription()).parentFolder(original.getParentFolder())
-				.objectName(original.getObjectName()).type(original.getType()).build();
+				.objectName(original.getObjectName()).type(original.getType())
+				.keywords(new ArrayList<>(original.getKeywords())).build();
 	}
 
 	private DmsContent copyContent(DmsContent original) {
@@ -266,4 +267,18 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		return mapper.entityListToDtoList(retVal);
 	}
 
+	@Override
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','DELETE') "
+			+ "or hasAuthority('DELETE_PRIVILEGE')")
+	public void deleteById(UUID id) {
+		DmsDocument toDelete = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
+		if (toDelete.getVersion() > 1) {
+			DmsDocument prevVersion = documentRepository.findById(toDelete.getPredecessorId()).orElse(null);
+			if (prevVersion != null) {
+				prevVersion.setImmutable(false);
+				documentRepository.save(prevVersion);
+			}
+		}
+		super.deleteById(id);
+	}
 }

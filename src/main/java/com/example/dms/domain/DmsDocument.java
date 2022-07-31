@@ -81,7 +81,7 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass{
 	@Default
 	private UUID predecessorId = null;
 	@Default
-	private boolean imutable = false;
+	private boolean immutable = false;
 	@Default 
 	private int version = 1;
 	
