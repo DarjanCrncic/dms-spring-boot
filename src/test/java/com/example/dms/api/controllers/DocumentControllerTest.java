@@ -99,7 +99,7 @@ class DocumentControllerTest {
 
 		validDocument = DmsDocument.builder().objectName("testni").creator(validUser)
 				.description("testni dokument za test").keywords(Arrays.asList(new String[] { "prvi", "drugi" }))
-				.imutable(false).type(type).build();
+				.immutable(false).type(type).build();
 
 		newDocumentDTO = NewDocumentDTO.builder().objectName("testni").description("testni dokument za test")
 				.keywords(Arrays.asList(new String[] { "prvi", "drugi" })).type(type.getTypeName()).username("admin").build();

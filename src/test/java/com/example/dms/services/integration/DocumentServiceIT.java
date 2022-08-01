@@ -121,8 +121,8 @@ class DocumentServiceIT {
 
 		assertEquals(2, newVersion.getVersion());
 		assertEquals(newDocument.getObjectName(), newVersion.getObjectName());
-		assertTrue(newDocument.isImutable());
-		assertFalse(newVersion.isImutable());
+		assertTrue(newDocument.isImmutable());
+		assertFalse(newVersion.isImmutable());
 
 		assertEquals(newDocument.getId(), newDocument.getRootId());
 		assertEquals(newDocument.getId(), newVersion.getRootId());
