@@ -33,4 +33,5 @@ public interface DocumentService extends CrudService<DmsDocument, DmsDocumentDTO
 
 	List<DmsDocumentDTO> copyDocuments(UUID folderId, List<UUID> documentIdList);
 
+	List<DmsDocumentDTO> cutDocuments(UUID folderId, List<UUID> documents);
 }

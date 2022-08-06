@@ -233,9 +233,9 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','WRITE') "
+	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','CREATE') "
 			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication) "
-			+ "|| hasAuthority('WRITE_PRIVILEGE')")
+			+ "|| hasAuthority('WRITE_PRIVILEGE') && hasAuthority('CREATE_PRIVILEGE')")
 	public List<DmsDocumentDTO> copyDocuments(UUID folderId, List<UUID> documentIdList) {
 		DmsFolder folder = folderRepository.findById(folderId).orElseThrow(
 				() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));
@@ -262,6 +262,24 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 				copy.setContent(copyContent);
 			}
 			retVal.add(copy);
+		}
+
+		return mapper.entityListToDtoList(retVal);
+	}
+	@Override
+	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','CREATE') "
+			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication) "
+			+ "|| hasAuthority('WRITE_PRIVILEGE') && hasAuthority('CREATE_PRIVILEGE')")
+	public List<DmsDocumentDTO> cutDocuments(UUID folderId, List<UUID> documentIdList) {
+		DmsFolder folder = folderRepository.findById(folderId).orElseThrow(
+				() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));
+
+		List<DmsDocument> documents = documentRepository.findAllById(documentIdList);
+		List<DmsDocument> retVal = new ArrayList<>();
+
+		for (DmsDocument doc : documents) {
+			doc.setParentFolder(folder);
+			retVal.add(documentRepository.save(doc));
 		}
 
 		return mapper.entityListToDtoList(retVal);

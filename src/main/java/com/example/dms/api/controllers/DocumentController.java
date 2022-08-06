@@ -114,6 +114,11 @@ public class DocumentController {
 		return documentService.copyDocuments(dto.getFolderId(), dto.getDocuments());
 	}
 
+	@PostMapping("/cut")
+	public List<DmsDocumentDTO> cutDocuments(@RequestBody CopyDocumentsDTO dto) {
+		return documentService.cutDocuments(dto.getFolderId(), dto.getDocuments());
+	}
+
 	@PostMapping("/version/{id}")
 	public DmsDocumentDTO versionDocument(@PathVariable UUID id) {
 		return documentService.createNewVersion(id);
