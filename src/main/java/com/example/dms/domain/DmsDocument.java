@@ -1,5 +1,6 @@
 package com.example.dms.domain;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotEmpty;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 
 import com.example.dms.domain.security.AclAllowedClass;
@@ -77,14 +79,18 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass{
 	private DmsContent content;
 	
 	@Default
+	@Type(type = "uuid-char")
 	private UUID rootId = null;
 	@Default
+	@Type(type = "uuid-char")
 	private UUID predecessorId = null;
 	@Default
 	private boolean immutable = false;
 	@Default 
-	private int version = 1;
-	
+	private String version = "1";
+	@Default
+	private boolean branched = false;
+
 	public void addCreator(DmsUser creator) {
 		if (creator != null && !creator.getDocuments().contains(this) && this.getCreator() == null) {
 			this.setCreator(creator);

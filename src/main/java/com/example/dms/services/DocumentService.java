@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.dms.api.dtos.SortDTO;
@@ -22,6 +23,9 @@ public interface DocumentService extends CrudService<DmsDocument, DmsDocumentDTO
 	boolean checkIsDocumentValidForDownload(DmsDocument document);
 
 	DmsDocumentDTO createNewVersion(UUID id);
+
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','VERSION') || hasAuthority('VERSION_PRIVILEGE')")
+	DmsDocumentDTO createNewBranch(UUID id);
 
 	List<DmsDocumentDTO> getAllVersions(UUID id);
 

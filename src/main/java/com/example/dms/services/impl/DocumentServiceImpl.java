@@ -1,6 +1,7 @@
 package com.example.dms.services.impl;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.example.dms.security.configuration.acl.CustomBasePermission;
+import com.example.dms.utils.VersionUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -180,7 +182,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		DmsDocument newVersion = copyDocument(doc);
 		newVersion.setRootId(doc.getRootId());
 		newVersion.setPredecessorId(doc.getId());
-		newVersion.setVersion(doc.getVersion() + 1);
+		newVersion.setVersion(VersionUtils.getNextVersion(doc.getVersion()));
 
 		doc.setImmutable(true);
 		save(doc);
@@ -191,9 +193,30 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
+	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','VERSION') || hasAuthority('VERSION_PRIVILEGE')")
+	public DmsDocumentDTO createNewBranch(UUID id) {
+		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
+		if (doc.isBranched()) {
+			throw new BadRequestException("This version of the document already has a branch.");
+		}
+
+		DmsDocument newVersion = copyDocument(doc);
+		newVersion.setRootId(doc.getRootId());
+		newVersion.setPredecessorId(doc.getId());
+		newVersion.setVersion(doc.getVersion() + ".1");
+
+		doc.setBranched(true);
+		save(doc);
+		newVersion = documentRepository.save(newVersion);
+		aclService.copyRightsToAnotherEntity(doc, newVersion);
+
+		return documentMapper.entityToDto(newVersion);
+	}
+
+	@Override
 	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
 	public List<DmsDocumentDTO> getAllVersions(UUID id) {
-		return documentMapper.entityListToDtoList(documentRepository.getAllVersions(id));
+		return documentMapper.entityListToDtoList(documentRepository.findAllByRootId(id));
 	}
 
 	private DmsDocument copyDocument(DmsDocument original) {
@@ -290,9 +313,18 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 			+ "or hasAuthority('DELETE_PRIVILEGE')")
 	public void deleteById(UUID id) {
 		DmsDocument toDelete = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
-		if (toDelete.getVersion() > 1) {
+		if (toDelete.isImmutable()) {
+			throw  new BadRequestException("Document cannot be deleted since it is immutable.");
+		}
+		if (toDelete.isBranched()) {
+			throw new BadRequestException("Document cannot be deleted since child branches still exist.");
+		}
+		if (toDelete.getPredecessorId() != null) {
 			DmsDocument prevVersion = documentRepository.findById(toDelete.getPredecessorId()).orElse(null);
 			if (prevVersion != null) {
+				if (prevVersion.isBranched() && toDelete.getVersion().startsWith(prevVersion.getVersion())) {
+					prevVersion.setBranched(false);
+				}
 				prevVersion.setImmutable(false);
 				documentRepository.save(prevVersion);
 			}

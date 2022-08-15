@@ -1,5 +1,6 @@
 package com.example.dms.api.dtos.document;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,5 +39,6 @@ public class DmsDocumentDTO implements BaseEntityDTO {
 	private UUID rootId;
 	private UUID predecessorId;
 	private boolean immutable;
-	private int version;
+	private String version;
+	private boolean branched;
 }

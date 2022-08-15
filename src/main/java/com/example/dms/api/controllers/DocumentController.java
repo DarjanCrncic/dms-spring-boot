@@ -68,11 +68,10 @@ public class DocumentController {
 
 	@PostMapping("/upload/{id}")
 	public DocumentFileDTO uploadDocumentContent(@PathVariable UUID id, @RequestBody MultipartFile file) {
-		if (file == null)
-			throw new BadRequestException("The file parameter in the request body is null.");
+		if (file == null) throw new BadRequestException("The file parameter in the request body is null.");
 		documentService.uploadFile(id, file);
-		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-				.path("/api/v1/documents/download" + id).toUriString();
+		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/documents/download"
+				+ id).toUriString();
 		return new DocumentFileDTO(id, fileDownloadUri, file.getContentType(), file.getSize(),
 				file.getOriginalFilename());
 	}
@@ -122,5 +121,15 @@ public class DocumentController {
 	@PostMapping("/version/{id}")
 	public DmsDocumentDTO versionDocument(@PathVariable UUID id) {
 		return documentService.createNewVersion(id);
+	}
+
+	@PostMapping("/branch/{id}")
+	public DmsDocumentDTO branchDocument(@PathVariable UUID id) {
+		return documentService.createNewBranch(id);
+	}
+
+	@GetMapping("/versions/{id}")
+	public List<DmsDocumentDTO> getAllVersions(@PathVariable UUID id) {
+		return documentService.getAllVersions(id);
 	}
 }
