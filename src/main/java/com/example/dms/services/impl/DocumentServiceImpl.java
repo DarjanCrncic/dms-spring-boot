@@ -275,8 +275,11 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 				copy.setObjectName(copy.getObjectName() + " (copy)");
 			}
 			copy = documentRepository.save(copy);
+			copy.setPredecessorId(copy.getId());
+			copy.setRootId(copy.getId());
+			copy = documentRepository.save(copy);
 			aclService.copyRightsToAnotherEntity(doc, copy);
-			
+
 			DmsContent copyContent = null;
 			if (doc.getContent() != null) {
 				copyContent = copyContent(doc.getContent());
