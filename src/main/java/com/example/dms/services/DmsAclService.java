@@ -1,13 +1,12 @@
 package com.example.dms.services;
 
-import java.util.Collection;
-import java.util.List;
-
+import com.example.dms.api.dtos.administration.GrantDTO;
+import com.example.dms.domain.security.AclAllowedClass;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 
-import com.example.dms.api.dtos.administration.GrantDTO;
-import com.example.dms.domain.security.AclAllowedClass;
+import java.util.Collection;
+import java.util.List;
 
 public interface DmsAclService {
 

@@ -1,11 +1,11 @@
 package com.example.dms.services;
 
-import java.util.UUID;
-
 import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.domain.DmsUser;
+
+import java.util.UUID;
 
 public interface UserService extends CrudService<DmsUser, DmsUserDTO, UUID>{
 

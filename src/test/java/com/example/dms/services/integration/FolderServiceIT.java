@@ -1,15 +1,17 @@
 package com.example.dms.services.integration;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.sql.SQLException;
-import java.util.UUID;
-
-import javax.sql.DataSource;
-
+import com.example.dms.api.dtos.document.DmsDocumentDTO;
+import com.example.dms.api.dtos.document.NewDocumentDTO;
+import com.example.dms.api.dtos.folder.DmsFolderDTO;
+import com.example.dms.api.mappers.FolderMapper;
+import com.example.dms.domain.DmsFolder;
+import com.example.dms.domain.DmsUser;
+import com.example.dms.repositories.DocumentRepository;
+import com.example.dms.repositories.FolderRepository;
+import com.example.dms.repositories.UserRepository;
+import com.example.dms.services.DocumentService;
+import com.example.dms.services.FolderService;
+import com.example.dms.utils.exceptions.DmsNotFoundException;
 import org.h2.tools.Server;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,18 +26,14 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.dms.api.dtos.document.DmsDocumentDTO;
-import com.example.dms.api.dtos.document.NewDocumentDTO;
-import com.example.dms.api.dtos.folder.DmsFolderDTO;
-import com.example.dms.api.mappers.FolderMapper;
-import com.example.dms.domain.DmsFolder;
-import com.example.dms.domain.DmsUser;
-import com.example.dms.repositories.DocumentRepository;
-import com.example.dms.repositories.FolderRepository;
-import com.example.dms.repositories.UserRepository;
-import com.example.dms.services.DocumentService;
-import com.example.dms.services.FolderService;
-import com.example.dms.utils.exceptions.DmsNotFoundException;
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ContextConfiguration

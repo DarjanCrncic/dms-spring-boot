@@ -1,27 +1,5 @@
 package com.example.dms.services.impl;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import com.example.dms.security.configuration.acl.CustomBasePermission;
-import com.example.dms.utils.VersionUtils;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostFilter;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.example.dms.api.dtos.SortDTO;
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
@@ -37,15 +15,35 @@ import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.repositories.FolderRepository;
 import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
+import com.example.dms.security.configuration.acl.CustomBasePermission;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.services.DocumentService;
 import com.example.dms.services.search.SpecificationBuilder;
 import com.example.dms.services.search.document.DocumentSpecProvider;
 import com.example.dms.utils.Utils;
+import com.example.dms.utils.VersionUtils;
 import com.example.dms.utils.exceptions.BadRequestException;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.InternalException;
 import com.example.dms.utils.exceptions.NotPermitedException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -101,9 +99,11 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		newDocumentObject.setRootId(newDocumentObject.getId());
 		newDocumentObject.setPredecessorId(newDocumentObject.getId());
 
-		super.aclService.grantRightsOnObject(newDocumentObject, creator.getUsername(), Arrays.asList(
-				BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE, BasePermission.ADMINISTRATION,
-				CustomBasePermission.VERSION));
+		if (!creator.isAdminRole()) {
+			super.aclService.grantRightsOnObject(newDocumentObject, creator.getUsername(), Arrays.asList(
+					BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE, BasePermission.ADMINISTRATION,
+					CustomBasePermission.VERSION));
+		}
 
 		return save(newDocumentObject);
 	}

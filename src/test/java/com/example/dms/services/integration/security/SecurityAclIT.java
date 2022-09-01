@@ -1,11 +1,12 @@
 package com.example.dms.services.integration.security;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.Arrays;
-import java.util.UUID;
-
+import com.example.dms.api.dtos.document.DmsDocumentDTO;
+import com.example.dms.api.dtos.document.ModifyDocumentDTO;
+import com.example.dms.api.dtos.document.NewDocumentDTO;
+import com.example.dms.domain.DmsDocument;
+import com.example.dms.repositories.DocumentRepository;
+import com.example.dms.services.DmsAclService;
+import com.example.dms.services.DocumentService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,13 +22,11 @@ import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.example.dms.api.dtos.document.DmsDocumentDTO;
-import com.example.dms.api.dtos.document.ModifyDocumentDTO;
-import com.example.dms.api.dtos.document.NewDocumentDTO;
-import com.example.dms.domain.DmsDocument;
-import com.example.dms.repositories.DocumentRepository;
-import com.example.dms.services.DmsAclService;
-import com.example.dms.services.DocumentService;
+import java.util.Arrays;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ContextConfiguration

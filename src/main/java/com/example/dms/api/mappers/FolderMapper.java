@@ -1,15 +1,14 @@
 package com.example.dms.api.mappers;
 
-import java.util.List;
-import java.util.UUID;
-
+import com.example.dms.api.dtos.folder.DmsFolderDTO;
+import com.example.dms.api.dtos.folder.FolderTreeDTO;
+import com.example.dms.domain.DmsFolder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import com.example.dms.api.dtos.folder.DmsFolderDTO;
-import com.example.dms.api.dtos.folder.FolderTreeDTO;
-import com.example.dms.domain.DmsFolder;
+import java.util.List;
+import java.util.UUID;
 
 @Mapper(uses = DocumentMapper.class)
 public interface FolderMapper extends MapperInterface<DmsFolder, DmsFolderDTO>  {

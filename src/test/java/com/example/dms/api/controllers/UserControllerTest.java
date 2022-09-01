@@ -1,16 +1,14 @@
 package com.example.dms.api.controllers;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
-
+import com.example.dms.api.dtos.user.DmsUserDTO;
+import com.example.dms.api.dtos.user.NewUserDTO;
+import com.example.dms.api.dtos.user.UpdateUserDTO;
+import com.example.dms.domain.DmsUser;
+import com.example.dms.repositories.UserRepository;
+import com.example.dms.services.UserService;
+import com.example.dms.utils.Utils;
+import com.example.dms.utils.exceptions.DmsNotFoundException;
+import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -23,15 +21,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.dms.api.dtos.user.DmsUserDTO;
-import com.example.dms.api.dtos.user.NewUserDTO;
-import com.example.dms.api.dtos.user.UpdateUserDTO;
-import com.example.dms.domain.DmsUser;
-import com.example.dms.repositories.UserRepository;
-import com.example.dms.services.UserService;
-import com.example.dms.utils.Utils;
-import com.example.dms.utils.exceptions.DmsNotFoundException;
-import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
 @WithMockUser(roles = "ADMIN")

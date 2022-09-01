@@ -1,7 +1,9 @@
 package com.example.dms.api.mappers;
 
-import java.util.List;
-
+import com.example.dms.api.dtos.document.DmsDocumentDTO;
+import com.example.dms.api.dtos.document.ModifyDocumentDTO;
+import com.example.dms.api.dtos.document.NewDocumentDTO;
+import com.example.dms.domain.DmsDocument;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -9,10 +11,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
-import com.example.dms.api.dtos.document.DmsDocumentDTO;
-import com.example.dms.api.dtos.document.ModifyDocumentDTO;
-import com.example.dms.api.dtos.document.NewDocumentDTO;
-import com.example.dms.domain.DmsDocument;
+import java.util.List;
 
 @Mapper(uses = {UserMapper.class, ContentMapper.class})
 public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocumentDTO> {

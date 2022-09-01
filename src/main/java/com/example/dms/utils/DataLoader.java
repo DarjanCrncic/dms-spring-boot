@@ -1,13 +1,5 @@
 package com.example.dms.utils;
 
-import java.util.Arrays;
-import java.util.Collections;
-
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Component;
-
 import com.example.dms.domain.DmsFolder;
 import com.example.dms.domain.DmsType;
 import com.example.dms.domain.DmsUser;
@@ -18,8 +10,14 @@ import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.repositories.security.PrivilegeRepository;
 import com.example.dms.repositories.security.RoleRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Component
 @RequiredArgsConstructor

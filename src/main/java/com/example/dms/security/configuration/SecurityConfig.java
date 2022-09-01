@@ -1,7 +1,9 @@
 package com.example.dms.security.configuration;
 
-import java.util.Arrays;
-
+import com.example.dms.security.DmsUserDetailsService;
+import com.example.dms.security.filters.AuthEntryPointJwt;
+import com.example.dms.security.filters.AuthTokenFilter;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,11 +23,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.example.dms.security.DmsUserDetailsService;
-import com.example.dms.security.filters.AuthEntryPointJwt;
-import com.example.dms.security.filters.AuthTokenFilter;
-
-import lombok.extern.log4j.Log4j2;
+import java.util.Arrays;
 
 @Configuration
 @Log4j2

@@ -1,13 +1,5 @@
 package com.example.dms.services.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-
 import com.example.dms.domain.DmsDocumentColumnPreference;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.DocumentColumnPreferencesRepository;
@@ -15,8 +7,14 @@ import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.PreferenceService;
 import com.example.dms.utils.exceptions.BadRequestException;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @PreAuthorize("hasRole('USER') || hasRole('ADMIN')")

@@ -1,20 +1,18 @@
 package com.example.dms.api.dtos.document;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.example.dms.api.dtos.BaseEntityDTO;
 import com.example.dms.api.dtos.content.DmsContentDTO;
 import com.example.dms.api.dtos.user.DmsUserDTO;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor

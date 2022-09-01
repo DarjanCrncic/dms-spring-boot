@@ -1,7 +1,5 @@
 package com.example.dms.utils;
 
-import java.math.BigDecimal;
-
 public class VersionUtils {
 
 	public static String getNextVersion(String currentVersion) {

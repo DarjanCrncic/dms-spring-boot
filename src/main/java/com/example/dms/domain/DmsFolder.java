@@ -1,7 +1,15 @@
 package com.example.dms.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.example.dms.domain.security.AclAllowedClass;
+import com.example.dms.utils.Constants;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.apache.commons.lang3.builder.ToStringExclude;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -12,26 +20,13 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
-
-import org.apache.commons.lang3.builder.ToStringExclude;
-
-import com.example.dms.domain.security.AclAllowedClass;
-import com.example.dms.utils.Constants;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false, exclude = {"parentFolder", "subfolders"})
 @Builder
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "parent_folder_id" }) })
 @Entity
@@ -70,5 +65,15 @@ public class DmsFolder extends BaseEntity implements AclAllowedClass{
 			document.setParentFolder(this);
 			this.getDocuments().add(document);
 		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 }

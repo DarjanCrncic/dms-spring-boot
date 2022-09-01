@@ -1,8 +1,8 @@
 package com.example.dms.services;
 
-import java.util.List;
-
 import com.example.dms.domain.DmsDocumentColumnPreference;
+
+import java.util.List;
 
 public interface PreferenceService {
 

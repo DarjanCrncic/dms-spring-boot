@@ -1,16 +1,16 @@
 package com.example.dms.api.controllers;
 
-import static org.mockito.Mockito.doNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Arrays;
-import java.util.UUID;
-
+import com.example.dms.api.dtos.document.DmsDocumentDTO;
+import com.example.dms.api.dtos.document.ModifyDocumentDTO;
+import com.example.dms.api.dtos.document.NewDocumentDTO;
+import com.example.dms.api.dtos.type.DmsTypeDTO;
+import com.example.dms.domain.DmsDocument;
+import com.example.dms.domain.DmsType;
+import com.example.dms.domain.DmsUser;
+import com.example.dms.repositories.UserRepository;
+import com.example.dms.security.DmsUserDetails;
+import com.example.dms.services.DocumentService;
+import com.example.dms.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -29,17 +29,16 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import com.example.dms.api.dtos.document.DmsDocumentDTO;
-import com.example.dms.api.dtos.document.ModifyDocumentDTO;
-import com.example.dms.api.dtos.document.NewDocumentDTO;
-import com.example.dms.api.dtos.type.DmsTypeDTO;
-import com.example.dms.domain.DmsDocument;
-import com.example.dms.domain.DmsType;
-import com.example.dms.domain.DmsUser;
-import com.example.dms.repositories.UserRepository;
-import com.example.dms.security.DmsUserDetails;
-import com.example.dms.services.DocumentService;
-import com.example.dms.utils.Utils;
+import java.util.Arrays;
+import java.util.UUID;
+
+import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(DocumentController.class)
 @ContextConfiguration

@@ -1,17 +1,15 @@
 package com.example.dms.api.dtos.folder;
 
-import java.util.UUID;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
 import com.example.dms.utils.Constants;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor

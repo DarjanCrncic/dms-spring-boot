@@ -1,10 +1,9 @@
 package com.example.dms.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import com.example.dms.utils.StringUtils;
 import org.junit.jupiter.api.Test;
 
-import com.example.dms.utils.StringUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StringUtilsTest {
 

@@ -1,11 +1,10 @@
 package com.example.dms.api.controllers;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.validation.Valid;
-
+import com.example.dms.api.dtos.user.DmsUserDTO;
+import com.example.dms.api.dtos.user.NewUserDTO;
+import com.example.dms.api.dtos.user.UpdateUserDTO;
+import com.example.dms.services.UserService;
+import com.example.dms.utils.exceptions.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,11 +18,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.dms.api.dtos.user.DmsUserDTO;
-import com.example.dms.api.dtos.user.NewUserDTO;
-import com.example.dms.api.dtos.user.UpdateUserDTO;
-import com.example.dms.services.UserService;
-import com.example.dms.utils.exceptions.BadRequestException;
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users")

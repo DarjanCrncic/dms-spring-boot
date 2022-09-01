@@ -1,8 +1,13 @@
 package com.example.dms.services.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import com.example.dms.api.dtos.user.DmsUserDTO;
+import com.example.dms.api.dtos.user.NewUserDTO;
+import com.example.dms.api.dtos.user.UpdateUserDTO;
+import com.example.dms.api.mappers.UserMapper;
+import com.example.dms.repositories.UserRepository;
+import com.example.dms.services.UserService;
+import com.example.dms.utils.exceptions.DmsNotFoundException;
+import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,14 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.example.dms.api.dtos.user.DmsUserDTO;
-import com.example.dms.api.dtos.user.NewUserDTO;
-import com.example.dms.api.dtos.user.UpdateUserDTO;
-import com.example.dms.api.mappers.UserMapper;
-import com.example.dms.repositories.UserRepository;
-import com.example.dms.services.UserService;
-import com.example.dms.utils.exceptions.DmsNotFoundException;
-import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ContextConfiguration

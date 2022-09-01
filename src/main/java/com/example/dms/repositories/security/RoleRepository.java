@@ -1,10 +1,9 @@
 package com.example.dms.repositories.security;
 
-import java.util.Optional;
-
+import com.example.dms.domain.security.DmsRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.dms.domain.security.DmsRole;
+import java.util.Optional;
 
 public interface RoleRepository extends JpaRepository<DmsRole, Long>{
 	Optional<DmsRole> findByName(String name);

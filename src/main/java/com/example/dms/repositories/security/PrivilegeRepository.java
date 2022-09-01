@@ -1,10 +1,9 @@
 package com.example.dms.repositories.security;
 
-import java.util.Optional;
-
+import com.example.dms.domain.security.DmsPrivilege;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.dms.domain.security.DmsPrivilege;
+import java.util.Optional;
 
 public interface PrivilegeRepository extends JpaRepository<DmsPrivilege, Long>{
 	Optional<DmsPrivilege> findByName(String name);

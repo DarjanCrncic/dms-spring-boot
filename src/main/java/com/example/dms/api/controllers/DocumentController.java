@@ -1,12 +1,15 @@
 package com.example.dms.api.controllers;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import javax.validation.Valid;
-
+import com.example.dms.api.dtos.SortDTO;
+import com.example.dms.api.dtos.document.CopyDocumentsDTO;
+import com.example.dms.api.dtos.document.DmsDocumentDTO;
+import com.example.dms.api.dtos.document.DocumentFileDTO;
+import com.example.dms.api.dtos.document.ModifyDocumentDTO;
+import com.example.dms.api.dtos.document.NewDocumentDTO;
+import com.example.dms.security.DmsUserDetails;
+import com.example.dms.services.DocumentService;
+import com.example.dms.utils.exceptions.BadRequestException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,17 +27,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.example.dms.api.dtos.SortDTO;
-import com.example.dms.api.dtos.document.CopyDocumentsDTO;
-import com.example.dms.api.dtos.document.DmsDocumentDTO;
-import com.example.dms.api.dtos.document.DocumentFileDTO;
-import com.example.dms.api.dtos.document.ModifyDocumentDTO;
-import com.example.dms.api.dtos.document.NewDocumentDTO;
-import com.example.dms.security.DmsUserDetails;
-import com.example.dms.services.DocumentService;
-import com.example.dms.utils.exceptions.BadRequestException;
-
-import lombok.RequiredArgsConstructor;
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/documents")

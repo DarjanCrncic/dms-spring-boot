@@ -1,8 +1,9 @@
 package com.example.dms.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.example.dms.domain.DmsUser;
+import com.example.dms.domain.security.DmsPrivilege;
+import com.example.dms.domain.security.DmsRole;
+import com.example.dms.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,10 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.dms.domain.DmsUser;
-import com.example.dms.domain.security.DmsPrivilege;
-import com.example.dms.domain.security.DmsRole;
-import com.example.dms.repositories.UserRepository;
+import java.util.ArrayList;
+import java.util.List;
 
 @Transactional
 @Service

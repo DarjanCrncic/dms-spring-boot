@@ -1,11 +1,13 @@
 package com.example.dms.services.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
+import com.example.dms.api.dtos.group.DmsGroupDTO;
+import com.example.dms.api.dtos.group.NewGroupDTO;
+import com.example.dms.api.dtos.user.DmsUserDTO;
+import com.example.dms.api.dtos.user.NewUserDTO;
+import com.example.dms.repositories.GroupRepository;
+import com.example.dms.repositories.UserRepository;
+import com.example.dms.services.GroupService;
+import com.example.dms.services.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,14 +18,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.dms.api.dtos.group.DmsGroupDTO;
-import com.example.dms.api.dtos.group.NewGroupDTO;
-import com.example.dms.api.dtos.user.DmsUserDTO;
-import com.example.dms.api.dtos.user.NewUserDTO;
-import com.example.dms.repositories.GroupRepository;
-import com.example.dms.repositories.UserRepository;
-import com.example.dms.services.GroupService;
-import com.example.dms.services.UserService;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @ContextConfiguration

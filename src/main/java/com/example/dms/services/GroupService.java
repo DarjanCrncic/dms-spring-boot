@@ -1,13 +1,12 @@
 package com.example.dms.services;
 
-import java.util.List;
-import java.util.UUID;
-
-import javax.validation.Valid;
-
 import com.example.dms.api.dtos.group.DmsGroupDTO;
 import com.example.dms.api.dtos.group.NewGroupDTO;
 import com.example.dms.domain.DmsGroup;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.UUID;
 
 public interface GroupService extends CrudService<DmsGroup, DmsGroupDTO, UUID>{
 

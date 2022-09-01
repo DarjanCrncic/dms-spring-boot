@@ -1,25 +1,22 @@
 package com.example.dms.domain;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @MappedSuperclass
-@EqualsAndHashCode
 @Setter
 public class BaseEntity {
 
@@ -36,4 +33,17 @@ public class BaseEntity {
 	
 	@UpdateTimestamp
 	private LocalDateTime modifyDate;
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (id == null || o == null || getClass() != o.getClass()) return false;
+		BaseEntity that = (BaseEntity) o;
+		return id.equals(that.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
 }

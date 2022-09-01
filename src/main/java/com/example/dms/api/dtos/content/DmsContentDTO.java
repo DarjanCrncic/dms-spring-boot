@@ -1,7 +1,6 @@
 package com.example.dms.api.dtos.content;
 
 import com.example.dms.api.dtos.BaseEntityDTO;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;

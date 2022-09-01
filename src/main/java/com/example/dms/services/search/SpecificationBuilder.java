@@ -1,13 +1,12 @@
 package com.example.dms.services.search;
 
+import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.springframework.data.jpa.domain.Specification;
-
-import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class SpecificationBuilder<T> {

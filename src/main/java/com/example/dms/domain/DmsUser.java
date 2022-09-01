@@ -1,9 +1,19 @@
 package com.example.dms.domain;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.example.dms.domain.security.DmsPrivilege;
+import com.example.dms.domain.security.DmsRole;
+import com.example.dms.utils.Constants;
+import com.example.dms.utils.Roles;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Builder.Default;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,27 +23,16 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.hibernate.validator.constraints.Length;
-
-import com.example.dms.domain.security.DmsPrivilege;
-import com.example.dms.domain.security.DmsRole;
-import com.example.dms.utils.Constants;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Builder.Default;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.ToString;
-
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Builder
 @Entity
 public class DmsUser extends BaseEntity {
@@ -77,7 +76,7 @@ public class DmsUser extends BaseEntity {
 	@JsonIgnore
 	@Default
 	private List<DmsDocument> documents = new ArrayList<>();
-	
+
 	@OneToMany(mappedBy = "user")
 	@ToString.Exclude
 	@JsonIgnore
@@ -87,17 +86,33 @@ public class DmsUser extends BaseEntity {
 	@ManyToMany
 	@Default
 	@JoinTable(name = "users_roles",
-		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), 
-		inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private List<DmsRole> roles = new ArrayList<>();
-	
+
 	@ManyToMany
-    @JoinTable(
-        name = "users_privileges", 
-        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), 
-        inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
-    private List<DmsPrivilege> privileges;
-	
+	@JoinTable(
+			name = "users_privileges",
+			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
+	private List<DmsPrivilege> privileges;
+
 	@Default
 	boolean enabled = true;
+
+	public boolean isAdminRole() {
+		return roles.stream().map(DmsRole::getName)
+				.collect(Collectors.toList())
+				.contains(Roles.ROLE_ADMIN.name());
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
 }

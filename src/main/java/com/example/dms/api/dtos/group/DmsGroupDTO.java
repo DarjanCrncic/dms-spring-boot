@@ -1,18 +1,17 @@
 package com.example.dms.api.dtos.group;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 import com.example.dms.api.dtos.BaseEntityDTO;
 import com.example.dms.api.dtos.user.DmsUserDTO;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Data
 @Builder

@@ -1,13 +1,12 @@
 package com.example.dms.repositories;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
+import com.example.dms.domain.DmsFolder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.example.dms.domain.DmsFolder;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface FolderRepository extends JpaRepository<DmsFolder, UUID>{
 	

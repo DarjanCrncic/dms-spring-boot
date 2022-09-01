@@ -1,18 +1,11 @@
 package com.example.dms.api.controllers;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Mockito.doNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import com.example.dms.api.dtos.folder.DmsFolderDTO;
+import com.example.dms.api.dtos.folder.NewFolderDTO;
+import com.example.dms.domain.DmsUser;
+import com.example.dms.repositories.UserRepository;
+import com.example.dms.services.FolderService;
+import com.example.dms.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -26,12 +19,18 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.dms.api.dtos.folder.DmsFolderDTO;
-import com.example.dms.api.dtos.folder.NewFolderDTO;
-import com.example.dms.domain.DmsUser;
-import com.example.dms.repositories.UserRepository;
-import com.example.dms.services.FolderService;
-import com.example.dms.utils.Utils;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(FolderController.class)
 @ContextConfiguration

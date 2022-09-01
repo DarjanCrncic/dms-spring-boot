@@ -1,7 +1,12 @@
 package com.example.dms.api.controllers;
 
-import javax.validation.Valid;
-
+import com.example.dms.domain.DmsUser;
+import com.example.dms.security.DmsUserDetails;
+import com.example.dms.security.JwtUtils;
+import com.example.dms.security.LoginRequest;
+import com.example.dms.security.LoginResponse;
+import com.example.dms.utils.exceptions.BadRequestException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,14 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.dms.domain.DmsUser;
-import com.example.dms.security.DmsUserDetails;
-import com.example.dms.security.JwtUtils;
-import com.example.dms.security.LoginRequest;
-import com.example.dms.security.LoginResponse;
-import com.example.dms.utils.exceptions.BadRequestException;
-
-import lombok.RequiredArgsConstructor;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")

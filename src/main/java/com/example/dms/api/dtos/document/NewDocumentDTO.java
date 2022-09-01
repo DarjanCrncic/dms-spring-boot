@@ -1,17 +1,14 @@
 package com.example.dms.api.dtos.document;
 
-import java.util.List;
-import java.util.UUID;
+import com.example.dms.utils.Constants;
+import lombok.Builder;
+import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.Length;
-
-import com.example.dms.utils.Constants;
-
-import lombok.Builder;
-import lombok.Data;
+import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder

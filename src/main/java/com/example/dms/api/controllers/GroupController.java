@@ -1,11 +1,10 @@
 package com.example.dms.api.controllers;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.validation.Valid;
-
+import com.example.dms.api.dtos.group.DmsGroupDTO;
+import com.example.dms.api.dtos.group.NewGroupDTO;
+import com.example.dms.services.GroupService;
+import com.example.dms.utils.exceptions.BadRequestException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.dms.api.dtos.group.DmsGroupDTO;
-import com.example.dms.api.dtos.group.NewGroupDTO;
-import com.example.dms.services.GroupService;
-import com.example.dms.utils.exceptions.BadRequestException;
-
-import lombok.RequiredArgsConstructor;
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/groups")

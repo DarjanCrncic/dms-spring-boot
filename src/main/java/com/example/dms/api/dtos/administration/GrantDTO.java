@@ -1,11 +1,10 @@
 package com.example.dms.api.dtos.administration;
 
-import java.util.Set;
-
-import javax.validation.constraints.Pattern;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import javax.validation.constraints.Pattern;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor

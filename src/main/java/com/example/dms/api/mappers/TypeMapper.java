@@ -1,12 +1,11 @@
 package com.example.dms.api.mappers;
 
-import java.util.List;
-
+import com.example.dms.api.dtos.type.DmsTypeDTO;
+import com.example.dms.domain.DmsType;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-import com.example.dms.api.dtos.type.DmsTypeDTO;
-import com.example.dms.domain.DmsType;
+import java.util.List;
 
 @Mapper
 public interface TypeMapper extends MapperInterface<DmsType, DmsTypeDTO>{

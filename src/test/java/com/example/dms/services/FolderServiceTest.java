@@ -1,17 +1,5 @@
 package com.example.dms.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Optional;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.dtos.folder.NewFolderDTO;
 import com.example.dms.api.mappers.FolderMapper;
@@ -20,6 +8,17 @@ import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.impl.FolderServiceImpl;
 import com.example.dms.utils.FolderUtils;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class FolderServiceTest {

@@ -1,15 +1,10 @@
 package com.example.dms.services.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.example.dms.api.dtos.administration.GrantDTO;
+import com.example.dms.domain.security.AclAllowedClass;
+import com.example.dms.services.DmsAclService;
+import com.example.dms.utils.Permissions;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
@@ -21,12 +16,15 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 
-import com.example.dms.api.dtos.administration.GrantDTO;
-import com.example.dms.domain.security.AclAllowedClass;
-import com.example.dms.services.DmsAclService;
-import com.example.dms.utils.Permissions;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -49,14 +47,14 @@ public class DmsAclServiceImpl implements DmsAclService {
 	@Override
 	public <T extends AclAllowedClass> void grantRightsOnObject(T object, Sid sid, Collection<Permission> permissions) {
 		ObjectIdentity oi = new ObjectIdentityImpl(object);
-		MutableAcl acl = null;
+		MutableAcl acl;
 		try {
 			acl = (MutableAcl) aclService.readAclById(oi);
 		} catch (NotFoundException nfe) {
 			acl = aclService.createAcl(oi);
 		}
 		log.debug("granting '{}' rights on object (" + object.getClass() + "): {}", ((PrincipalSid) sid).getPrincipal(),
-				Permissions.getByMasks(permissions.stream().map(perm -> perm.getMask()).collect(Collectors.toList())));
+				Permissions.getByMasks(permissions.stream().map(Permission::getMask).collect(Collectors.toList())));
 
 		for (Permission permission : permissions) {
 			acl.insertAce(acl.getEntries().size(), permission, sid, true);
@@ -68,7 +66,7 @@ public class DmsAclServiceImpl implements DmsAclService {
 	public <T extends AclAllowedClass> void revokeRightsOnObject(T object, Sid sid, List<Permission> permissions) {
 		ObjectIdentity oi = new ObjectIdentityImpl(object);
 
-		MutableAcl acl = null;
+		MutableAcl acl;
 		try {
 			acl = (MutableAcl) aclService.readAclById(oi);
 		} catch (NotFoundException nfe) {
@@ -100,7 +98,7 @@ public class DmsAclServiceImpl implements DmsAclService {
 	public <T> void removeEntriesOnDelete(T object) {
 		ObjectIdentity oi = new ObjectIdentityImpl(object);
 
-		MutableAcl acl = null;
+		MutableAcl acl;
 		try {
 			acl = (MutableAcl) aclService.readAclById(oi);
 		} catch (NotFoundException nfe) {
@@ -116,7 +114,7 @@ public class DmsAclServiceImpl implements DmsAclService {
 		ObjectIdentity oi = new ObjectIdentityImpl(object);
 		Sid sid = new PrincipalSid(username);
 
-		MutableAcl acl = null;
+		MutableAcl acl;
 		try {
 			acl = (MutableAcl) aclService.readAclById(oi);
 		} catch (NotFoundException nfe) {
@@ -126,9 +124,9 @@ public class DmsAclServiceImpl implements DmsAclService {
 	}
 
 	private boolean checkGranted(MutableAcl acl, Sid sid, Collection<Permission> permissions) {
-		boolean isGranted = false;
+		boolean isGranted;
 		try {
-			isGranted = acl.isGranted(permissions.stream().collect(Collectors.toList()), Arrays.asList(sid), false);
+			isGranted = acl.isGranted(new ArrayList<>(permissions), List.of(sid), false);
 		} catch (Exception e) {
 			isGranted = false;
 		}
@@ -139,8 +137,12 @@ public class DmsAclServiceImpl implements DmsAclService {
 	public <T extends AclAllowedClass> List<GrantDTO> getRights(T object) {
 		ObjectIdentity oi = new ObjectIdentityImpl(object);
 
-		MutableAcl acl = null;
-		acl = (MutableAcl) aclService.readAclById(oi);
+		MutableAcl acl;
+		try {
+			acl = (MutableAcl) aclService.readAclById(oi);
+		} catch (NotFoundException nfe) {
+			return Collections.emptyList();
+		}
 
 		List<AccessControlEntry> entries = acl.getEntries();
 		Map<String, Set<String>> map = new HashMap<>();
@@ -164,7 +166,7 @@ public class DmsAclServiceImpl implements DmsAclService {
 	public <T extends AclAllowedClass> void copyRightsToAnotherEntity(T original, T copy) {
 		ObjectIdentity originalOI = new ObjectIdentityImpl(original);
 		
-		MutableAcl acl = null;
+		MutableAcl acl;
 		try {
 			acl = (MutableAcl) aclService.readAclById(originalOI);
 		} catch (NotFoundException nfe) {

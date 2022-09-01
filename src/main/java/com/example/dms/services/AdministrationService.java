@@ -1,9 +1,9 @@
 package com.example.dms.services;
 
+import com.example.dms.api.dtos.administration.GrantDTO;
+
 import java.util.List;
 import java.util.UUID;
-
-import com.example.dms.api.dtos.administration.GrantDTO;
 
 public interface AdministrationService {
 

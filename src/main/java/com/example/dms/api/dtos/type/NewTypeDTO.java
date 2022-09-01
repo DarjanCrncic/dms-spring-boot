@@ -1,12 +1,10 @@
 package com.example.dms.api.dtos.type;
 
-import javax.validation.constraints.NotEmpty;
-
+import com.example.dms.utils.Constants;
+import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
-import com.example.dms.utils.Constants;
-
-import lombok.Data;
+import javax.validation.constraints.NotEmpty;
 
 @Data
 public class NewTypeDTO {

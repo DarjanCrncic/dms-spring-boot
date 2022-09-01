@@ -1,9 +1,9 @@
 package com.example.dms.api.dtos.document;
 
+import lombok.Data;
+
 import java.util.List;
 import java.util.UUID;
-
-import lombok.Data;
 
 @Data
 public class CopyDocumentsDTO {

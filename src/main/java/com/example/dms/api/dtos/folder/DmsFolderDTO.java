@@ -1,19 +1,19 @@
 package com.example.dms.api.dtos.folder;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.example.dms.api.dtos.BaseEntityDTO;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data@AllArgsConstructor
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class DmsFolderDTO implements BaseEntityDTO {

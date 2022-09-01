@@ -1,8 +1,9 @@
 package com.example.dms.services.integration.security;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import com.example.dms.api.dtos.user.DmsUserDTO;
+import com.example.dms.api.dtos.user.NewUserDTO;
+import com.example.dms.repositories.UserRepository;
+import com.example.dms.services.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.example.dms.api.dtos.user.DmsUserDTO;
-import com.example.dms.api.dtos.user.NewUserDTO;
-import com.example.dms.repositories.UserRepository;
-import com.example.dms.services.UserService;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ContextConfiguration
