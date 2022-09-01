@@ -66,14 +66,4 @@ public class DmsFolder extends BaseEntity implements AclAllowedClass{
 			this.getDocuments().add(document);
 		}
 	}
-
-	@Override
-	public boolean equals(Object o) {
-		return super.equals(o);
-	}
-
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
 }

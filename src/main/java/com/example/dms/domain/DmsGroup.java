@@ -39,14 +39,4 @@ public class DmsGroup extends BaseEntity {
 			inverseJoinColumns = { @JoinColumn(name = "user_id") })
 	@Default
 	private Set<DmsUser> members = new HashSet<>();
-
-	@Override
-	public boolean equals(Object o) {
-		return super.equals(o);
-	}
-
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
 }

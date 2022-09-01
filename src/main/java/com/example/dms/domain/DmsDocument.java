@@ -107,14 +107,4 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass{
 			folder.getDocuments().add(this);
 		}
 	}
-
-	@Override
-	public boolean equals(Object o) {
-		return super.equals(o);
-	}
-
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
 }

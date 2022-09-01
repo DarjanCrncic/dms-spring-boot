@@ -32,14 +32,4 @@ public class DmsContent extends BaseEntity{
 	@OneToOne
 	@JoinColumn(name = "document_id")
 	private DmsDocument document;
-
-	@Override
-	public boolean equals(Object o) {
-		return super.equals(o);
-	}
-
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
 }

@@ -105,14 +105,4 @@ public class DmsUser extends BaseEntity {
 				.collect(Collectors.toList())
 				.contains(Roles.ROLE_ADMIN.name());
 	}
-
-	@Override
-	public boolean equals(Object o) {
-		return super.equals(o);
-	}
-
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
 }
