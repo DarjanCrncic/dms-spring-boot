@@ -7,6 +7,7 @@ import com.example.dms.api.dtos.document.DocumentFileDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.security.DmsUserDetails;
+import com.example.dms.services.ContentService;
 import com.example.dms.services.DocumentService;
 import com.example.dms.utils.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 public class DocumentController {
 
 	private final DocumentService documentService;
+	private final ContentService contentService;
 
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
@@ -66,7 +68,7 @@ public class DocumentController {
 	@PostMapping("/upload/{id}")
 	public DocumentFileDTO uploadDocumentContent(@PathVariable UUID id, @RequestBody MultipartFile file) {
 		if (file == null) throw new BadRequestException("The file parameter in the request body is null.");
-		documentService.uploadFile(id, file);
+		contentService.uploadFile(id, file);
 		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/documents/download"
 				+ id).toUriString();
 		return new DocumentFileDTO(id, fileDownloadUri, file.getContentType(), file.getSize(),
@@ -80,7 +82,7 @@ public class DocumentController {
 
 	@GetMapping("/download/{id}")
 	public ResponseEntity<byte[]> downloadDocumentContent(@PathVariable UUID id) {
-		return documentService.downloadContent(id);
+		return contentService.downloadContent(id);
 	}
 
 	@PutMapping("/{id}")

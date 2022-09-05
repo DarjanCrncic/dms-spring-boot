@@ -24,20 +24,13 @@ import com.example.dms.utils.Utils;
 import com.example.dms.utils.VersionUtils;
 import com.example.dms.utils.exceptions.BadRequestException;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
-import com.example.dms.utils.exceptions.InternalException;
 import com.example.dms.utils.exceptions.NotPermitedException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -129,46 +122,6 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') || hasAuthority('WRITE_PRIVILEGE')")
-	public void uploadFile(UUID id, MultipartFile file) {
-		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
-		if (doc.isImmutable()) {
-			throw new BadRequestException("Object is immutable and you cannot add content to it.");
-		}
-		if (doc.getContent() != null) {
-			throw new BadRequestException("Object already has content.");
-			// TODO create new version?
-		}
-		String path = file.getOriginalFilename();
-		if (path == null) {
-			throw new BadRequestException("Original filename is null.");
-		}
-
-		String originalFileName = StringUtils.cleanPath(path);
-		DmsContent content = null;
-		try {
-			content = DmsContent.builder().content(file.getBytes()).contentSize(file.getSize())
-					.contentType(file.getContentType()).originalFileName(file.getOriginalFilename()).document(doc)
-					.build();
-			contentRepository.save(content);
-			doc.setContent(content);
-		} catch (IOException e) {
-			throw new InternalException(
-					"Could not upload file: '" + originalFileName + "' for document: '" + id + "'.");
-		}
-		save(doc);
-	}
-
-	@Override
-	@PreAuthorize("hasPermission(#document,'READ')")
-	public boolean checkIsDocumentValidForDownload(DmsDocument document) {
-		if (document.getContent() == null || document.getContent().getContentType() == null
-				|| document.getContent().getOriginalFileName() == null || document.getContent().getContentSize() == 0)
-			throw new InternalException("Document has corrupted (or no) content, download unavailable.");
-		return true;
-	}
-
-	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','VERSION') || hasAuthority('VERSION_PRIVILEGE')")
 	public DmsDocumentDTO createNewVersion(UUID id) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
@@ -230,19 +183,6 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
-	public ResponseEntity<byte[]> downloadContent(UUID id) {
-		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
-		checkIsDocumentValidForDownload(document);
-		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION,
-						"attachment; filename=\"" + document.getContent().getOriginalFileName() + "\"")
-				.contentType(MediaType.valueOf(document.getContent().getContentType()))
-				.header("File-Name", document.getContent().getOriginalFileName())
-				.body(document.getContent().getContent());
-	}
-
-	@Override
 	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
 	public List<DmsDocumentDTO> searchAll(Optional<String> search, Optional<SortDTO> sort) {
 		if (search.isPresent()) {
@@ -278,9 +218,8 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 			copy = documentRepository.save(copy);
 			aclService.copyRightsToAnotherEntity(doc, copy);
 
-			DmsContent copyContent = null;
 			if (doc.getContent() != null) {
-				copyContent = copyContent(doc.getContent());
+				DmsContent copyContent = copyContent(doc.getContent());
 				copyContent.setDocument(copy);
 				copyContent = contentRepository.save(copyContent);
 				copy.setContent(copyContent);

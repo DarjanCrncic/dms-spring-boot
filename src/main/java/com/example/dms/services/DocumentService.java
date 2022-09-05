@@ -5,9 +5,7 @@ import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.domain.DmsDocument;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,10 +15,6 @@ public interface DocumentService extends CrudService<DmsDocument, DmsDocumentDTO
 
 	DmsDocumentDTO createDocument(NewDocumentDTO newDocumentDTO);
 
-	void uploadFile(UUID id, MultipartFile file);
-
-	boolean checkIsDocumentValidForDownload(DmsDocument document);
-
 	DmsDocumentDTO createNewVersion(UUID id);
 
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','VERSION') || hasAuthority('VERSION_PRIVILEGE')")
@@ -29,8 +23,6 @@ public interface DocumentService extends CrudService<DmsDocument, DmsDocumentDTO
 	List<DmsDocumentDTO> getAllVersions(UUID id);
 
 	DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch);
-
-	ResponseEntity<byte[]> downloadContent(UUID id);
 
 	List<DmsDocumentDTO> searchAll(Optional<String> search, Optional<SortDTO> sort);
 

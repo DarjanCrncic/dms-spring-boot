@@ -23,7 +23,7 @@ public class DmsContent extends BaseEntity{
 	@Default
 	private byte[] content = null;
 	@Default
-	private Long contentSize = 0l;
+	private Long contentSize = 0L;
 	@Default
 	private String contentType = null;
 	@Default
