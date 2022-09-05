@@ -4,6 +4,7 @@ import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.api.mappers.UserMapper;
+import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
@@ -18,7 +19,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ContextConfiguration
@@ -95,5 +98,13 @@ class UserServiceIT {
 		assertEquals(user.getId(), userService.findByEmail(user.getEmail()).getId());
 		assertThrows(DmsNotFoundException.class, () -> userService.findByEmail("test"));
 	}
-	
+
+	@Test
+	void testEquals() {
+		DmsUser test = userRepository.findByUsername(user.getUsername()).get();
+		assertTrue(test.equals(userRepository.findByEmail(user.getEmail()).get()));
+
+		DmsUser test2 = userRepository.findByUsername("user").get();
+		assertFalse(test.equals(test2));
+	}
 }

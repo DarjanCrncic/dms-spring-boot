@@ -5,13 +5,14 @@ import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.domain.DmsDocument;
+import com.example.dms.domain.DmsFolder;
 import com.example.dms.domain.DmsType;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.DocumentRepository;
+import com.example.dms.repositories.FolderRepository;
 import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DocumentService;
-import com.example.dms.services.UserService;
 import com.example.dms.utils.exceptions.BadRequestException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +37,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ContextConfiguration
-@WithMockUser(authorities = {"ROLE_ADMIN","CREATE_PRIVILEGE","VERSION_PRIVILEGE","READ_PRIVILEGE","WRITE_PRIVILEGE","DELETE_PRIVILEGE"})
+@WithMockUser(authorities = {"ROLE_ADMIN", "CREATE_PRIVILEGE", "VERSION_PRIVILEGE", "READ_PRIVILEGE",
+		"WRITE_PRIVILEGE", "DELETE_PRIVILEGE"})
 class DocumentServiceIT {
 
 	@Autowired
@@ -46,14 +48,14 @@ class DocumentServiceIT {
 	DocumentService documentService;
 
 	@Autowired
-	UserService userService;
-	
+	FolderRepository folderRepository;
+
 	@Autowired
 	DocumentRepository documentRepository;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	TypeRepository typeRepository;
 
@@ -61,13 +63,15 @@ class DocumentServiceIT {
 	DmsDocumentDTO newVersion;
 	DmsDocumentDTO updatedDocument;
 	DmsType type;
+	DmsFolder folder;
 	String typeName = "testni-tip";
-	
+
 	@BeforeEach
 	void setUp() {
 		type = typeRepository.save(DmsType.builder().typeName(typeName).build());
+		folder = folderRepository.save(DmsFolder.builder().name("test").build());
 		newDocument = documentService.createDocument(
-				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").type(typeName).username("user").build());
+				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").type(typeName).username("user").parentFolderId(folder.getId()).build());
 	}
 
 	@AfterEach
@@ -76,9 +80,9 @@ class DocumentServiceIT {
 			documentRepository.deleteById(newDocument.getId());
 		if (newVersion != null && documentRepository.existsById(newVersion.getId()))
 			documentRepository.deleteById(newVersion.getId());
-		if (updatedDocument != null && documentRepository.existsById(updatedDocument.getId())) 
+		if (updatedDocument != null && documentRepository.existsById(updatedDocument.getId()))
 			documentRepository.deleteById(updatedDocument.getId());
-		if (type != null && typeRepository.existsById(type.getId())) 
+		if (type != null && typeRepository.existsById(type.getId()))
 			typeRepository.delete(type);
 	}
 
@@ -91,13 +95,13 @@ class DocumentServiceIT {
 		assertEquals(newDocument.getId(), foundDocument.getId());
 		assertSame(newDocument.getCreator().getUsername(), foundDocument.getCreator().getUsername());
 	}
-	
+
 	@Test
 	@DisplayName("Test binding of document to type.")
 	@Transactional
 	void testTypeBinding() {
 		type = typeRepository.findByTypeName(typeName).orElse(null);
-		
+
 		assertEquals(type.getTypeName(), newDocument.getType());
 		assertEquals(type.getTypeName(), typeName);
 		assertThat(type.getDocuments()).hasSize(1);
@@ -113,7 +117,7 @@ class DocumentServiceIT {
 
 	@Test
 	@DisplayName("Test document versioning and previous version imutability.")
-	//TODO
+		//TODO
 	void testVersioning() {
 		newVersion = documentService.createNewVersion(newDocument.getId());
 		newDocument = documentService.findById(newDocument.getId());
@@ -136,7 +140,7 @@ class DocumentServiceIT {
 	@WithMockUser(username = "user", authorities = {"CREATE_PRIVILEGE", "READ_PRIVILEGE", "WRITE_PRIVILEGE"})
 	void testDocumentPut() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").description("updated")
-				.keywords(Arrays.asList(new String[] { "foo", "bar" })).build();
+				.keywords(Arrays.asList(new String[]{"foo", "bar"})).build();
 		updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, false);
 
 		assertEquals(modifyDTO.getObjectName(), updatedDocument.getObjectName());
@@ -144,17 +148,25 @@ class DocumentServiceIT {
 		assertEquals(modifyDTO.getKeywords().get(0), updatedDocument.getKeywords().get(0));
 		assertEquals(newDocument.getRootId(), updatedDocument.getRootId());
 	}
-	
+
 	@Test
 	@DisplayName("Test modifying document with patch HTTP request.")
 	@WithMockUser(username = "user", authorities = {"CREATE_PRIVILEGE", "READ_PRIVILEGE", "WRITE_PRIVILEGE"})
 	void testDocumentPatch() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
-		
+
 		assertEquals(modifyDTO.getObjectName(), updatedDocument.getObjectName());
 		assertNull(modifyDTO.getDescription());
 		assertNull(modifyDTO.getKeywords());
 		assertEquals(newDocument.getRootId(), updatedDocument.getRootId());
+	}
+
+	@Test
+	void testEquals() {
+		DmsDocument doc1 = documentRepository.findById(newDocument.getId()).get();
+		DmsDocument doc2 = documentRepository.findById(newDocument.getId()).get();
+
+		assertTrue(doc1.equals(doc2));
 	}
 }

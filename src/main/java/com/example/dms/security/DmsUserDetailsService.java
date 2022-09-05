@@ -1,8 +1,6 @@
 package com.example.dms.security;
 
 import com.example.dms.domain.DmsUser;
-import com.example.dms.domain.security.DmsPrivilege;
-import com.example.dms.domain.security.DmsRole;
 import com.example.dms.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,19 +27,14 @@ public class DmsUserDetailsService implements UserDetailsService {
 		if (user == null) {
 			throw new UsernameNotFoundException("User with username: " + username + " is not found.");
 		}
-		
 		return new DmsUserDetails(user, getPrivileges(user));
 	}
 	
 
 	private List<GrantedAuthority> getPrivileges(DmsUser user) {
 		List<GrantedAuthority> authorities = new ArrayList<>();
-		for (DmsRole role : user.getRoles()) {
-			authorities.add(role);
-		}
-		for (DmsPrivilege privilege : user.getPrivileges()) {
-			authorities.add(privilege);
-		}
+		authorities.addAll(user.getRoles());
+		authorities.addAll(user.getPrivileges());
 		return authorities;
 	}
 

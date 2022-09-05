@@ -68,7 +68,6 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		}
 
 		DmsFolder newFolder = DmsFolder.builder().name(name).build();
-
 		newFolder.addParentFolder(parentFolder);
 		newFolder = folderRepository.save(newFolder);
 

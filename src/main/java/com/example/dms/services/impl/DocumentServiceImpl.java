@@ -57,8 +57,8 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	private final FolderRepository folderRepository;
 
 	public DocumentServiceImpl(UserRepository userRepository, DocumentRepository documentRepository,
-			DocumentMapper documentMapper, TypeRepository typeRepository, DmsAclService aclService,
-			ContentRepository contentRepository, FolderRepository folderRepository) {
+							   DocumentMapper documentMapper, TypeRepository typeRepository, DmsAclService aclService,
+							   ContentRepository contentRepository, FolderRepository folderRepository) {
 		super(documentRepository, documentMapper, aclService);
 		this.userRepository = userRepository;
 		this.documentRepository = documentRepository;
@@ -86,9 +86,9 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		DmsFolder folder = folderRepository.findById(newDocumentDTO.getParentFolderId())
 				.orElseThrow(() -> new DmsNotFoundException("Invalid parent folder."));
 
-		if (!folder.getName().equals("/") && !super.aclService.hasRight(folder, newDocumentDTO.getUsername(),
-				Arrays.asList(BasePermission.CREATE))) {
-			throw new NotPermitedException("Inssuficient permissions for creating a document in this folder.");
+		if (!creator.isAdminRole() && !folder.getName().equals("/") && !super.aclService.hasRight(folder, newDocumentDTO.getUsername(),
+				List.of(BasePermission.CREATE))) {
+			throw new NotPermitedException("Insufficient permissions for creating a document in this folder.");
 		}
 
 		newDocumentObject.addParentFolder(folder);
@@ -99,11 +99,9 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		newDocumentObject.setRootId(newDocumentObject.getId());
 		newDocumentObject.setPredecessorId(newDocumentObject.getId());
 
-		if (!creator.isAdminRole()) {
-			super.aclService.grantRightsOnObject(newDocumentObject, creator.getUsername(), Arrays.asList(
-					BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE, BasePermission.ADMINISTRATION,
-					CustomBasePermission.VERSION));
-		}
+		super.aclService.grantRightsOnObject(newDocumentObject, creator.getUsername(), Arrays.asList(
+				BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE, BasePermission.ADMINISTRATION,
+				CustomBasePermission.VERSION));
 
 		return save(newDocumentObject);
 	}
@@ -270,7 +268,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		for (DmsDocument doc : documents) {
 			DmsDocument copy = copyDocument(doc);
 			copy.addParentFolder(folder);
-			
+
 			if (existingDocs.contains(doc.getId())) {
 				copy.setObjectName(copy.getObjectName() + " (copy)");
 			}
@@ -292,6 +290,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 		return mapper.entityListToDtoList(retVal);
 	}
+
 	@Override
 	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','CREATE') "
 			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication) "
@@ -317,7 +316,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	public void deleteById(UUID id) {
 		DmsDocument toDelete = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (toDelete.isImmutable()) {
-			throw  new BadRequestException("Document cannot be deleted since it is immutable.");
+			throw new BadRequestException("Document cannot be deleted since it is immutable.");
 		}
 		if (toDelete.isBranched()) {
 			throw new BadRequestException("Document cannot be deleted since child branches still exist.");

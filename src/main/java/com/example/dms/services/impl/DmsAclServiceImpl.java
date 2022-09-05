@@ -2,8 +2,11 @@ package com.example.dms.services.impl;
 
 import com.example.dms.api.dtos.administration.GrantDTO;
 import com.example.dms.domain.security.AclAllowedClass;
+import com.example.dms.security.DmsUserDetailsService;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.utils.Permissions;
+import com.example.dms.utils.Roles;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
@@ -14,6 +17,8 @@ import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,18 +33,20 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class DmsAclServiceImpl implements DmsAclService {
 
-	JdbcMutableAclService aclService;
-
-	public DmsAclServiceImpl(JdbcMutableAclService aclService) {
-		super();
-		this.aclService = aclService;
-	}
+	private final JdbcMutableAclService aclService;
+	private final DmsUserDetailsService userDetailsService;
 
 	@Override
 	public <T extends AclAllowedClass> void grantRightsOnObject(T object, String username,
 			Collection<Permission> permissions) {
+		UserDetails details = userDetailsService.loadUserByUsername(username);
+		if (details.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+				.collect(Collectors.toList()).contains(Roles.ROLE_ADMIN.name())) {
+			return;
+		}
 		Sid sid = new PrincipalSid(username);
 		this.grantRightsOnObject(object, sid, permissions);
 	}

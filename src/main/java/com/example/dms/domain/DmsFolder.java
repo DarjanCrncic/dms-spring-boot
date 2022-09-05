@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.builder.ToStringExclude;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -50,7 +49,6 @@ public class DmsFolder extends BaseEntity implements AclAllowedClass{
 	@OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	@JsonManagedReference("documents")
-	@ToStringExclude
 	private List<DmsDocument> documents = new ArrayList<>();
 
 	public void addParentFolder(DmsFolder parentFolder) {
