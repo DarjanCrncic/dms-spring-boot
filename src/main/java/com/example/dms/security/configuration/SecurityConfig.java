@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @Log4j2
@@ -69,12 +70,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		        .exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeRequests()
-				.antMatchers("/h2-console/**").permitAll()
-				.antMatchers("/auth/**").permitAll()
-				.antMatchers("/ping/**").permitAll()
-				.antMatchers("/error").permitAll()
-				.antMatchers("/**").authenticated()
-				.anyRequest().permitAll().and().httpBasic();
+				.antMatchers("/h2-console/**", "/auth/**", "/ping/**", "/error").permitAll()
+				.anyRequest().authenticated();
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
@@ -84,8 +81,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		log.info("using custom CORS configuration, allowd origins: " + allowedCorsOrigins);
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(allowedCorsOrigins.split(",")));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
+        configuration.setAllowedHeaders(List.of("*"));
 		configuration.setAllowCredentials(true);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
