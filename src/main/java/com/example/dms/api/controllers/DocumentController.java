@@ -30,7 +30,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -51,7 +50,7 @@ public class DocumentController {
 	}
 
 	@GetMapping
-	public List<DmsDocumentDTO> getAllDocuments(@RequestParam Optional<String> search, Optional<SortDTO> sort) {
+	public List<DmsDocumentDTO> getAllDocuments(@RequestParam(required = false) String search, SortDTO sort) {
 		return documentService.searchAll(search, sort);
 	}
 

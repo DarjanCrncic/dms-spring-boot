@@ -34,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -79,8 +78,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		DmsFolder folder = folderRepository.findById(newDocumentDTO.getParentFolderId())
 				.orElseThrow(() -> new DmsNotFoundException("Invalid parent folder."));
 
-		if (!creator.isAdminRole() && !folder.getName().equals("/") && !super.aclService.hasRight(folder, newDocumentDTO.getUsername(),
-				List.of(BasePermission.CREATE))) {
+		if (!folder.getName().equals("/") && !super.aclService.hasRight(folder, newDocumentDTO.getUsername(), List.of(BasePermission.CREATE))) {
 			throw new NotPermitedException("Insufficient permissions for creating a document in this folder.");
 		}
 
@@ -184,11 +182,11 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
-	public List<DmsDocumentDTO> searchAll(Optional<String> search, Optional<SortDTO> sort) {
-		if (search.isPresent()) {
+	public List<DmsDocumentDTO> searchAll(String search, SortDTO sort) {
+		if (search != null) {
 			SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
 			return documentMapper
-					.entityListToDtoList(documentRepository.findAll(builder.parse(search.get()), Utils.toSort(sort)));
+					.entityListToDtoList(documentRepository.findAll(builder.parse(search), Utils.toSort(sort)));
 		}
 		return documentMapper.entityListToDtoList(documentRepository.findAll(Utils.toSort(sort)));
 	}

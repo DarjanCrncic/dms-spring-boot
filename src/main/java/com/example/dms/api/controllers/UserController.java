@@ -1,5 +1,6 @@
 package com.example.dms.api.controllers;
 
+import com.example.dms.api.dtos.SortDTO;
 import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
@@ -31,8 +32,8 @@ public class UserController {
 	UserService userService;
 	
 	@GetMapping
-	public List<DmsUserDTO> getAllUsers() {
-		return userService.findAll();
+	public List<DmsUserDTO> getAllUsers(@RequestParam(required = false) String search, SortDTO sort) {
+		return userService.searchAll(search, sort);
 	}
 	
 	@GetMapping("/details")

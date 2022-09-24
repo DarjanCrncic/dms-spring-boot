@@ -1,13 +1,18 @@
 package com.example.dms.services.impl;
 
+import com.example.dms.api.dtos.SortDTO;
 import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.api.mappers.UserMapper;
+import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.services.UserService;
+import com.example.dms.services.search.SpecificationBuilder;
+import com.example.dms.services.search.document.DocumentSpecProvider;
+import com.example.dms.utils.Utils;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -81,5 +86,15 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 			userMapper.updateUserPut(userDTO, user);
 		}
 		return userMapper.entityToDto(userRepository.save(user));
+	}
+
+	@Override
+	public List<DmsUserDTO> searchAll(String search, SortDTO sort) {
+		if (search != null) {
+			SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
+			return userMapper
+					.entityListToDtoList(userRepository.findAll(builder.parse(search), Utils.toSort(sort)));
+		}
+		return userMapper.entityListToDtoList(userRepository.findAll(Utils.toSort(sort)));
 	}
 }

@@ -40,19 +40,21 @@ public class DmsAclServiceImpl implements DmsAclService {
 	private final DmsUserDetailsService userDetailsService;
 
 	@Override
-	public <T extends AclAllowedClass> void grantRightsOnObject(T object, String username,
-			Collection<Permission> permissions) {
-		UserDetails details = userDetailsService.loadUserByUsername(username);
-		if (details.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-				.collect(Collectors.toList()).contains(Roles.ROLE_ADMIN.name())) {
-			return;
-		}
+	public <T extends AclAllowedClass> void grantRightsOnObject(T object, String username, Collection<Permission> permissions) {
+		if (isUserAdmin(username)) return;
 		Sid sid = new PrincipalSid(username);
 		this.grantRightsOnObject(object, sid, permissions);
 	}
 
+	private boolean isUserAdmin(String username) {
+		UserDetails details = userDetailsService.loadUserByUsername(username);
+		return details.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+				.collect(Collectors.toList()).contains(Roles.ROLE_ADMIN.name());
+	}
+
 	@Override
 	public <T extends AclAllowedClass> void grantRightsOnObject(T object, Sid sid, Collection<Permission> permissions) {
+		if (isUserAdmin(((PrincipalSid) sid).getPrincipal())) return; // TODO: might fail if i introduce groups
 		ObjectIdentity oi = new ObjectIdentityImpl(object);
 		MutableAcl acl;
 		try {
@@ -118,6 +120,7 @@ public class DmsAclServiceImpl implements DmsAclService {
 
 	@Override
 	public <T extends AclAllowedClass> boolean hasRight(T object, String username, Collection<Permission> permissions) {
+		if (isUserAdmin(username)) return true;
 		ObjectIdentity oi = new ObjectIdentityImpl(object);
 		Sid sid = new PrincipalSid(username);
 

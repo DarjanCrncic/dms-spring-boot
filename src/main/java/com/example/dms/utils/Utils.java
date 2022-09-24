@@ -6,19 +6,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import org.springframework.data.domain.Sort;
 
-import java.util.Optional;
-
 public class Utils {
 	public static String stringify(Object object) throws JsonProcessingException {
 		return new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
 				.writeValueAsString(object);
 	}
 
-	public static Sort toSort(Optional<SortDTO> sort) {
-		if (sort.isEmpty()) {
-			return Sort.by(Sort.Direction.DESC, "crationDate");
+	public static Sort toSort(SortDTO sort) {
+		if (sort == null || StringUtils.isFalse(sort.getDirection()) || StringUtils.isFalse(sort.getActive())) {
+			return Sort.by(Sort.Direction.DESC, "creationDate");
 		}
-		return Sort.by(sort.get().getDirection().equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
-				StringUtils.snakeToCammel(sort.get().getActive()));
+		return Sort.by(sort.getDirection().equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+				StringUtils.snakeToCammel(sort.getActive()));
 	}
 }

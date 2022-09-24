@@ -62,8 +62,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 				.orElseThrow(DmsNotFoundException::new);
 		checkConstraints(name, parentFolderId);
 		
-		if (!parentFolder.getName().equals("/")
-				&& !super.aclService.hasRight(parentFolder, username, Arrays.asList(BasePermission.CREATE))) {
+		if (!super.aclService.hasRight(parentFolder, username, List.of(BasePermission.CREATE))) {
 			throw new NotPermitedException("Inssuficient permissions for creating a folder at this path.");
 		}
 

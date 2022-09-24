@@ -29,4 +29,8 @@ public class StringUtils {
 	public static long extractNumOfChars(String word, char c) {
 		return word.chars().filter(a -> a == c).count();
 	}
+
+	public static boolean isFalse(String val) {
+		return val == null || val.isEmpty() || val.isBlank();
+	}
 }

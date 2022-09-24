@@ -1,7 +1,5 @@
 package com.example.dms.services.search;
 
-import com.example.dms.domain.DmsDocument;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -16,7 +14,7 @@ public abstract class BasicSearchSpecification {
 	public static final String LESS_OR_EQUALS = "<=";
 	public static final String GREATER_OR_EQUALS = ">=";
 
-    public Predicate toPredicateBasic(Root<DmsDocument> root, CriteriaQuery<?> query, CriteriaBuilder builder, SearchCriteria criteria) {
+    public Predicate toPredicateBasic(Root<?> root, CriteriaQuery<?> query, CriteriaBuilder builder, SearchCriteria criteria) {
     	
         if (criteria.getOperation().equalsIgnoreCase(GREATER)) {
             return builder.greaterThan(root.<String> get(criteria.getKey()), criteria.getValue().toString());
