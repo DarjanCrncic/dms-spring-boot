@@ -5,13 +5,12 @@ import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.api.mappers.UserMapper;
-import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.services.UserService;
 import com.example.dms.services.search.SpecificationBuilder;
-import com.example.dms.services.search.document.DocumentSpecProvider;
+import com.example.dms.services.search.user.UserSpecProvider;
 import com.example.dms.utils.Utils;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
@@ -91,7 +90,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 	@Override
 	public List<DmsUserDTO> searchAll(String search, SortDTO sort) {
 		if (search != null) {
-			SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
+			SpecificationBuilder<DmsUser> builder = new SpecificationBuilder<>(new UserSpecProvider());
 			return userMapper
 					.entityListToDtoList(userRepository.findAll(builder.parse(search), Utils.toSort(sort)));
 		}

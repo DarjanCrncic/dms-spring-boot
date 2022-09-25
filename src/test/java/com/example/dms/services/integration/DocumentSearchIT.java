@@ -86,8 +86,8 @@ class DocumentSearchIT {
 	@DisplayName("Test search with search criteria.")
 	void testSearchCriteria() {
 		DocumentSpecification spec1 = new DocumentSpecification(
-				new SearchCriteria("object_name", ":", "TestTest", ","));
-		DocumentSpecification spec2 = new DocumentSpecification(new SearchCriteria("creator", ":", "user", ","));
+				new SearchCriteria("object_name", ":", "TestTest"));
+		DocumentSpecification spec2 = new DocumentSpecification(new SearchCriteria("creator", ":", "user"));
 
 		assertEquals(1, documentRepository.findAll(Specification.where(spec1).and(spec2)).size());
 	}
@@ -96,9 +96,9 @@ class DocumentSearchIT {
 	@DisplayName("Test search with search criteria - no results found.")
 	void testSearchCriteriaNotFound() {
 		DocumentSpecification spec1 = new DocumentSpecification(
-				new SearchCriteria("object_name", ":", "TestTestaaa", ","));
+				new SearchCriteria("object_name", ":", "TestTestaaa"));
 		DocumentSpecification spec2 = new DocumentSpecification(
-				new SearchCriteria("description", ":", "testaaaaa", ","));
+				new SearchCriteria("description", ":", "testaaaaa"));
 
 		assertEquals(0, documentRepository.findAll(Specification.where(spec1).and(spec2)).size());
 	}

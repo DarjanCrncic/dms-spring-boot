@@ -1,6 +1,5 @@
 package com.example.dms.repositories;
 
-import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsUser;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,5 +17,5 @@ public interface UserRepository extends JpaRepository<DmsUser, UUID>{
 
 	Optional<DmsUser> findByEmail(String email);
 
-	List<DmsUser> findAll(Specification<DmsDocument> parse, Sort toSort);
+	List<DmsUser> findAll(Specification<DmsUser> parse, Sort toSort);
 }
