@@ -15,7 +15,7 @@ public class SpecificationBuilder<T> {
 	
 	public static final String OR_OPERATOR = "~";
 	public static final String AND_OPERATOR = ",";
-	public static final String searchRegex = "(\\w+)(:|<|>|!|<=|>=)([\\w|-]+)";
+	public static final String searchRegex = "(\\w+)(:|<|>|!|<=|>=)([\\w|\\-|\\/]+)";
 	public static final String numRegex = "(\\d)([,|~]?)";
 
 	Map<String, String> map = new LinkedHashMap<>();
