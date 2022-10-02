@@ -31,6 +31,7 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 	@Mapping(target = "version", ignore = true)
 	@Mapping(target = "creator", ignore = true)
 	@Mapping(target = "content", ignore = true)
+	@Mapping(target = "branched", ignore = true)
 	DmsDocument newDocumentDTOToDocument(NewDocumentDTO documentDTO);
 	
 	@Override
@@ -47,6 +48,7 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 	@Mapping(target = "predecessorId", ignore = true)
 	@Mapping(target = "rootId", ignore = true)
 	@Mapping(target = "version", ignore = true)
+	@Mapping(target = "branched", ignore = true)
 	void updateDocumentPut(ModifyDocumentDTO documentDTO, @MappingTarget DmsDocument document);
 	
 	@Mapping(target = "type", ignore = true)
@@ -60,6 +62,7 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 	@Mapping(target = "predecessorId", ignore = true)
 	@Mapping(target = "rootId", ignore = true)
 	@Mapping(target = "version", ignore = true)
+	@Mapping(target = "branched", ignore = true)
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	void updateDocumentPatch(ModifyDocumentDTO documentDTO, @MappingTarget DmsDocument document);
 }

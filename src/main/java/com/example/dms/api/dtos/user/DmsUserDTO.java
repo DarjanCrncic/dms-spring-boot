@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -24,5 +25,7 @@ public class DmsUserDTO implements BaseEntityDTO {
 	private String lastName;
 	private String email;
 	private boolean enabled;
-	
+
+	private String role;
+	private List<String> privileges;
 }

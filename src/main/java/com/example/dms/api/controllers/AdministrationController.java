@@ -1,7 +1,10 @@
 package com.example.dms.api.controllers;
 
 import com.example.dms.api.dtos.administration.GrantDTO;
+import com.example.dms.api.dtos.administration.RolesPrivilegesDTO;
 import com.example.dms.services.AdministrationService;
+import com.example.dms.utils.Privileges;
+import com.example.dms.utils.Roles;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +43,11 @@ public class AdministrationController {
 	@GetMapping("/folders/{id}")
 	public List<GrantDTO> getPermissionsForFolder(@PathVariable UUID id) {
 		return administrationService.getRightsForFolder(id);
+	}
+
+	@GetMapping("/roles-privileges")
+	public RolesPrivilegesDTO getRolesAndPrivileges() {
+		return new RolesPrivilegesDTO(Roles.getAsString(), Privileges.getAsString());
 	}
 
 }

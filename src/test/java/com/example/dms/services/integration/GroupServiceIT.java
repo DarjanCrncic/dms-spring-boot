@@ -18,6 +18,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -31,28 +32,31 @@ class GroupServiceIT {
 
 	@Autowired
 	GroupRepository groupRepository;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	GroupService groupService;
-	
+
 	DmsUserDTO user1, user2;
 	DmsGroupDTO savedGroup;
 	NewGroupDTO newGroupDTO;
-	
+
 	@BeforeEach
 	void setUp() {
-		user1 = userService.createUser(new NewUserDTO("testuser", "12345", "Darjan", "Crnčić", "test.user@gmail.com"));
-		user2 = userService.createUser(new NewUserDTO("testuser2", "12345", "Darjan", "Crnčić", "test2.user@gmail.com"));
+		user1 = userService.createUser(new NewUserDTO("testuser", "12345", "Darjan", "Crnčić", "test.user@gmail.com",
+				"ROLE_USER",
+				new ArrayList<>()));
+		user2 = userService.createUser(new NewUserDTO("testuser2", "12345", "Darjan", "Crnčić", "test2.user@gmail.com"
+				, "ROLE_USER", new ArrayList<>()));
 		newGroupDTO = NewGroupDTO.builder().groupName("grupa").description("testna grupa").build();
 		savedGroup = groupService.createGroup(newGroupDTO);
 	}
-	
+
 	@AfterEach
 	void cleanUp() {
 		if (savedGroup != null && groupRepository.existsById(savedGroup.getId()))
@@ -62,7 +66,7 @@ class GroupServiceIT {
 		if (user2 != null && userRepository.existsById(user2.getId()))
 			userRepository.deleteById(user2.getId());
 	}
-	
+
 	@Test
 	@DisplayName("Test creation of a new group.")
 	void createNewGroupTest() {
@@ -70,6 +74,7 @@ class GroupServiceIT {
 		assertEquals(newGroupDTO.getDescription(), savedGroup.getDescription());
 		assertEquals(0, savedGroup.getMembers().size());
 	}
+
 	@Test
 	@DisplayName("Test adding users to group.")
 	@Transactional
@@ -77,18 +82,19 @@ class GroupServiceIT {
 		savedGroup = groupService.addUserToGroup(savedGroup.getId(), user1.getId());
 		savedGroup = groupService.addUserToGroup(savedGroup.getId(), user2.getId());
 		savedGroup = groupService.addUserToGroup(savedGroup.getId(), user2.getId());
-		
+
 		assertEquals(2, savedGroup.getMembers().size());
 	}
+
 	@Test
 	@DisplayName("Test adding multiple users to group.")
 	@Transactional
 	void addMultipleUsersToGroup() {
 		List<UUID> userList = Arrays.asList(new UUID[]{user1.getId(), user2.getId()});
 		savedGroup = groupService.addUsersToGroup(savedGroup.getId(), userList);
-		
+
 		assertEquals(2, savedGroup.getMembers().size());
 	}
-	
-	
+
+
 }

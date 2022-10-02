@@ -9,6 +9,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.AclAuthorizationStrategy;
 import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
@@ -106,6 +108,16 @@ public class AclContext {
       defaultMethodSecurityExpressionHandler() {
         DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
         expressionHandler.setPermissionEvaluator(permissionEvaluator());
-        return expressionHandler;
+		expressionHandler.setRoleHierarchy(roleHierarchy());
+		return expressionHandler;
     }
+
+	@Bean
+	public RoleHierarchy roleHierarchy() {
+		RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+		String hierarchy = "ROLE_ADMIN > ROLE_USER";
+		roleHierarchy.setHierarchy(hierarchy);
+		return roleHierarchy;
+	}
+
 }

@@ -75,5 +75,4 @@ public class UserController {
 	}
 	
 	//TODO: deativate and activate user endpoint
-	//TODO: change user roles endpoint
 }

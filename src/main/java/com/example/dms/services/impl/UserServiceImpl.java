@@ -6,8 +6,11 @@ import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.api.mappers.UserMapper;
 import com.example.dms.domain.DmsUser;
+import com.example.dms.domain.security.DmsPrivilege;
+import com.example.dms.domain.security.DmsRole;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DmsAclService;
+import com.example.dms.services.RolePrivilegeService;
 import com.example.dms.services.UserService;
 import com.example.dms.services.search.SpecificationBuilder;
 import com.example.dms.services.search.user.UserSpecProvider;
@@ -15,9 +18,11 @@ import com.example.dms.utils.Utils;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,11 +33,17 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 
 	UserRepository userRepository;
 	UserMapper userMapper;
-	
-	public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, DmsAclService aclService) {
+	RolePrivilegeService rolePrivilegeService;
+
+	BCryptPasswordEncoder passwordEncoder;
+
+	public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, DmsAclService aclService,
+						   RolePrivilegeService rolePrivilegeService, BCryptPasswordEncoder passwordEncoder) {
 		super(userRepository, userMapper, aclService);
 		this.userRepository = userRepository;
 		this.userMapper = userMapper;
+		this.rolePrivilegeService = rolePrivilegeService;
+		this.passwordEncoder = passwordEncoder;
 	}
 	
 	@Override
@@ -72,18 +83,37 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 			throw new UniqueConstraintViolatedException("Following field is not unique: username, value: " + user.getUsername());
 		}
 		//TODO: Add automatic "home" folder creation for users
+		user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+		mapRolesPrivilegesToUser(user, userDTO.getRole(), userDTO.getPrivileges());
 		return userMapper.entityToDto(userRepository.save(user));
+	}
+
+	private void mapRolesPrivilegesToUser(DmsUser user, String roleName, List<String> privilegesNames) {
+		if (roleName != null) {
+			List<DmsRole> roles = new ArrayList<>();
+			roles.add(rolePrivilegeService.findRoleByName(roleName));
+			user.setRoles(roles);
+		}
+		if (privilegesNames != null) {
+			List<DmsPrivilege> privileges = rolePrivilegeService.findPrivilegesByNames(privilegesNames);
+			user.setPrivileges(privileges);
+		}
 	}
 
 	@Override
 	@PreAuthorize("hasRole('ADMIN')")
 	public DmsUserDTO updateUser(UpdateUserDTO userDTO, UUID id, boolean patch) {
 		DmsUser user = userRepository.findById(id).orElseThrow(DmsNotFoundException::new);
+		String oldUsername = user.getUsername();
 		if (patch) {
 			userMapper.updateUserPatch(userDTO, user);
 		} else {
 			userMapper.updateUserPut(userDTO, user);
 		}
+		if (userDTO.getUsername() != null && !oldUsername.equals(userDTO.getUsername())) {
+			userRepository.updateUsername(oldUsername, userDTO.getUsername());
+		}
+		mapRolesPrivilegesToUser(user, userDTO.getRole(), userDTO.getPrivileges());
 		return userMapper.entityToDto(userRepository.save(user));
 	}
 

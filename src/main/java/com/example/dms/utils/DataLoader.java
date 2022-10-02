@@ -85,7 +85,7 @@ public class DataLoader implements ApplicationRunner {
     		userRepository.save(test);
     	} 
     	DmsUser admin = DmsUser.builder().username("admin").password(dummyPassword).firstName("adminF").lastName("adminL").email("admin.admin@gmail.com")
-    			.roles(Arrays.asList(adminRole, userRole)).privileges(Arrays.asList(read, write, create, version, administration, delete)).build();	
+    			.roles(Arrays.asList(adminRole)).privileges(Arrays.asList(read, write, create, version, administration, delete)).build();
     	if (userRepository.findByUsername("admin").isEmpty()) {
     		userRepository.save(admin);
     	} 
