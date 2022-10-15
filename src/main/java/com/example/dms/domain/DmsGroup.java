@@ -27,7 +27,7 @@ import java.util.Set;
 public class DmsGroup extends BaseEntity {
 
 	@NotEmpty
-	@Length(min = 5, max = 32)
+	@Length(min = 2, max = 32)
 	@Column(unique = true)
 	private String groupName;
 	

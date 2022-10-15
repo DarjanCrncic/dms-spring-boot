@@ -15,7 +15,7 @@ import javax.validation.constraints.NotEmpty;
 public class NewGroupDTO {
 
 	@NotEmpty
-	@Length(min = 5, max = 32)
+	@Length(min = 2, max = 32)
 	private String groupName;
 	private String description;
 }

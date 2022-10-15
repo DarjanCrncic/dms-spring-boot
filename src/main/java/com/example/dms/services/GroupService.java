@@ -1,5 +1,6 @@
 package com.example.dms.services;
 
+import com.example.dms.api.dtos.SortDTO;
 import com.example.dms.api.dtos.group.DmsGroupDTO;
 import com.example.dms.api.dtos.group.NewGroupDTO;
 import com.example.dms.domain.DmsGroup;
@@ -20,4 +21,5 @@ public interface GroupService extends CrudService<DmsGroup, DmsGroupDTO, UUID>{
 
 	DmsGroupDTO updateGroup(UUID id, NewGroupDTO groupDTO);
 
+	List<DmsGroupDTO> searchAll(String search, SortDTO sort);
 }

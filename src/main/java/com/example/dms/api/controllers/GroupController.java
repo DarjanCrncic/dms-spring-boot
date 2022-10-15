@@ -1,5 +1,6 @@
 package com.example.dms.api.controllers;
 
+import com.example.dms.api.dtos.SortDTO;
 import com.example.dms.api.dtos.group.DmsGroupDTO;
 import com.example.dms.api.dtos.group.NewGroupDTO;
 import com.example.dms.services.GroupService;
@@ -30,8 +31,8 @@ public class GroupController {
 	private final GroupService groupService;
 
 	@GetMapping
-	public List<DmsGroupDTO> getAllGroups() {
-		return groupService.findAll();
+	public List<DmsGroupDTO> getAllGroups(@RequestParam(required = false) String search, SortDTO sort) {
+		return groupService.searchAll(search, sort);
 	}
 
 	@GetMapping("/search")

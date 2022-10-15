@@ -1,5 +1,6 @@
 package com.example.dms.services.impl;
 
+import com.example.dms.api.dtos.SortDTO;
 import com.example.dms.api.dtos.group.DmsGroupDTO;
 import com.example.dms.api.dtos.group.NewGroupDTO;
 import com.example.dms.api.mappers.GroupMapper;
@@ -9,6 +10,9 @@ import com.example.dms.repositories.GroupRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.services.GroupService;
+import com.example.dms.services.search.SpecificationBuilder;
+import com.example.dms.services.search.group.GroupSpecProvider;
+import com.example.dms.utils.Utils;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -84,5 +88,15 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 		existingGroup.setDescription(groupDTO.getDescription());
 		existingGroup.setGroupName(groupDTO.getGroupName());
 		return save(existingGroup);
+	}
+
+	@Override
+	public List<DmsGroupDTO> searchAll(String search, SortDTO sort) {
+		if (search != null) {
+			SpecificationBuilder<DmsGroup> builder = new SpecificationBuilder<>(new GroupSpecProvider());
+			return groupMapper
+					.entityListToDtoList(groupRepository.findAll(builder.parse(search), Utils.toSort(sort)));
+		}
+		return groupMapper.entityListToDtoList(groupRepository.findAll(Utils.toSort(sort)));
 	}
 }
