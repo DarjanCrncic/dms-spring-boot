@@ -12,6 +12,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -19,45 +21,48 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ContextConfiguration
 class SecurityIT {
 
-	
+
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	DmsUserDTO user;
-	
+
 	@AfterEach
 	void cleanUp() {
 		if (user != null && userRepository.existsById(user.getId())) {
 			userRepository.deleteById(user.getId());
 		}
 	}
-	
+
 	@Test
-	@WithMockUser(username = "testuser", authorities = { "ROLE_ADMIN" })
+	@WithMockUser(username = "testuser", authorities = {"ROLE_ADMIN"})
 	void testSecurityWithMockUser() {
-		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test","testtest.test@gmail.com"));
+		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test", "testtest.test@gmail.com",
+				"ROLE_USER", List.of("READ_PRIVILEGE")));
 		userService.deleteById(user.getId());
-		
+
 		assertTrue(userRepository.findByUsername("test").isEmpty());
 	}
-	
+
 	@Test
-	@WithMockUser(username = "testuser", roles = { "ADMIN" })
+	@WithMockUser(username = "testuser", roles = {"ADMIN"})
 	void testSecurityWithMockUserRple() {
-		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test","testtest.test@gmail.com"));
+		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test", "testtest.test@gmail.com",
+				"ROLE_USER", List.of("READ_PRIVILEGE")));
 		userService.deleteById(user.getId());
-		
+
 		assertTrue(userRepository.findByUsername("test").isEmpty());
 	}
-	
+
 	@Test
-	@WithMockUser(username = "testuser", authorities = { "ROLE_USER" })
+	@WithMockUser(username = "testuser", authorities = {"ROLE_USER"})
 	void testSecurityException() {
-		NewUserDTO dto = new NewUserDTO("testuser", "12345", "test", "test","testtest.test@gmail.com");
+		NewUserDTO dto = new NewUserDTO("testuser", "12345", "test", "test", "testtest.test@gmail.com",
+				"ROLE_USER", List.of("READ_PRIVILEGE"));
 		assertThrows(AccessDeniedException.class, () -> userService.createUser(dto));
 	}
-	
+
 }
