@@ -13,6 +13,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper
 public interface UserMapper extends MapperInterface<DmsUser, DmsUserDTO>{
@@ -31,6 +32,7 @@ public interface UserMapper extends MapperInterface<DmsUser, DmsUserDTO>{
 
 	@Override
 	List<DmsUserDTO> entityListToDtoList(List<DmsUser> list);
+	Set<DmsUserDTO> entityListToDtoList(Set<DmsUser> list);
 
 	@Mapping(target = "enabled", ignore = true)
 	@Mapping(target = "roles", ignore = true)

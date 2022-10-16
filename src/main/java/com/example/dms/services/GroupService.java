@@ -17,7 +17,7 @@ public interface GroupService extends CrudService<DmsGroup, DmsGroupDTO, UUID>{
 
 	DmsGroupDTO addUserToGroup(UUID groupId, UUID userId);
 
-	DmsGroupDTO addUsersToGroup(UUID groupId, List<UUID> userList);
+	DmsGroupDTO updateGroupMembers(UUID groupId, List<UUID> userList);
 
 	DmsGroupDTO updateGroup(UUID id, NewGroupDTO groupDTO);
 

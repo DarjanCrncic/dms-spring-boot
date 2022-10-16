@@ -91,7 +91,7 @@ class GroupServiceIT {
 	@Transactional
 	void addMultipleUsersToGroup() {
 		List<UUID> userList = Arrays.asList(new UUID[]{user1.getId(), user2.getId()});
-		savedGroup = groupService.addUsersToGroup(savedGroup.getId(), userList);
+		savedGroup = groupService.updateGroupMembers(savedGroup.getId(), userList);
 
 		assertEquals(2, savedGroup.getMembers().size());
 	}

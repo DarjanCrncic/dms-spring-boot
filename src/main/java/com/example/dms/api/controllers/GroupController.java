@@ -3,6 +3,7 @@ package com.example.dms.api.controllers;
 import com.example.dms.api.dtos.SortDTO;
 import com.example.dms.api.dtos.group.DmsGroupDTO;
 import com.example.dms.api.dtos.group.NewGroupDTO;
+import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.services.GroupService;
 import com.example.dms.utils.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -36,9 +37,9 @@ public class GroupController {
 	}
 
 	@GetMapping("/search")
-	public DmsGroupDTO getGroupByReqParam(@RequestParam Optional<String> name) {
-		if (name.isPresent()) {
-			return groupService.findGroupByGroupName(name.get());
+	public DmsGroupDTO getGroupByReqParam(@RequestParam(required = false) String name) {
+		if (name != null) {
+			return groupService.findGroupByGroupName(name);
 		}
 		throw new BadRequestException("Request parameters for search are invalid.");
 	}
@@ -46,6 +47,11 @@ public class GroupController {
 	@GetMapping("/{id}")
 	public DmsGroupDTO getGroupById(@PathVariable UUID id) {
 		return groupService.findById(id);
+	}
+
+	@GetMapping("/members/{id}")
+	public Set<DmsUserDTO> getMembers(@PathVariable UUID id) {
+		return groupService.findById(id).getMembers();
 	}
 
 	@PostMapping
@@ -65,8 +71,8 @@ public class GroupController {
 		groupService.deleteById(id);
 	}
 
-	@PostMapping("/users/{id}")
+	@PostMapping("/members/{id}")
 	public DmsGroupDTO addUsersToGroup(@PathVariable UUID id, @RequestBody List<UUID> idList) {
-		return groupService.addUsersToGroup(id, idList);
+		return groupService.updateGroupMembers(id, idList);
 	}
 }

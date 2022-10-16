@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
@@ -66,19 +65,16 @@ public class DmsUser extends BaseEntity {
 	private String email;
 
 	@ManyToMany(mappedBy = "members")
-	@ToString.Exclude
 	@JsonIgnore // TODO: change this to use JsonView
 	@Default
 	private Set<DmsGroup> groups = new HashSet<>();
 
 	@OneToMany(mappedBy = "creator")
-	@ToString.Exclude
 	@JsonIgnore
 	@Default
 	private List<DmsDocument> documents = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user")
-	@ToString.Exclude
 	@JsonIgnore
 	@Default
 	private List<DmsDocumentColumnPreference> documentColumnPreferences = new ArrayList<>();

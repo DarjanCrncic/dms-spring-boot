@@ -10,7 +10,6 @@ import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
@@ -53,10 +52,9 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass{
 	private String description = null; 
 	
 	@Default
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "dms_document_id")
-	@ToString.Exclude
 	private List<String> keywords = new ArrayList<>();
 	
 	@ManyToOne(optional = false)

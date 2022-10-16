@@ -19,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,13 +55,13 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 	}
 	
 	@Override
-	public DmsGroupDTO addUsersToGroup(UUID groupId, List<UUID> userIdList) {
+	public DmsGroupDTO updateGroupMembers(UUID groupId, List<UUID> userIdList) {
 		DmsGroup group = groupRepository.findById(groupId).orElseThrow(() -> new DmsNotFoundException("Group with specified id was not found."));
-		DmsUser user = null;
-		for (UUID id : userIdList) {
-			user = userRepository.findById(id).orElseThrow(() -> new DmsNotFoundException("User with specified id was not found."));
-			group.getMembers().add(user);
+		List<DmsUser> users = userRepository.findAllByIdIn(userIdList);
+		if (users.size() != userIdList.size()) {
+			throw new DmsNotFoundException("Invalid user id list provided.");
 		}
+		group.setMembers(new HashSet<>(users));
 		return save(group);
 	}
 	
