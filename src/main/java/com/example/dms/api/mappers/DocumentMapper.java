@@ -36,33 +36,11 @@ public interface DocumentMapper extends MapperInterface<DmsDocument, DmsDocument
 	
 	@Override
 	List<DmsDocumentDTO> entityListToDtoList(List<DmsDocument> list);
-	
+
 	@Mapping(target = "type", ignore = true)
-	@Mapping(target = "creationDate", ignore = true)
-	@Mapping(target = "id", ignore = true)
-	@Mapping(target = "modifyDate", ignore = true)
-	@Mapping(target = "content", ignore = true)
-	@Mapping(target = "creator", ignore = true)
-	@Mapping(target = "immutable", ignore = true)
-	@Mapping(target = "parentFolder", ignore = true)
-	@Mapping(target = "predecessorId", ignore = true)
-	@Mapping(target = "rootId", ignore = true)
-	@Mapping(target = "version", ignore = true)
-	@Mapping(target = "branched", ignore = true)
 	void updateDocumentPut(ModifyDocumentDTO documentDTO, @MappingTarget DmsDocument document);
-	
+
 	@Mapping(target = "type", ignore = true)
-	@Mapping(target = "creationDate", ignore = true)
-	@Mapping(target = "id", ignore = true)
-	@Mapping(target = "modifyDate", ignore = true)
-	@Mapping(target = "content", ignore = true)
-	@Mapping(target = "creator", ignore = true)
-	@Mapping(target = "immutable", ignore = true)
-	@Mapping(target = "parentFolder", ignore = true)
-	@Mapping(target = "predecessorId", ignore = true)
-	@Mapping(target = "rootId", ignore = true)
-	@Mapping(target = "version", ignore = true)
-	@Mapping(target = "branched", ignore = true)
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	void updateDocumentPatch(ModifyDocumentDTO documentDTO, @MappingTarget DmsDocument document);
 }

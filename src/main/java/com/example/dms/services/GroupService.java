@@ -13,8 +13,6 @@ public interface GroupService extends CrudService<DmsGroup, DmsGroupDTO, UUID>{
 
 	DmsGroupDTO createGroup(@Valid NewGroupDTO groupDTO);
 
-	DmsGroupDTO findGroupByGroupName(String groupName);
-
 	DmsGroupDTO addUserToGroup(UUID groupId, UUID userId);
 
 	DmsGroupDTO updateGroupMembers(UUID groupId, List<UUID> userList);

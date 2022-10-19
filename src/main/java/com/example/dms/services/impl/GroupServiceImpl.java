@@ -32,14 +32,14 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 	private final GroupRepository groupRepository;
 	private final UserRepository userRepository;
 	private final GroupMapper groupMapper;
-	
+
 	public GroupServiceImpl(GroupRepository groupRepository, UserRepository userRepository, GroupMapper groupMapper, DmsAclService aclService) {
 		super(groupRepository, groupMapper, aclService);
 		this.groupMapper = groupMapper;
 		this.groupRepository = groupRepository;
 		this.userRepository = userRepository;
 	}
-	
+
 	@Override
 	public List<DmsGroupDTO> findAll() {
 		return groupMapper.entityListToDtoList(groupRepository.findAll());
@@ -48,12 +48,11 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 	@Override
 	public DmsGroupDTO addUserToGroup(UUID groupId, UUID userId) {
 		DmsGroup group = groupRepository.findById(groupId).orElseThrow(() -> new DmsNotFoundException("Group with specified id was not found."));
-		DmsUser user = null;
-		user = userRepository.findById(userId).orElseThrow(() -> new DmsNotFoundException("User with specified id was not found."));
+		DmsUser user = userRepository.findById(userId).orElseThrow(() -> new DmsNotFoundException("User with specified id was not found."));
 		group.getMembers().add(user);
 		return save(group);
 	}
-	
+
 	@Override
 	public DmsGroupDTO updateGroupMembers(UUID groupId, List<UUID> userIdList) {
 		DmsGroup group = groupRepository.findById(groupId).orElseThrow(() -> new DmsNotFoundException("Group with specified id was not found."));
@@ -64,31 +63,31 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 		group.setMembers(new HashSet<>(users));
 		return save(group);
 	}
-	
+
 	@Override
-	public DmsGroupDTO findGroupByGroupName(String groupName) {
-		Optional<DmsGroup> existingGroup = groupRepository.findByGroupName(groupName);
-		if (existingGroup.isEmpty()) {
-			throw new UniqueConstraintViolatedException("Group name: '" + groupName + "' is not found.");
-		}
-		return groupMapper.entityToDto(existingGroup.get());
-	}
-	
-	@Override
-	public DmsGroupDTO createGroup(NewGroupDTO dmsGroup) {
-		Optional<DmsGroup> existingGroup = groupRepository.findByGroupName(dmsGroup.getGroupName());
-		if (existingGroup.isPresent()) {
-			throw new UniqueConstraintViolatedException("Following field is not unique: groupName, value: '" + dmsGroup.getGroupName() + "'");
-		}
-		return save(groupMapper.newGroupDtoToGroup(dmsGroup));
+	public DmsGroupDTO createGroup(NewGroupDTO groupDTO) {
+		checkGroup(groupDTO.getGroupName(), groupDTO.getIdentifier(), null);
+		return save(groupMapper.newGroupDtoToGroup(groupDTO));
 	}
 
 	@Override
 	public DmsGroupDTO updateGroup(UUID id, NewGroupDTO groupDTO) {
 		DmsGroup existingGroup = groupRepository.findById(id).orElseThrow(DmsNotFoundException::new);
-		existingGroup.setDescription(groupDTO.getDescription());
-		existingGroup.setGroupName(groupDTO.getGroupName());
+		checkGroup(groupDTO.getGroupName(), groupDTO.getIdentifier(), existingGroup.getId());
+		groupMapper.updateGroupPut(groupDTO, existingGroup);
 		return save(existingGroup);
+	}
+
+	private void checkGroup(String groupName, String identifier, UUID groupId) {
+		Optional<DmsGroup> existingGroupName = groupRepository.findByGroupName(groupName);
+		Optional<DmsGroup> existingGroupIdentifier = groupRepository.findByGroupName(identifier);
+
+		if (existingGroupName.isPresent() && (groupId == null || !existingGroupName.get().getId().equals(groupId))) {
+			throw new UniqueConstraintViolatedException("Group name must be unique.");
+		}
+		if (existingGroupIdentifier.isPresent() && (groupId == null || !existingGroupIdentifier.get().getId().equals(groupId))) {
+			throw new UniqueConstraintViolatedException("Group identifier must be unique.");
+		}
 	}
 
 	@Override

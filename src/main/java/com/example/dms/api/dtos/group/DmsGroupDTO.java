@@ -24,6 +24,7 @@ public class DmsGroupDTO implements BaseEntityDTO {
 	private LocalDateTime modifyDate;
 	
 	private String groupName;
+	private String identifier;
 	private String description;
 	@Default
 	private Set<DmsUserDTO> members = new HashSet<>();

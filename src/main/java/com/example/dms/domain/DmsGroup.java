@@ -30,7 +30,12 @@ public class DmsGroup extends BaseEntity {
 	@Length(min = 2, max = 32)
 	@Column(unique = true)
 	private String groupName;
-	
+
+	@NotEmpty
+	@Length(min = 2, max = 32)
+	@Column(unique = true)
+	private String identifier;
+
 	@Default
 	private String description = null;
 

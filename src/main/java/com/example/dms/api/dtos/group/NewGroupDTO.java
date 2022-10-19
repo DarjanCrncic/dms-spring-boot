@@ -17,5 +17,6 @@ public class NewGroupDTO {
 	@NotEmpty
 	@Length(min = 2, max = 32)
 	private String groupName;
+	private String identifier;
 	private String description;
 }

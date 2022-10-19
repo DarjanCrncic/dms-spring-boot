@@ -12,6 +12,7 @@ import java.util.UUID;
 public interface GroupRepository extends JpaRepository<DmsGroup, UUID>{
 
 	Optional<DmsGroup> findByGroupName(String groupName);
+	Optional<DmsGroup> findByIdentifier(String identifier);
 
 	List<DmsGroup> findAll(Specification<DmsGroup> parse, Sort toSort);
 }

@@ -5,7 +5,6 @@ import com.example.dms.api.dtos.group.DmsGroupDTO;
 import com.example.dms.api.dtos.group.NewGroupDTO;
 import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.services.GroupService;
-import com.example.dms.utils.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,14 +33,6 @@ public class GroupController {
 	@GetMapping
 	public List<DmsGroupDTO> getAllGroups(@RequestParam(required = false) String search, SortDTO sort) {
 		return groupService.searchAll(search, sort);
-	}
-
-	@GetMapping("/search")
-	public DmsGroupDTO getGroupByReqParam(@RequestParam(required = false) String name) {
-		if (name != null) {
-			return groupService.findGroupByGroupName(name);
-		}
-		throw new BadRequestException("Request parameters for search are invalid.");
 	}
 
 	@GetMapping("/{id}")
