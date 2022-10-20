@@ -10,6 +10,8 @@ import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
@@ -52,24 +54,25 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass{
 	private String description = null; 
 	
 	@Default
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
+	@Fetch(FetchMode.SUBSELECT)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "dms_document_id")
 	private List<String> keywords = new ArrayList<>();
 	
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name="type_id")
 	@Default
 	@JsonBackReference
 	private DmsType type = null;
 	
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "parent_folder_id")
 	@Default
 	private DmsFolder parentFolder = null;
 
 	// internal attributes
-	@OneToOne(mappedBy = "document", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+	@OneToOne(mappedBy = "document", cascade = CascadeType.ALL)
 	private DmsContent content;
 	
 	@Default

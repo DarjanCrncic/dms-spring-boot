@@ -82,6 +82,7 @@ public class AclContext {
     public PermissionEvaluator permissionEvaluator() {
 		AclPermissionEvaluator permissionEvaluator = new DmsAclPermissionEvaluator(aclService());
 		permissionEvaluator.setPermissionFactory(permissionFactory());
+		permissionEvaluator.setSidRetrievalStrategy(sidRetrievalStrategy());
 		return permissionEvaluator;
     }
 
@@ -120,4 +121,8 @@ public class AclContext {
 		return roleHierarchy;
 	}
 
+	@Bean
+	public CustomSidRetrievalStrategyImpl sidRetrievalStrategy() {
+		return new CustomSidRetrievalStrategyImpl(roleHierarchy());
+	}
 }

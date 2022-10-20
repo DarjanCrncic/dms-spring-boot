@@ -2,6 +2,7 @@ package com.example.dms.services.impl;
 
 import com.example.dms.api.dtos.administration.GrantDTO;
 import com.example.dms.domain.security.AclAllowedClass;
+import com.example.dms.repositories.GroupRepository;
 import com.example.dms.security.DmsUserDetailsService;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.utils.Permissions;
@@ -38,15 +39,21 @@ public class DmsAclServiceImpl implements DmsAclService {
 
 	private final JdbcMutableAclService aclService;
 	private final DmsUserDetailsService userDetailsService;
+	private final GroupRepository groupRepository;
 
 	@Override
 	public <T extends AclAllowedClass> void grantRightsOnObject(T object, String username, Collection<Permission> permissions) {
 		if (isUserAdmin(username)) return;
+
 		Sid sid = new PrincipalSid(username);
 		this.grantRightsOnObject(object, sid, permissions);
 	}
 
 	private boolean isUserAdmin(String username) {
+		if (groupRepository.existsByIdentifier(username)) return false;
+		// in order to reuse this whole service, I'm using the group identifier as a username
+		// since userDetailsService will throw an error for any group identifier, have to return here
+
 		UserDetails details = userDetailsService.loadUserByUsername(username);
 		return details.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.collect(Collectors.toList()).contains(Roles.ROLE_ADMIN.name());
@@ -54,7 +61,7 @@ public class DmsAclServiceImpl implements DmsAclService {
 
 	@Override
 	public <T extends AclAllowedClass> void grantRightsOnObject(T object, Sid sid, Collection<Permission> permissions) {
-		if (isUserAdmin(((PrincipalSid) sid).getPrincipal())) return; // TODO: might fail if i introduce groups
+		if (isUserAdmin(((PrincipalSid) sid).getPrincipal())) return;
 		ObjectIdentity oi = new ObjectIdentityImpl(object);
 		MutableAcl acl;
 		try {

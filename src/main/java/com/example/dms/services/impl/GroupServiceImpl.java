@@ -88,6 +88,9 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 		if (existingGroupIdentifier.isPresent() && (groupId == null || !existingGroupIdentifier.get().getId().equals(groupId))) {
 			throw new UniqueConstraintViolatedException("Group identifier must be unique.");
 		}
+		if (userRepository.findByUsername(groupName).isPresent() || userRepository.findByUsername(identifier).isPresent()) {
+			throw new UniqueConstraintViolatedException("Group name and identifier must be different from any existing username.");
+		}
 	}
 
 	@Override

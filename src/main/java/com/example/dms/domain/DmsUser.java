@@ -12,10 +12,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -64,7 +67,8 @@ public class DmsUser extends BaseEntity {
 	@Column(unique = true)
 	private String email;
 
-	@ManyToMany(mappedBy = "members")
+	@ManyToMany(mappedBy = "members", fetch = FetchType.EAGER)
+	@Fetch(FetchMode.SUBSELECT)
 	@JsonIgnore // TODO: change this to use JsonView
 	@Default
 	private Set<DmsGroup> groups = new HashSet<>();
@@ -80,6 +84,7 @@ public class DmsUser extends BaseEntity {
 	private List<DmsDocumentColumnPreference> documentColumnPreferences = new ArrayList<>();
 
 	@ManyToMany
+	@Fetch(FetchMode.SUBSELECT)
 	@Default
 	@JoinTable(name = "users_roles",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
@@ -87,6 +92,7 @@ public class DmsUser extends BaseEntity {
 	private List<DmsRole> roles = new ArrayList<>();
 
 	@ManyToMany
+	@Fetch(FetchMode.SUBSELECT)
 	@JoinTable(
 			name = "users_privileges",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),

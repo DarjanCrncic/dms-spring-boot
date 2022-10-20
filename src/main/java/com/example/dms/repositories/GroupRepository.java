@@ -14,5 +14,6 @@ public interface GroupRepository extends JpaRepository<DmsGroup, UUID>{
 	Optional<DmsGroup> findByGroupName(String groupName);
 	Optional<DmsGroup> findByIdentifier(String identifier);
 
+	boolean existsByIdentifier(String identifier);
 	List<DmsGroup> findAll(Specification<DmsGroup> parse, Sort toSort);
 }

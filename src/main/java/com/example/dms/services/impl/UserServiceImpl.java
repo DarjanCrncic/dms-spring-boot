@@ -8,6 +8,7 @@ import com.example.dms.api.mappers.UserMapper;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.domain.security.DmsPrivilege;
 import com.example.dms.domain.security.DmsRole;
+import com.example.dms.repositories.GroupRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.services.RolePrivilegeService;
@@ -36,14 +37,17 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 	RolePrivilegeService rolePrivilegeService;
 
 	BCryptPasswordEncoder passwordEncoder;
+	GroupRepository groupRepository;
 
 	public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, DmsAclService aclService,
-						   RolePrivilegeService rolePrivilegeService, BCryptPasswordEncoder passwordEncoder) {
+						   RolePrivilegeService rolePrivilegeService, BCryptPasswordEncoder passwordEncoder,
+						   GroupRepository groupRepository) {
 		super(userRepository, userMapper, aclService);
 		this.userRepository = userRepository;
 		this.userMapper = userMapper;
 		this.rolePrivilegeService = rolePrivilegeService;
 		this.passwordEncoder = passwordEncoder;
+		this.groupRepository = groupRepository;
 	}
 	
 	@Override
@@ -75,13 +79,8 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 	@Override
 	@PreAuthorize("hasRole('ADMIN')")
 	public DmsUserDTO createUser(NewUserDTO userDTO) {
+		checkUser(userDTO.getUsername(), userDTO.getEmail(), null);
 		DmsUser user = userMapper.newUserDTOToUser(userDTO);
-		if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-			throw new UniqueConstraintViolatedException("Following field is not unique: email, value: " + user.getEmail());
-		}
-		if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-			throw new UniqueConstraintViolatedException("Following field is not unique: username, value: " + user.getUsername());
-		}
 		//TODO: Add automatic "home" folder creation for users
 		user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 		mapRolesPrivilegesToUser(user, userDTO.getRole(), userDTO.getPrivileges());
@@ -110,11 +109,27 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 		} else {
 			userMapper.updateUserPut(userDTO, user);
 		}
+		checkUser(user.getUsername(), user.getEmail(), user.getId());
 		if (userDTO.getUsername() != null && !oldUsername.equals(userDTO.getUsername())) {
 			userRepository.updateUsername(oldUsername, userDTO.getUsername());
 		}
 		mapRolesPrivilegesToUser(user, userDTO.getRole(), userDTO.getPrivileges());
 		return userMapper.entityToDto(userRepository.save(user));
+	}
+
+	void checkUser(String username, String email, UUID id) {
+		Optional<DmsUser> userUsername = userRepository.findByUsername(username);
+		Optional<DmsUser> userEmail = userRepository.findByEmail(email);
+
+		if (userEmail.isPresent() && (id == null || userEmail.get().getId().equals(id))) {
+			throw new UniqueConstraintViolatedException("User email must be unique.");
+		}
+		if (userUsername.isPresent() && (id == null || userUsername.get().getId().equals(id))) {
+			throw new UniqueConstraintViolatedException("Username must be unique");
+		}
+		if (groupRepository.findByIdentifier(username).isPresent()) {
+			throw new UniqueConstraintViolatedException("Username must be different from any existing group identifier.");
+		}
 	}
 
 	@Override
