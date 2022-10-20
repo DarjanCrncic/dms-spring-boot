@@ -74,6 +74,9 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 	public DmsGroupDTO updateGroup(UUID id, NewGroupDTO groupDTO) {
 		DmsGroup existingGroup = groupRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		checkGroup(groupDTO.getGroupName(), groupDTO.getIdentifier(), existingGroup.getId());
+		if (!existingGroup.getIdentifier().equals(groupDTO.getIdentifier())) {
+			this.groupRepository.updateIdentifier(existingGroup.getIdentifier(), groupDTO.getIdentifier());
+		}
 		groupMapper.updateGroupPut(groupDTO, existingGroup);
 		return save(existingGroup);
 	}
