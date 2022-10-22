@@ -32,7 +32,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 	private final DocumentRepository documentRepository;
 	private final FolderRepository folderRepository;
 
-	private <T extends AclAllowedClass> List<GrantDTO> grantRightsToUsers(List<GrantDTO> dtos, T object) {
+	private <T extends AclAllowedClass> List<GrantDTO> grantRightsToSid(List<GrantDTO> dtos, T object) {
 		Map<String, Set<String>> existingRights = grantDTOToMap(aclService.getRights(object));
 		Map<String, Set<String>> newRights = grantDTOToMap(dtos);
 
@@ -69,14 +69,14 @@ public class AdministrationServiceImpl implements AdministrationService {
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','ADMINISTRATION') || hasAuthority('ADMINISTRATION_PRIVILEGE')")
 	public List<GrantDTO> grantRightsForDocument(List<GrantDTO> dtos, UUID id) {
 		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
-		return this.grantRightsToUsers(dtos, document);
+		return this.grantRightsToSid(dtos, document);
 	}
 
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','ADMINISTRATION') || hasAuthority('ADMINISTRATION_PRIVILEGE')")
 	public List<GrantDTO> grantRightsForFolder(List<GrantDTO> dtos, UUID id) {
 		DmsFolder folder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
-		return this.grantRightsToUsers(dtos, folder);
+		return this.grantRightsToSid(dtos, folder);
 	}
 
 	@Override

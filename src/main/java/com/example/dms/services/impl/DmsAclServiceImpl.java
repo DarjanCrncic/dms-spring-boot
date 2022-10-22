@@ -25,8 +25,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -161,16 +159,7 @@ public class DmsAclServiceImpl implements DmsAclService {
 			return Collections.emptyList();
 		}
 
-		List<AccessControlEntry> entries = acl.getEntries();
-		Map<String, Set<String>> map = new HashMap<>();
-		for (AccessControlEntry entry : entries) {
-			String permission = Permissions.getByMask(entry.getPermission().getMask());
-			PrincipalSid sid = (PrincipalSid) entry.getSid();
-			if (!map.containsKey(sid.getPrincipal())) {
-				map.put(sid.getPrincipal(), new HashSet<>());
-			}
-			map.get(sid.getPrincipal()).add(permission);
-		}
+		Map<String, Set<String>> map = collectEntriesToMasksMap(acl.getEntries());
 		List<GrantDTO> grants = new ArrayList<>();
 
 		for (String principal : map.keySet()) {
@@ -190,20 +179,20 @@ public class DmsAclServiceImpl implements DmsAclService {
 			log.warn("object invalid, no acls found...");
 			return;
 		}
-		
-		List<AccessControlEntry> entries = acl.getEntries();
-		Map<Sid, Set<Permission>> map = new HashMap<>();
-		for (AccessControlEntry entry : entries) {
-			Sid sid = entry.getSid();
-			if (!map.containsKey(sid)) {
-				map.put(sid, new HashSet<>());
-			}
-			map.get(sid).add(entry.getPermission());
-		}
-		
-		for (Sid sid : map.keySet()) {
+
+		Map<String, Set<Permission>> map = collectEntriesToPermissionsMap(acl.getEntries());
+		for (String sid : map.keySet()) {
 			grantRightsOnObject(copy, sid, map.get(sid));
 		}
 	}
 
+	private Map<String, Set<String>> collectEntriesToMasksMap(List<AccessControlEntry> entries) {
+		return entries.stream().collect(Collectors.groupingBy(entry -> ((PrincipalSid) entry.getSid()).getPrincipal(),
+				Collectors.mapping(entry -> Permissions.getByMask(entry.getPermission().getMask()), Collectors.toSet())));
+	}
+
+	private Map<String, Set<Permission>> collectEntriesToPermissionsMap(List<AccessControlEntry> entries) {
+		return entries.stream().collect(Collectors.groupingBy(entry -> ((PrincipalSid) entry.getSid()).getPrincipal(),
+				Collectors.mapping(AccessControlEntry::getPermission, Collectors.toSet())));
+	}
 }
