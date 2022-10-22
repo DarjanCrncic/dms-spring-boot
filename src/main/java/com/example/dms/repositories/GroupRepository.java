@@ -25,4 +25,8 @@ public interface GroupRepository extends JpaRepository<DmsGroup, UUID>{
 	@Query(nativeQuery = true, value = "UPDATE ACL_SID SET sid = ?2 WHERE sid = ?1")
 	void updateIdentifier(String oldIdentifier, String newIdentifier);
 
+
+	@Modifying
+	@Query(nativeQuery = true, value = "DELETE FROM ACL_ENTRY WHERE sid = (SELECT id FROM ACL_SID WHERE sid = ?1)")
+	void removeAclEntries(String username);
 }

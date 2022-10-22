@@ -105,4 +105,11 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 		}
 		return groupMapper.entityListToDtoList(groupRepository.findAll(Utils.toSort(sort)));
 	}
+
+	@Override
+	public void deleteById(UUID id) {
+		DmsGroup group = checkPresent(id);
+		groupRepository.removeAclEntries(group.getIdentifier());
+		super.deleteById(id);
+	}
 }

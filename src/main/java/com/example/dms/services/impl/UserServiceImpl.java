@@ -81,7 +81,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 	public DmsUserDTO createUser(NewUserDTO userDTO) {
 		checkUser(userDTO.getUsername(), userDTO.getEmail(), null);
 		DmsUser user = userMapper.newUserDTOToUser(userDTO);
-		//TODO: Add automatic "home" folder creation for users
+
 		user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 		mapRolesPrivilegesToUser(user, userDTO.getRole(), userDTO.getPrivileges());
 		return userMapper.entityToDto(userRepository.save(user));
@@ -140,5 +140,12 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 					.entityListToDtoList(userRepository.findAll(builder.parse(search), Utils.toSort(sort)));
 		}
 		return userMapper.entityListToDtoList(userRepository.findAll(Utils.toSort(sort)));
+	}
+
+	@Override
+	public void deleteById(UUID id) {
+		DmsUser user = checkPresent(id);
+		userRepository.removeAclEntries(user.getUsername());
+		super.deleteById(id);
 	}
 }

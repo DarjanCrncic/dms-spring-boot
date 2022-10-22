@@ -17,10 +17,18 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<DmsUser, UUID>{
 
 	Optional<DmsUser> findByUsername(String username);
+
 	Optional<DmsUser> findByEmail(String email);
+
 	List<DmsUser> findAll(Specification<DmsUser> parse, Sort toSort);
+
 	List<DmsUser> findAllByIdIn(Collection<UUID> ids);
+
 	@Modifying
 	@Query(nativeQuery = true, value = "UPDATE ACL_SID SET sid = ?2 WHERE sid = ?1")
 	void updateUsername(String oldUsername, String newUsername);
+
+	@Modifying
+	@Query(nativeQuery = true, value = "DELETE FROM ACL_ENTRY WHERE sid = (SELECT id FROM ACL_SID WHERE sid = ?1)")
+	void removeAclEntries(String username);
 }
