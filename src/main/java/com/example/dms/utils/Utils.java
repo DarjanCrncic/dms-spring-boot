@@ -25,7 +25,7 @@ public class Utils {
 			return Sort.by(Sort.Direction.DESC, "creationDate");
 		}
 		return Sort.by(sort.getDirection().equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
-				StringUtils.snakeToCammel(sort.getActive()));
+				StringUtils.snakeToCamel(sort.getActive()));
 	}
 
 	private static final List<String> supportedDateFormats = List.of("yyyy-MM-dd", "dd/MM/yyyy", "dd-MM-yyyy");

@@ -1,12 +1,15 @@
 package com.example.dms.utils;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class StringUtils {
 
 	private StringUtils() {
 		throw new IllegalStateException("Utility class");
 	}
 
-	public static String snakeToCammel(String text) {
+	public static String snakeToCamel(String text) {
 		if (!text.contains("_")) {
 			return text;
 		}
@@ -32,5 +35,10 @@ public class StringUtils {
 
 	public static boolean isFalse(String val) {
 		return val == null || val.isEmpty() || val.isBlank();
+	}
+
+	public static String dateTimeToString(LocalDateTime dateTime) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+		return dateTime.format(formatter);
 	}
 }

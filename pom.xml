@@ -16,7 +16,7 @@
 	<description>Spring Boot Document Management System</description>
 	<properties>
 		<java.version>11</java.version>
-		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
+		<org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
 		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 	</properties>
 	<dependencies>
@@ -71,12 +71,11 @@
 			<artifactId>mapstruct</artifactId>
 			<version>${org.mapstruct.version}</version>
 		</dependency>
-		<!-- documentation  -->
 		<dependency>
-			<groupId>org.springframework.restdocs</groupId>
-			<artifactId>spring-restdocs-mockmvc</artifactId>
-			<scope>test</scope>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
+		<!-- documentation  -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
@@ -121,7 +120,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+			<artifactId>jjwt-jackson</artifactId>
 			<version>0.11.2</version>
 			<scope>runtime</scope>
 		</dependency>
@@ -154,7 +153,6 @@
 							<artifactId>lombok</artifactId>
 							<version>${lombok.version}</version>
 						</path>
-						<!-- This is needed when using Lombok 1.18.16 and above -->
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok-mapstruct-binding</artifactId>
@@ -165,7 +163,6 @@
 							<artifactId>mapstruct-processor</artifactId>
 							<version>${org.mapstruct.version}</version>
 						</path>
-						<!-- other annotation processors -->
 					</annotationProcessorPaths>
 					<compilerArgs>
 						<compilerArg>
@@ -174,28 +171,6 @@
 					</compilerArgs>
 				</configuration>
 			</plugin>
-			<!-- tag::asciidoc[] -->
-			<plugin>
-				<groupId>org.asciidoctor</groupId>
-				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>generate-docs</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>process-asciidoc</goal>
-						</goals>
-						<configuration>
-							<sourceDocumentName>index.adoc</sourceDocumentName>
-							<backend>html</backend>
-							<attributes>
-								<snippets>${project.build.directory}/snippets</snippets>
-							</attributes>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- end::asciidoc[] -->
 		</plugins>
 	</build>
 

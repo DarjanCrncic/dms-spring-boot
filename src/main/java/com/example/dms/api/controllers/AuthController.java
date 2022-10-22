@@ -49,21 +49,7 @@ public class AuthController {
 		DmsUser user = userDetails.getUser();
 
 		return new LoginResponse(userDetails.getUsername(), jwt, System.currentTimeMillis() + jwtExpirationMs,
-				user.getFirstName(), user.getLastName(), userDetails.getPrivileges(), userDetails.getRoles());
+				user.getFirstName(), user.getLastName(), userDetails.getPrivileges(), userDetails.getRoles(),
+				userDetails.getGroupIdentifiers());
 	}
-
-//	@PostMapping("/signup")
-//	@ResponseStatus(HttpStatus.CREATED)
-//	public String registerUser(@RequestBody SignupRequest signUpRequest) {
-//		if (authUserRepository.findByUsername(signUpRequest.getUsername()) != null) {
-//			return "Username alredy exists...";
-//		}
-//
-//		// Create new user's account
-//		AuthUser user = new AuthUser(signUpRequest.getUsername(), encoder.encode(signUpRequest.getPassword()));
-//
-//		authUserRepository.save(user);
-//
-//		return "User registered successfully!";
-//	}
 }

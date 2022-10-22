@@ -70,7 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		        .exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeRequests()
-				.antMatchers("/h2-console/**", "/auth/**", "/ping/**", "/error").permitAll()
+				.antMatchers("/h2-console/**", "/auth/**", "/ping/**", "/error" , "/dms-websocket").permitAll()
 				.anyRequest().authenticated();
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

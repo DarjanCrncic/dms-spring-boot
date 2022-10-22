@@ -15,7 +15,7 @@ public class SearchCriteria {
 
     public SearchCriteria(String key, String operation, Object value) {
 		super();
-		this.key = StringUtils.snakeToCammel(key);
+		this.key = StringUtils.snakeToCamel(key);
 		this.operation = operation;
 		this.value = value;
     }

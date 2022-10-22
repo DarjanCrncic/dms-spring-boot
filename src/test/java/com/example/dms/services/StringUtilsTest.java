@@ -9,10 +9,10 @@ class StringUtilsTest {
 
 	@Test
 	void testSnakeToCammelConversion() {
-		assertEquals("objectName", StringUtils.snakeToCammel("object_name"));
-		assertEquals("objectNameName", StringUtils.snakeToCammel("object_name_name"));
-		assertEquals("objectName", StringUtils.snakeToCammel("Object_Name"));
-		assertEquals("objectName", StringUtils.snakeToCammel("OBJECT_NAME"));
-		assertEquals("objectName", StringUtils.snakeToCammel("objectName"));
+		assertEquals("objectName", StringUtils.snakeToCamel("object_name"));
+		assertEquals("objectNameName", StringUtils.snakeToCamel("object_name_name"));
+		assertEquals("objectName", StringUtils.snakeToCamel("Object_Name"));
+		assertEquals("objectName", StringUtils.snakeToCamel("OBJECT_NAME"));
+		assertEquals("objectName", StringUtils.snakeToCamel("objectName"));
 	}
 }

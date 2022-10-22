@@ -16,4 +16,5 @@ public class LoginResponse {
 	private String lastName;
 	private List<String> privileges;
 	private List<String> roles;
+	private List<String> groupIdentifiers;
 }
