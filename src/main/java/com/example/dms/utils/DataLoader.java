@@ -16,7 +16,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 @Component
@@ -71,21 +70,23 @@ public class DataLoader implements ApplicationRunner {
     	if (roleRepository.findByName(Roles.ROLE_USER.name()).isEmpty()) {
     		userRole = roleRepository.save(DmsRole.builder().name(Roles.ROLE_USER.name()).build());
     	}
-    	
-    	// test and admin users
-    	String dummyPassword = passwordEncoder.encode("12345");
-    	DmsUser user = DmsUser.builder().username("user").password(dummyPassword).firstName("userF").lastName("userL").email("user.user@gmail.com")
-    			.roles(Arrays.asList(userRole)).privileges(Collections.emptyList()).build();	
-    	if (userRepository.findByUsername("user").isEmpty()) {
-    		userRepository.save(user);
-    	} 
-    	DmsUser test = DmsUser.builder().username("tester").password(dummyPassword).firstName("testF").lastName("testL").email("tester.tester@gmail.com")
-    			.roles(Arrays.asList(userRole)).privileges(Arrays.asList(read, write, create)).build();	
-    	if (userRepository.findByUsername("tester").isEmpty()) {
-    		userRepository.save(test);
-    	} 
-    	DmsUser admin = DmsUser.builder().username("admin").password(dummyPassword).firstName("adminF").lastName("adminL").email("admin.admin@gmail.com")
-    			.roles(Arrays.asList(adminRole)).privileges(Arrays.asList(read, write, create, version, administration, delete)).build();
+		assert userRole != null;
+		assert adminRole != null;
+
+		// test and admin users
+		String dummyPassword = passwordEncoder.encode("12345");
+		DmsUser user = DmsUser.builder().username("user").password(dummyPassword).firstName("userF").lastName("userL").email("user.user@gmail.com")
+    			.roles(Utils.toSet(userRole)).privileges(Collections.emptySet()).build();
+		if (userRepository.findByUsername("user").isEmpty()) {
+			userRepository.save(user);
+		}
+		DmsUser test = DmsUser.builder().username("tester").password(dummyPassword).firstName("testF").lastName("testL").email("tester.tester@gmail.com")
+    			.roles(Utils.toSet(userRole)).privileges(Utils.toSet(read, write, create)).build();
+		if (userRepository.findByUsername("tester").isEmpty()) {
+			userRepository.save(test);
+		}
+		DmsUser admin = DmsUser.builder().username("admin").password(dummyPassword).firstName("adminF").lastName("adminL").email("admin.admin@gmail.com")
+    			.roles(Utils.toSet(adminRole)).privileges(Utils.toSet(read, write, create, version, administration, delete)).build();
     	if (userRepository.findByUsername("admin").isEmpty()) {
     		userRepository.save(admin);
     	} 

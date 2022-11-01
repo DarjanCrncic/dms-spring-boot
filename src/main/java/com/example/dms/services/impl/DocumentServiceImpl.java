@@ -8,6 +8,7 @@ import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.domain.DmsContent;
 import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsFolder;
+import com.example.dms.domain.DmsNotification;
 import com.example.dms.domain.DmsType;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.ContentRepository;
@@ -16,10 +17,16 @@ import com.example.dms.repositories.FolderRepository;
 import com.example.dms.repositories.TypeRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.security.configuration.acl.CustomBasePermission;
+import com.example.dms.services.AdministrationService;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.services.DocumentService;
+import com.example.dms.services.NotificationService;
 import com.example.dms.services.search.SpecificationBuilder;
 import com.example.dms.services.search.document.DocumentSpecProvider;
+import com.example.dms.utils.ActionEnum;
+import com.example.dms.utils.NotificationUtils;
+import com.example.dms.utils.Roles;
+import com.example.dms.utils.TypeEnum;
 import com.example.dms.utils.Utils;
 import com.example.dms.utils.VersionUtils;
 import com.example.dms.utils.exceptions.BadRequestException;
@@ -47,10 +54,13 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	private final TypeRepository typeRepository;
 	private final ContentRepository contentRepository;
 	private final FolderRepository folderRepository;
+	private final NotificationService notificationService;
+	private final AdministrationService administrationService;
 
 	public DocumentServiceImpl(UserRepository userRepository, DocumentRepository documentRepository,
 							   DocumentMapper documentMapper, TypeRepository typeRepository, DmsAclService aclService,
-							   ContentRepository contentRepository, FolderRepository folderRepository) {
+							   ContentRepository contentRepository, FolderRepository folderRepository, NotificationService notificationService,
+							   AdministrationService administrationService) {
 		super(documentRepository, documentMapper, aclService);
 		this.userRepository = userRepository;
 		this.documentRepository = documentRepository;
@@ -58,6 +68,8 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		this.typeRepository = typeRepository;
 		this.contentRepository = contentRepository;
 		this.folderRepository = folderRepository;
+		this.notificationService = notificationService;
+		this.administrationService = administrationService;
 	}
 
 	@Override
@@ -115,8 +127,19 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 					.orElseThrow(() -> new DmsNotFoundException("Given type does not exist."));
 			doc.addType(newType);
 		}
-
+		this.createNotification(doc, ActionEnum.UPDATE);
 		return save(doc);
+	}
+
+	private void createNotification(DmsDocument doc, ActionEnum action) {
+		List<DmsUser> recipients = userRepository.findByRoleName(Roles.ROLE_ADMIN.name());
+		recipients.addAll(userRepository.findAllByUsernameIn(administrationService.getRecipients(doc)));
+		DmsNotification notification = DmsNotification.builder()
+				.message(NotificationUtils.buildMessage(doc.getObjectName(), TypeEnum.DOCUMENT, action))
+				.recipients(recipients)
+				.seen(false)
+				.linkTo(doc.getParentFolder().getId()).build();
+		notificationService.save(notification);
 	}
 
 	@Override
@@ -268,6 +291,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 				documentRepository.save(prevVersion);
 			}
 		}
+		this.createNotification(toDelete, ActionEnum.DELETE);
 		super.deleteById(id);
 	}
 }

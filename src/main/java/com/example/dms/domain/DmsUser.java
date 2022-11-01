@@ -16,6 +16,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Length;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -73,7 +74,7 @@ public class DmsUser extends BaseEntity {
 	@Default
 	private Set<DmsGroup> groups = new HashSet<>();
 
-	@OneToMany(mappedBy = "creator")
+	@OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
 	@JsonIgnore
 	@Default
 	private List<DmsDocument> documents = new ArrayList<>();
@@ -83,21 +84,29 @@ public class DmsUser extends BaseEntity {
 	@Default
 	private List<DmsDocumentColumnPreference> documentColumnPreferences = new ArrayList<>();
 
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(
+			name = "users_notifications",
+			joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "notification_id"))
+	private Set<DmsNotification> notifications = new HashSet<>();
+
 	@ManyToMany
 	@Fetch(FetchMode.SUBSELECT)
 	@Default
 	@JoinTable(name = "users_roles",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-	private List<DmsRole> roles = new ArrayList<>();
+	private Set<DmsRole> roles = new HashSet<>();
 
 	@ManyToMany
 	@Fetch(FetchMode.SUBSELECT)
+	@Default
 	@JoinTable(
 			name = "users_privileges",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
-	private List<DmsPrivilege> privileges;
+	private Set<DmsPrivilege> privileges = new HashSet<>();
 
 	@Default
 	boolean enabled = true;

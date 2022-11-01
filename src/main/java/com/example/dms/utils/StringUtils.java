@@ -2,6 +2,8 @@ package com.example.dms.utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringUtils {
 
@@ -29,10 +31,6 @@ public class StringUtils {
 		return builder.toString();
 	}
 	
-	public static long extractNumOfChars(String word, char c) {
-		return word.chars().filter(a -> a == c).count();
-	}
-
 	public static boolean isFalse(String val) {
 		return val == null || val.isEmpty() || val.isBlank();
 	}
@@ -40,5 +38,15 @@ public class StringUtils {
 	public static String dateTimeToString(LocalDateTime dateTime) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 		return dateTime.format(formatter);
+	}
+
+	public static boolean validateFolderName(String name) {
+		Pattern p = Pattern.compile(Constants.FOLDER_NAME_REGEX);
+		Matcher m = p.matcher(name);
+		return m.matches();
+	}
+
+	public static String capitalize(String str) {
+		return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
 	}
 }

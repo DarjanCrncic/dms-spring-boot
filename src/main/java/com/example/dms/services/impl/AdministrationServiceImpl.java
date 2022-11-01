@@ -100,4 +100,17 @@ public class AdministrationServiceImpl implements AdministrationService {
 	private Map<String, Set<String>> grantDTOToMap(List<GrantDTO> dtos) {
 		return dtos.stream().collect(Collectors.toMap(GrantDTO::getUsername, GrantDTO::getPermissions));
 	}
+
+	@Override
+	public <T extends AclAllowedClass> Set<String> getRecipients(T object) {
+		return getRightsForObject(object).stream()
+				.map(GrantDTO::getUsername).collect(Collectors.toSet());
+	}
+
+	@Override
+	public <T extends AclAllowedClass> Set<String> getRecipients(T object, String filterPermission) {
+		return getRightsForObject(object).stream()
+				.filter(r -> r.getPermissions().contains(filterPermission))
+				.map(GrantDTO::getUsername).collect(Collectors.toSet());
+	}
 }

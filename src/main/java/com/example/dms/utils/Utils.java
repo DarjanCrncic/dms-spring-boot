@@ -11,7 +11,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Log4j2
 public class Utils {
@@ -39,5 +42,12 @@ public class Utils {
 			}
 		}
 		return null;
+	}
+
+	@SafeVarargs
+	public static <T> Set<T> toSet(T... objects) {
+		Set<T> set = new HashSet<T>();
+		Collections.addAll(set, objects);
+		return set;
 	}
 }

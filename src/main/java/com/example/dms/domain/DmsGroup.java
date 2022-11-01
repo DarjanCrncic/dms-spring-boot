@@ -40,7 +40,7 @@ public class DmsGroup extends BaseEntity {
 	private String description = null;
 
 	@ManyToMany(cascade = CascadeType.PERSIST)
-	@JoinTable(name = "user_groups", joinColumns = { @JoinColumn(name = "group_id") }, 
+	@JoinTable(name = "users_groups", joinColumns = { @JoinColumn(name = "group_id") },
 			inverseJoinColumns = { @JoinColumn(name = "user_id") })
 	@Default
 	private Set<DmsUser> members = new HashSet<>();

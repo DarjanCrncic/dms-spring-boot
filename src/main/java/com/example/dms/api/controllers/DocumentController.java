@@ -9,7 +9,6 @@ import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.security.DmsUserDetails;
 import com.example.dms.services.ContentService;
 import com.example.dms.services.DocumentService;
-import com.example.dms.services.MessagingService;
 import com.example.dms.utils.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,7 +40,6 @@ public class DocumentController {
 
 	private final DocumentService documentService;
 	private final ContentService contentService;
-	private final MessagingService messagingService;
 
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
@@ -89,17 +87,13 @@ public class DocumentController {
 	@PutMapping("/{id}")
 	public DmsDocumentDTO updateDocumentPut(@PathVariable UUID id,
 											@RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
-		DmsDocumentDTO dto = documentService.updateDocument(id, modifyDocumentDTO, false);
-		messagingService.sendDocumentNotification(dto);
-		return dto;
+		return documentService.updateDocument(id, modifyDocumentDTO, false);
 	}
 
 	@PatchMapping("/{id}")
 	public DmsDocumentDTO updateDocumentPatch(@PathVariable UUID id,
 											  @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
-		DmsDocumentDTO dto = documentService.updateDocument(id, modifyDocumentDTO, true);
-		messagingService.sendDocumentNotification(dto);
-		return dto;
+		return documentService.updateDocument(id, modifyDocumentDTO, true);
 	}
 
 	@DeleteMapping("/{id}")

@@ -1,33 +1,38 @@
 package com.example.dms.services.impl;
 
-import com.example.dms.api.dtos.administration.GrantDTO;
-import com.example.dms.api.dtos.administration.NotificationMessage;
-import com.example.dms.api.dtos.document.DmsDocumentDTO;
-import com.example.dms.services.AdministrationService;
+import com.example.dms.api.mappers.NotificationMapper;
+import com.example.dms.domain.DmsNotification;
 import com.example.dms.services.MessagingService;
-import com.example.dms.utils.StringUtils;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.concurrent.DelegatingSecurityContextRunnable;
 import org.springframework.stereotype.Service;
-
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MessagingServiceImpl implements MessagingService {
 
 	private final SimpMessagingTemplate simpMessagingTemplate;
-	private final AdministrationService administrationService;
+	private final NotificationMapper notificationMapper;
+	private final TaskExecutor taskExecutor;
+
 
 	@Override
-	public void sendDocumentNotification(DmsDocumentDTO documentDTO) {
-		NotificationMessage message = new NotificationMessage();
-		message.setMessage("Document " + documentDTO.getObjectName() + " has been updated.");
-		message.setReceivers(administrationService.getRightsForDocument(
-				documentDTO.getId()).stream().map(GrantDTO::getUsername).collect(Collectors.toSet()));
-		message.setLinkTo(documentDTO.getParentFolderId());
-		message.setTimestamp(StringUtils.dateTimeToString(documentDTO.getModifyDate()));
+	public void notify(DmsNotification notification) {
+		NotificationRunnable runnable = new NotificationRunnable(notification);
+		taskExecutor.execute(new DelegatingSecurityContextRunnable(runnable));
+	}
 
-		simpMessagingTemplate.convertAndSend("/documents", message);
+	@AllArgsConstructor
+	private class NotificationRunnable implements Runnable {
+
+		private DmsNotification notification;
+
+		@Override
+		public void run() {
+			simpMessagingTemplate.convertAndSend("/documents", notificationMapper.entityToDto(notification));
+		}
 	}
 }

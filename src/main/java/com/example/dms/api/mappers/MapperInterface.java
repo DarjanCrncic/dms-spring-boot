@@ -5,6 +5,7 @@ import com.example.dms.domain.BaseEntity;
 import com.example.dms.domain.security.DmsPrivilege;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public interface MapperInterface<T extends BaseEntity, D extends BaseEntityDTO> {
@@ -13,8 +14,8 @@ public interface MapperInterface<T extends BaseEntity, D extends BaseEntityDTO> 
 	
 	List<D> entityListToDtoList(List<T> objectList);
 
-	default List<String> map(List<DmsPrivilege> value) {
-		return value.stream().map(DmsPrivilege::getName).collect(Collectors.toList());
+	default Set<String> map(Set<DmsPrivilege> value) {
+		return value.stream().map(DmsPrivilege::getName).collect(Collectors.toSet());
 	}
 
 }

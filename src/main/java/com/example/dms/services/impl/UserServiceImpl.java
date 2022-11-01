@@ -23,9 +23,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -89,12 +90,12 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 
 	private void mapRolesPrivilegesToUser(DmsUser user, String roleName, List<String> privilegesNames) {
 		if (roleName != null) {
-			List<DmsRole> roles = new ArrayList<>();
+			Set<DmsRole> roles = new HashSet<>();
 			roles.add(rolePrivilegeService.findRoleByName(roleName));
 			user.setRoles(roles);
 		}
 		if (privilegesNames != null) {
-			List<DmsPrivilege> privileges = rolePrivilegeService.findPrivilegesByNames(privilegesNames);
+			Set<DmsPrivilege> privileges = (Set<DmsPrivilege>) rolePrivilegeService.findPrivilegesByNames(privilegesNames);
 			user.setPrivileges(privileges);
 		}
 	}

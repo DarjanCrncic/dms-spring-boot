@@ -1,7 +1,7 @@
 package com.example.dms.services;
 
-import com.example.dms.api.dtos.document.DmsDocumentDTO;
+import com.example.dms.domain.DmsNotification;
 
 public interface MessagingService {
-	void sendDocumentNotification(DmsDocumentDTO documentDTO);
+	void notify(DmsNotification notification);
 }

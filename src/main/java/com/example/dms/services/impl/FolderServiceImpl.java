@@ -10,7 +10,7 @@ import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.services.DocumentService;
 import com.example.dms.services.FolderService;
-import com.example.dms.utils.FolderUtils;
+import com.example.dms.utils.StringUtils;
 import com.example.dms.utils.exceptions.BadRequestException;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.NotPermitedException;
@@ -86,7 +86,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 
 	private void checkConstraints(String name, UUID parentFolderId) {
-		if (!FolderUtils.validateFolderName(name)) {
+		if (!StringUtils.validateFolderName(name)) {
 			throw new BadRequestException("Folder name: '" + name + "' does not match required parameters.");
 		}
 		if (folderRepository.findByNameAndParentFolderId(name, parentFolderId).isPresent()) {
@@ -98,8 +98,8 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','DELETE') || hasAuthority('DELETE_PRIVILEGE')")
 	public void deleteFolder(UUID id) {
 		DmsFolder folder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
-		folder.getSubfolders().stream().forEach(sub -> deleteFolder(sub.getId()));
-		folder.getDocuments().stream().forEach(doc -> documentService.deleteById(doc.getId()));
+		folder.getSubfolders().forEach(sub -> deleteFolder(sub.getId()));
+		folder.getDocuments().forEach(doc -> documentService.deleteById(doc.getId()));
 		this.deleteById(id);
 	}
 

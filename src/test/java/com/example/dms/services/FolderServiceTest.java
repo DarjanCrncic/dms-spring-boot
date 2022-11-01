@@ -7,7 +7,7 @@ import com.example.dms.domain.DmsFolder;
 import com.example.dms.repositories.DocumentRepository;
 import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.impl.FolderServiceImpl;
-import com.example.dms.utils.FolderUtils;
+import com.example.dms.utils.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -57,30 +56,11 @@ class FolderServiceTest {
 
 	@Test
 	void testFolderRegex() {
-		assertTrue(FolderUtils.validateFolderName("test"));
-		assertTrue(FolderUtils.validateFolderName("test1_2"));
-		assertFalse(FolderUtils.validateFolderName("/test"));
-		assertFalse(FolderUtils.validateFolderName("test/"));
-		assertFalse(FolderUtils.validateFolderName("//test"));
+		assertTrue(StringUtils.validateFolderName("test"));
+		assertTrue(StringUtils.validateFolderName("test1_2"));
+		assertFalse(StringUtils.validateFolderName("/test"));
+		assertFalse(StringUtils.validateFolderName("test/"));
+		assertFalse(StringUtils.validateFolderName("//test"));
 	}
 
-	@Test
-	void testParentFolderExtraction() {
-		assertEquals("/test1", FolderUtils.getParentFolderPath("/test1/test2"));
-		assertEquals("/test1/test2", FolderUtils.getParentFolderPath("/test1/test2/test3"));
-
-		assertEquals("/", FolderUtils.getParentFolderPath("/test1"));
-	}
-
-	@Test
-	void testIvalidFolderPathWhenCreating() {
-//		assertThrows(BadRequestException.class, () -> folderService.createFolder("notStartingWithFrontSlash", "admin"));
-//		assertThrows(BadRequestException.class, () -> folderService.createFolder("/endingWithFrontSlash/", "admin"));
-	}
-	
-	@Test 
-	void testSameParentFolderPath() {
-		assertTrue(FolderUtils.isSameParentFolder("/prvi/drugi/old", "/prvi/drugi/new"));
-		assertFalse(FolderUtils.isSameParentFolder("/prvi/treci/old", "/prvi/drugi/new"));
-	}
 }

@@ -38,7 +38,7 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/documents", "/folders");
+		config.enableSimpleBroker("/documents", "/folders", "/notifications");
 		config.setApplicationDestinationPrefixes("/dms");
 	}
 
