@@ -9,9 +9,7 @@ import lombok.Setter;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import java.util.List;
+import javax.persistence.ManyToOne;
 import java.util.UUID;
 
 @Getter
@@ -26,11 +24,7 @@ public class DmsNotification extends BaseEntity {
 	private UUID linkTo;
 	private boolean seen = false;
 
-	// TODO: Clear orphaned records or improve to serve as history records
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(
-			name = "users_notifications",
-			joinColumns = @JoinColumn(name = "notification_id"),
-			inverseJoinColumns = @JoinColumn(name = "user_id"))
-	private List<DmsUser> recipients;
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinColumn(name = "recipient_id")
+	private DmsUser recipient;
 }

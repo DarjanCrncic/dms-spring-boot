@@ -134,12 +134,14 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	private void createNotification(DmsDocument doc, ActionEnum action) {
 		List<DmsUser> recipients = userRepository.findByRoleName(Roles.ROLE_ADMIN.name());
 		recipients.addAll(userRepository.findAllByUsernameIn(administrationService.getRecipients(doc)));
-		DmsNotification notification = DmsNotification.builder()
-				.message(NotificationUtils.buildMessage(doc.getObjectName(), TypeEnum.DOCUMENT, action))
-				.recipients(recipients)
-				.seen(false)
-				.linkTo(doc.getParentFolder().getId()).build();
-		notificationService.save(notification);
+		recipients.forEach(recipient -> {
+			DmsNotification notification = DmsNotification.builder()
+					.message(NotificationUtils.buildMessage(doc.getObjectName(), TypeEnum.DOCUMENT, action))
+					.recipient(recipient)
+					.seen(false)
+					.linkTo(doc.getParentFolder().getId()).build();
+			notificationService.save(notification);
+		});
 	}
 
 	@Override

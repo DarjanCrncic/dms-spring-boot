@@ -16,7 +16,6 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -84,11 +83,9 @@ public class DmsUser extends BaseEntity {
 	@Default
 	private List<DmsDocumentColumnPreference> documentColumnPreferences = new ArrayList<>();
 
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(
-			name = "users_notifications",
-			joinColumns = @JoinColumn(name = "user_id"),
-			inverseJoinColumns = @JoinColumn(name = "notification_id"))
+	@OneToMany(mappedBy = "recipient", orphanRemoval = true)
+	@Fetch(FetchMode.SUBSELECT)
+	@Default
 	private Set<DmsNotification> notifications = new HashSet<>();
 
 	@ManyToMany
@@ -99,7 +96,7 @@ public class DmsUser extends BaseEntity {
 			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private Set<DmsRole> roles = new HashSet<>();
 
-	@ManyToMany
+	@OneToMany
 	@Fetch(FetchMode.SUBSELECT)
 	@Default
 	@JoinTable(

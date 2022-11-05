@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface NotificationRepository extends JpaRepository<DmsNotification, UUID> {
-	List<DmsNotification> findAllByRecipientsIdIn(List<UUID> arrayList, Sort sort);
-	void deleteAllByRecipientsIdIn(List<UUID> singletonList);
+	List<DmsNotification> findAllByRecipientIdIn(List<UUID> arrayList, Sort sort);
+	void deleteAllByRecipientIdIn(List<UUID> singletonList);
 }
