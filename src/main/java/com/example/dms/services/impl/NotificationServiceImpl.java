@@ -2,7 +2,6 @@ package com.example.dms.services.impl;
 
 import com.example.dms.domain.DmsNotification;
 import com.example.dms.repositories.NotificationRepository;
-import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.MessagingService;
 import com.example.dms.services.NotificationService;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
@@ -22,7 +21,6 @@ public class NotificationServiceImpl implements NotificationService {
 
 	private final NotificationRepository notificationRepository;
 	private final MessagingService messagingService;
-	private final UserRepository userRepository;
 
 	@Override
 	public DmsNotification findById(UUID id) {
