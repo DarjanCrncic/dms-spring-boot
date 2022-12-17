@@ -95,7 +95,7 @@ public class DmsUser extends BaseEntity {
 	@JoinTable(name = "users_roles",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
-			uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "privilege_id" }, name = "user_role_constraint"))
+			uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "role_id" }, name = "user_role_constraint"))
 	private Set<DmsRole> roles = new HashSet<>();
 
 	@OneToMany
