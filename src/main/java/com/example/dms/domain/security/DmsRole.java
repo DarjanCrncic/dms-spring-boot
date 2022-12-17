@@ -11,8 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 @Entity
 @Builder
@@ -20,7 +18,6 @@ import javax.persistence.UniqueConstraint;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "id", "name" }) })
 public class DmsRole implements GrantedAuthority {
 	
 	private static final long serialVersionUID = -5873742027665612084L;

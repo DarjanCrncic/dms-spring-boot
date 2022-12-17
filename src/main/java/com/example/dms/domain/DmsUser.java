@@ -23,6 +23,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
@@ -93,7 +94,8 @@ public class DmsUser extends BaseEntity {
 	@Default
 	@JoinTable(name = "users_roles",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
+			uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "privilege_id" }, name = "user_role_constraint"))
 	private Set<DmsRole> roles = new HashSet<>();
 
 	@OneToMany
@@ -102,7 +104,8 @@ public class DmsUser extends BaseEntity {
 	@JoinTable(
 			name = "users_privileges",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
+			inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"),
+			uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "privilege_id" }, name = "user_privilege_constraint"))
 	private Set<DmsPrivilege> privileges = new HashSet<>();
 
 	@Default
