@@ -1,7 +1,9 @@
 package com.example.dms.domain;
 
+import com.example.dms.domain.interfaces.DmsAclNotifiable;
 import com.example.dms.domain.security.AclAllowedClass;
 import com.example.dms.utils.Constants;
+import com.example.dms.utils.TypeEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
@@ -21,15 +23,16 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "parent_folder_id" }) })
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "parent_folder_id"})})
 @Entity
-public class DmsFolder extends BaseEntity implements AclAllowedClass{
+public class DmsFolder extends BaseEntity implements AclAllowedClass, DmsAclNotifiable {
 
 	@NotEmpty
 	@Pattern(regexp = Constants.FOLDER_NAME_REGEX)
@@ -45,7 +48,7 @@ public class DmsFolder extends BaseEntity implements AclAllowedClass{
 	@Builder.Default
 	@JsonManagedReference("subfolders")
 	private List<DmsFolder> subfolders = new ArrayList<>();
-	
+
 	@OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	@JsonManagedReference("documents")
@@ -57,11 +60,21 @@ public class DmsFolder extends BaseEntity implements AclAllowedClass{
 			parentFolder.getSubfolders().add(this);
 		}
 	}
-	
+
 	public void addDocument(DmsDocument document) {
 		if (!this.getDocuments().contains(document)) {
 			document.setParentFolder(this);
 			this.getDocuments().add(document);
 		}
 	}
+
+	public String getName() { return name; }
+
+	public UUID getLink() { return parentFolder.getId(); }
+
+	public String getLinkName() { return parentFolder.getName(); }
+
+	public AclAllowedClass getACLObjectForPermissions() { return parentFolder; }
+
+	public TypeEnum getObjectType() { return TypeEnum.FOLDER; }
 }

@@ -22,17 +22,15 @@ import java.util.UUID;
 public class AdministrationController {
 	
 	private final AdministrationService administrationService;
-	
+
 	@PostMapping("/documents/grant/{id}")
 	public List<GrantDTO> grantPermissionsDocuments(@RequestBody List<GrantDTO> grantDTOs, @PathVariable UUID id) {
-		administrationService.grantRightsForDocument(grantDTOs, id);
-		return grantDTOs;
+		return administrationService.grantRightsForDocument(grantDTOs, id);
 	}
 	
 	@PostMapping("/folders/grant/{id}")
 	public List<GrantDTO> grantPermissionsFolders(@RequestBody List<GrantDTO> grantDTOs, @PathVariable UUID id) {
-		administrationService.grantRightsForFolder(grantDTOs, id);
-		return grantDTOs;
+		return administrationService.grantRightsForFolder(grantDTOs, id);
 	}
 	
 	@GetMapping("/documents/{id}")

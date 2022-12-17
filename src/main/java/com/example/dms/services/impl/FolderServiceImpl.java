@@ -10,6 +10,8 @@ import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.services.DocumentService;
 import com.example.dms.services.FolderService;
+import com.example.dms.services.NotificationService;
+import com.example.dms.utils.ActionEnum;
 import com.example.dms.utils.StringUtils;
 import com.example.dms.utils.exceptions.BadRequestException;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
@@ -33,14 +35,16 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	private final FolderMapper folderMapper;
 	private final DocumentRepository documentRepository;
 	private final DocumentService documentService;
-
+	private final NotificationService notificationService;
 	public FolderServiceImpl(FolderRepository folderRepository, FolderMapper folderMapper,
-			DocumentRepository documentRepository, DmsAclService aclService, DocumentService documentService) {
+			DocumentRepository documentRepository, DmsAclService aclService, DocumentService documentService,
+			NotificationService notificationService) {
 		super(folderRepository, folderMapper, aclService);
 		this.folderRepository = folderRepository;
 		this.folderMapper = folderMapper;
 		this.documentRepository = documentRepository;
 		this.documentService = documentService;
+		this.notificationService = notificationService;
 	}
 
 	@Override
@@ -63,7 +67,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		checkConstraints(name, parentFolderId);
 		
 		if (!super.aclService.hasRight(parentFolder, username, List.of(BasePermission.CREATE))) {
-			throw new NotPermitedException("Inssuficient permissions for creating a folder at this path.");
+			throw new NotPermitedException("Insufficient permissions for creating a folder at this path.");
 		}
 
 		DmsFolder newFolder = DmsFolder.builder().name(name).build();
@@ -72,6 +76,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 
 		super.aclService.grantRightsOnObject(newFolder, username, Arrays.asList(BasePermission.READ,
 				BasePermission.WRITE, BasePermission.CREATE, BasePermission.DELETE, BasePermission.ADMINISTRATION));
+		this.notificationService.createAclNotification(newFolder, ActionEnum.CREATE);
 		return folderMapper.entityToDto(newFolder);
 	}
 
@@ -82,6 +87,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		checkConstraints(newName, oldFolder.getParentFolder().getId());
 		
 		oldFolder.setName(newName);
+		this.notificationService.createAclNotification(oldFolder, ActionEnum.UPDATE);
 		return save(oldFolder);
 	}
 
@@ -100,6 +106,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 		DmsFolder folder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		folder.getSubfolders().forEach(sub -> deleteFolder(sub.getId()));
 		folder.getDocuments().forEach(doc -> documentService.deleteById(doc.getId()));
+		this.notificationService.createAclNotification(folder, ActionEnum.DELETE);
 		this.deleteById(id);
 	}
 

@@ -7,6 +7,7 @@ import org.springframework.security.acls.model.Sid;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface DmsAclService {
 
@@ -27,4 +28,7 @@ public interface DmsAclService {
 
 	<T extends AclAllowedClass> void copyRightsToAnotherEntity(T original, T copy);
 
+	<T extends AclAllowedClass> Set<String> getRecipients(T object);
+
+	<T extends AclAllowedClass> Set<String> getRecipients(T object, String filterPermission);
 }

@@ -1,7 +1,9 @@
 package com.example.dms.domain;
 
+import com.example.dms.domain.interfaces.DmsAclNotifiable;
 import com.example.dms.domain.security.AclAllowedClass;
 import com.example.dms.utils.Constants;
+import com.example.dms.utils.TypeEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -36,7 +38,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Entity
-public class DmsDocument extends BaseEntity implements AclAllowedClass{
+public class DmsDocument extends BaseEntity implements AclAllowedClass, DmsAclNotifiable {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "creator_id")
@@ -108,4 +110,13 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass{
 			folder.getDocuments().add(this);
 		}
 	}
+
+	public String getName() { return objectName; }
+
+	public UUID getLink() { return parentFolder.getId(); }
+	public String getLinkName() { return parentFolder.getName(); }
+
+	public AclAllowedClass getACLObjectForPermissions() { return this; }
+
+	public TypeEnum getObjectType() { return TypeEnum.DOCUMENT; }
 }

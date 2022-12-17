@@ -195,4 +195,17 @@ public class DmsAclServiceImpl implements DmsAclService {
 		return entries.stream().collect(Collectors.groupingBy(entry -> ((PrincipalSid) entry.getSid()).getPrincipal(),
 				Collectors.mapping(AccessControlEntry::getPermission, Collectors.toSet())));
 	}
+
+	@Override
+	public <T extends AclAllowedClass> Set<String> getRecipients(T object) {
+		return getRights(object).stream()
+				.map(GrantDTO::getUsername).collect(Collectors.toSet());
+	}
+
+	@Override
+	public <T extends AclAllowedClass> Set<String> getRecipients(T object, String filterPermission) {
+		return getRights(object).stream()
+				.filter(r -> r.getPermissions().contains(filterPermission))
+				.map(GrantDTO::getUsername).collect(Collectors.toSet());
+	}
 }

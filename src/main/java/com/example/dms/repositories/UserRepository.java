@@ -33,7 +33,7 @@ public interface UserRepository extends JpaRepository<DmsUser, UUID>{
 	@Query(nativeQuery = true, value = "DELETE FROM ACL_ENTRY WHERE sid = (SELECT id FROM ACL_SID WHERE sid = ?1)")
 	void removeAclEntries(String username);
 
-	List<DmsUser> findAllByUsernameIn(Set<String> usernames);
+	List<DmsUser> findAllByUsernameInOrGroupsIdentifierIn(Set<String> usernames, Set<String> groupIdentifiers);
 
 	@Query("SELECT u FROM DmsUser u INNER JOIN u.roles r WHERE r.name = ?1")
 	List<DmsUser> findByRoleName(String roleName);
