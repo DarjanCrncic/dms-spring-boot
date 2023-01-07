@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +25,7 @@ public class RolePrivilegeServiceImpl implements RolePrivilegeService {
 	}
 
 	@Override
-	public List<DmsPrivilege> findPrivilegesByNames(Collection<String> names) {
+	public Collection<DmsPrivilege> findPrivilegesByNames(Collection<String> names) {
 		return privilegeRepository.findAllByNameIn(names);
 	}
 }

@@ -95,7 +95,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 			user.setRoles(roles);
 		}
 		if (privilegesNames != null) {
-			Set<DmsPrivilege> privileges = (Set<DmsPrivilege>) rolePrivilegeService.findPrivilegesByNames(privilegesNames);
+			Set<DmsPrivilege> privileges = new HashSet<>(rolePrivilegeService.findPrivilegesByNames(privilegesNames));
 			user.setPrivileges(privileges);
 		}
 	}
@@ -122,10 +122,10 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 		Optional<DmsUser> userUsername = userRepository.findByUsername(username);
 		Optional<DmsUser> userEmail = userRepository.findByEmail(email);
 
-		if (userEmail.isPresent() && (id == null || userEmail.get().getId().equals(id))) {
+		if (userEmail.isPresent() && (id == null || !userEmail.get().getId().equals(id))) {
 			throw new UniqueConstraintViolatedException("User email must be unique.");
 		}
-		if (userUsername.isPresent() && (id == null || userUsername.get().getId().equals(id))) {
+		if (userUsername.isPresent() && (id == null || !userUsername.get().getId().equals(id))) {
 			throw new UniqueConstraintViolatedException("Username must be unique");
 		}
 		if (groupRepository.findByIdentifier(username).isPresent()) {
