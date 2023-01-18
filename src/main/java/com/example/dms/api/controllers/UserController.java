@@ -70,9 +70,7 @@ public class UserController {
 	}
 	
 	@PatchMapping("/{id}")
-	public DmsUserDTO updateExistingUserPatch(@RequestBody UpdateUserDTO userDTO, @PathVariable UUID id) {
+	public DmsUserDTO updateExistingUserPatch(@Valid @RequestBody UpdateUserDTO userDTO, @PathVariable UUID id) {
 		return userService.updateUser(userDTO, id, true);
 	}
-	
-	//TODO: deativate and activate user endpoint
 }

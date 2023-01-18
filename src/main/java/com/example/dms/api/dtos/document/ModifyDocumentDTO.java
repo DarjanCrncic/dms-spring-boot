@@ -1,6 +1,5 @@
 package com.example.dms.api.dtos.document;
 
-import com.example.dms.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +9,9 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
+import static com.example.dms.utils.Constants.MAX_LENGTH_32;
+import static com.example.dms.utils.Constants.MIN_LENGTH_4;
+
 @Data
 @NoArgsConstructor
 @Builder
@@ -17,7 +19,8 @@ import java.util.List;
 public class ModifyDocumentDTO {
 
 	@NotBlank
-	@Length(min = Constants.MINLENGTH, max = 32, message = "Ivalid object name length, document name must have atleast " + Constants.MINLENGTH + " characters.")
+	@Length(min = MIN_LENGTH_4, max = MAX_LENGTH_32, message = "Invalid object name length, document name must have at least "
+			+ MIN_LENGTH_4 + " characters.")
 	private String objectName;
 	
 	private String description;

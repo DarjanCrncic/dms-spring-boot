@@ -16,8 +16,10 @@ import com.example.dms.services.UserService;
 import com.example.dms.services.search.SpecificationBuilder;
 import com.example.dms.services.search.user.UserSpecProvider;
 import com.example.dms.utils.Utils;
+import com.example.dms.utils.exceptions.BadRequestException;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import com.example.dms.utils.exceptions.UniqueConstraintViolatedException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -110,6 +112,11 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 		} else {
 			userMapper.updateUserPut(userDTO, user);
 		}
+		if (!StringUtils.isEmpty(userDTO.getPassword())) {
+			if (userDTO.getPassword().length() < 4) throw new BadRequestException("Invalid password length.");
+			user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+		}
+
 		checkUser(user.getUsername(), user.getEmail(), user.getId());
 		if (userDTO.getUsername() != null && !oldUsername.equals(userDTO.getUsername())) {
 			userRepository.updateUsername(oldUsername, userDTO.getUsername());

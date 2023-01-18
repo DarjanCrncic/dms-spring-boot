@@ -10,6 +10,6 @@ import javax.validation.constraints.NotEmpty;
 public class NewTypeDTO {
 	
 	@NotEmpty
-	@Length(min = Constants.MINLENGTH, max = Constants.MAXLENGTH)
+	@Length(min = Constants.MIN_LENGTH_4, max = Constants.MAX_LENGTH_32)
 	private String typeName;
 }

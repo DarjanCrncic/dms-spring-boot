@@ -70,7 +70,7 @@ class UserServiceIT {
 	@DisplayName("Test updating users with HTTP PUT request.")
 	void userUpdateTestPut() {
 		DmsUserDTO updatedUser = userService.updateUser(new UpdateUserDTO("testuser2", "Darjana", "Crnčića", "test" +
-				".user@gmaila.com", "ROLE_USER", List.of("READ_PRIVILEGE")), user.getId(), false);
+				".user@gmaila.com", "ROLE_USER", List.of("READ_PRIVILEGE"), true, null), user.getId(), false);
 
 		assertEquals(user.getId(), updatedUser.getId());
 		assertEquals("test.user@gmaila.com", updatedUser.getEmail());
@@ -83,7 +83,7 @@ class UserServiceIT {
 	@DisplayName("Test updating users with HTTP PATCH request.")
 	void userUpdateTestPatch() {
 		DmsUserDTO updatedUser = userService.updateUser(new UpdateUserDTO("testuser2", null, null,
-				"test.user@gmaila" + ".com", "ROLE_USER", List.of("READ_PRIVILEGE")), user.getId(), true);
+				"test.user@gmaila" + ".com", "ROLE_USER", List.of("READ_PRIVILEGE"), true, null), user.getId(), true);
 
 		assertEquals(user.getId(), updatedUser.getId());
 		assertEquals("test.user@gmaila.com", updatedUser.getEmail());

@@ -2,7 +2,6 @@ package com.example.dms.domain;
 
 import com.example.dms.domain.security.DmsPrivilege;
 import com.example.dms.domain.security.DmsRole;
-import com.example.dms.utils.Constants;
 import com.example.dms.utils.Roles;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -32,6 +31,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.example.dms.utils.Constants.MIN_LENGTH_2;
+import static com.example.dms.utils.Constants.MIN_LENGTH_4;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -42,25 +44,23 @@ public class DmsUser extends BaseEntity {
 
 	@NotBlank
 	@NonNull
-	@Length(min = Constants.MINLENGTH, message = "Ivalid username length, username must have atleast "
-			+ Constants.MINLENGTH + " characters.")
+	@Length(min = MIN_LENGTH_4, message = "Invalid username length, username must have at least " + MIN_LENGTH_4 + " characters.")
 	@Column(unique = true)
 	private String username;
 
 	@NotBlank
 	@NonNull
-	@Length(min = Constants.MINLENGTH, message = "Ivalid password length, password must have atleast "
-			+ Constants.MINLENGTH + " characters.")
+	@Length(min = MIN_LENGTH_4, message = "Invalid password length, password must have at least " + MIN_LENGTH_4 + " characters.")
 	private String password;
 
 	@NotBlank
 	@NonNull
-	@Length(min = 2, message = "Ivalid first name length, first name must have atleast 2 characters.")
+	@Length(min = MIN_LENGTH_2, message = "Invalid first name length, first name must have at least " + MIN_LENGTH_2 + "characters.")
 	private String firstName;
 
 	@NotBlank
 	@NonNull
-	@Length(min = 2, message = "Ivalid last name length, last name must have atleast 2 characters.")
+	@Length(min = MIN_LENGTH_2, message = "Invalid last name length, last name must have " + MIN_LENGTH_2 + " characters.")
 	private String lastName;
 
 	@Email

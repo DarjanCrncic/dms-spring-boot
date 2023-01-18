@@ -34,7 +34,6 @@ public interface UserMapper extends MapperInterface<DmsUser, DmsUserDTO>{
 	List<DmsUserDTO> entityListToDtoList(List<DmsUser> list);
 	Set<DmsUserDTO> entityListToDtoList(Set<DmsUser> list);
 
-	@Mapping(target = "enabled", ignore = true)
 	@Mapping(target = "roles", ignore = true)
 	@Mapping(target = "privileges", ignore = true)
 	@Mapping(target = "documents", ignore = true)
@@ -42,8 +41,8 @@ public interface UserMapper extends MapperInterface<DmsUser, DmsUserDTO>{
 	@Mapping(target = "documentColumnPreferences", ignore = true)
 	DmsUser newUserDTOToUser(NewUserDTO newUserDTO);
 
-	@Mapping(target = "enabled", ignore = true)
 	@Mapping(target = "roles", ignore = true)
+	@Mapping(target = "password", ignore = true)
 	@Mapping(target = "privileges", ignore = true)
 	@Mapping(target = "creationDate", ignore = true)
 	@Mapping(target = "id", ignore = true)
@@ -53,8 +52,8 @@ public interface UserMapper extends MapperInterface<DmsUser, DmsUserDTO>{
 	@Mapping(target = "documentColumnPreferences", ignore = true)
 	void updateUserPut(UpdateUserDTO userDTO, @MappingTarget DmsUser user);
 
-	@Mapping(target = "enabled", ignore = true)
 	@Mapping(target = "roles", ignore = true)
+	@Mapping(target = "password", ignore = true)
 	@Mapping(target = "privileges", ignore = true)
 	@Mapping(target = "creationDate", ignore = true)
 	@Mapping(target = "id", ignore = true)
@@ -64,7 +63,5 @@ public interface UserMapper extends MapperInterface<DmsUser, DmsUserDTO>{
 	@Mapping(target = "documentColumnPreferences", ignore = true)
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	void updateUserPatch(UpdateUserDTO userDTO, @MappingTarget DmsUser user);
-
-
 
 }

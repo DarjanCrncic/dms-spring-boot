@@ -2,6 +2,7 @@ package com.example.dms.security;
 
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.UserRepository;
+import com.example.dms.utils.exceptions.NotPermitedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,6 +27,9 @@ public class DmsUserDetailsService implements UserDetailsService {
 		
 		if (user == null) {
 			throw new UsernameNotFoundException("User with username: " + username + " is not found.");
+		}
+		if (!user.isEnabled()) {
+			throw new NotPermitedException("User with username: " + username + "is currently disabled.");
 		}
 		return new DmsUserDetails(user, getPrivileges(user));
 	}

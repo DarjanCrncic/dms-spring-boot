@@ -27,7 +27,7 @@ import java.util.List;
 public class DmsType extends BaseEntity{
 	
 	@NotEmpty
-	@Length(min = Constants.MINLENGTH, max = Constants.MAXLENGTH)
+	@Length(min = Constants.MIN_LENGTH_4, max = Constants.MAX_LENGTH_32)
 	@Column(unique = true)
 	private String typeName;
 	

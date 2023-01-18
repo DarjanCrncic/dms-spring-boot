@@ -8,6 +8,9 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotEmpty;
 
+import static com.example.dms.utils.Constants.MAX_LENGTH_32;
+import static com.example.dms.utils.Constants.MIN_LENGTH_2;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,7 +18,7 @@ import javax.validation.constraints.NotEmpty;
 public class NewGroupDTO {
 
 	@NotEmpty
-	@Length(min = 2, max = 32)
+	@Length(min = MIN_LENGTH_2, max = MAX_LENGTH_32)
 	private String groupName;
 	private String identifier;
 	private String description;

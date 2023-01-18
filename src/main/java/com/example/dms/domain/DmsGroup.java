@@ -18,6 +18,9 @@ import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.example.dms.utils.Constants.MAX_LENGTH_32;
+import static com.example.dms.utils.Constants.MIN_LENGTH_2;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,12 +30,12 @@ import java.util.Set;
 public class DmsGroup extends BaseEntity {
 
 	@NotEmpty
-	@Length(min = 2, max = 32)
+	@Length(min = MIN_LENGTH_2, max = MAX_LENGTH_32)
 	@Column(unique = true)
 	private String groupName;
 
 	@NotEmpty
-	@Length(min = 2, max = 32)
+	@Length(min = MIN_LENGTH_2, max = MAX_LENGTH_32)
 	@Column(unique = true)
 	private String identifier;
 

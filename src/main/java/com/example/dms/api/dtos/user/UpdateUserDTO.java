@@ -1,6 +1,5 @@
 package com.example.dms.api.dtos.user;
 
-import com.example.dms.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,23 +10,25 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
+import static com.example.dms.utils.Constants.MIN_LENGTH_2;
+import static com.example.dms.utils.Constants.MIN_LENGTH_4;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateUserDTO {
 	
 	@NotBlank
-	@Length(min = Constants.MINLENGTH, message = "Ivalid username length, username must have atleast " + Constants.MINLENGTH
-			+ " characters.")
+	@Length(min = MIN_LENGTH_4, message = "Invalid username length, password must have at least " + MIN_LENGTH_4 + " characters.")
 	@Column(unique = true)
 	private String username;
 
 	@NotBlank
-	@Length(min = 2, message = "Ivalid first name length, first name must have atleast 2 characters.")
+	@Length(min = MIN_LENGTH_2, message = "Invalid first name length, last name must have at least " + MIN_LENGTH_2 + " characters.")
 	private String firstName;
 
 	@NotBlank
-	@Length(min = 2, message = "Ivalid last name length, last name must have atleast 2 characters.")
+	@Length(min = MIN_LENGTH_2, message = "Invalid last name length, last name must have at least " + MIN_LENGTH_2 + " characters.")
 	private String lastName;
 
 	@Email
@@ -36,4 +37,7 @@ public class UpdateUserDTO {
 
 	private String role;
 	private List<String> privileges;
+	private boolean enabled;
+
+	private String password;
 }

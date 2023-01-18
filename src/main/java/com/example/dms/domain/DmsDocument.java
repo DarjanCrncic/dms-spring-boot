@@ -2,7 +2,6 @@ package com.example.dms.domain;
 
 import com.example.dms.domain.interfaces.DmsAclNotifiable;
 import com.example.dms.domain.security.AclAllowedClass;
-import com.example.dms.utils.Constants;
 import com.example.dms.utils.TypeEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.example.dms.utils.Constants.MAX_LENGTH_32;
+import static com.example.dms.utils.Constants.MIN_LENGTH_4;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -47,8 +49,8 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass, DmsAclNo
 	private DmsUser creator = null;
 	
 	@NotBlank
-	@Length(min = Constants.MINLENGTH, max = 32, message = "Ivalid object name length, document name must have atleast " 
-			+ Constants.MINLENGTH + " characters.")
+	@Length(min = MIN_LENGTH_4, max = MAX_LENGTH_32, message = "Imvalid object name length, document name must have at least "
+			+ MIN_LENGTH_4 + " characters.")
 	@NotEmpty
 	private String objectName;
 	
