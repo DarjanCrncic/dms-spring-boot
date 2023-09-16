@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class StringUtilsTest {
 
 	@Test
-	void testSnakeToCammelConversion() {
+	void testSnakeToCamelConversion() {
 		assertEquals("objectName", StringUtils.snakeToCamel("object_name"));
 		assertEquals("objectNameName", StringUtils.snakeToCamel("object_name_name"));
 		assertEquals("objectName", StringUtils.snakeToCamel("Object_Name"));

@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -104,7 +103,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 
 	@Override
 	@PreAuthorize("hasRole('ADMIN')")
-	public DmsUserDTO updateUser(UpdateUserDTO userDTO, UUID id, boolean patch) {
+	public DmsUserDTO updateUser(UpdateUserDTO userDTO, Integer id, boolean patch) {
 		DmsUser user = userRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		String oldUsername = user.getUsername();
 		if (patch) {
@@ -125,7 +124,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 		return userMapper.entityToDto(userRepository.save(user));
 	}
 
-	void checkUser(String username, String email, UUID id) {
+	void checkUser(String username, String email, Integer id) {
 		Optional<DmsUser> userUsername = userRepository.findByUsername(username);
 		Optional<DmsUser> userEmail = userRepository.findByEmail(email);
 
@@ -151,7 +150,7 @@ public class UserServiceImpl extends EntityCrudServiceImpl<DmsUser, DmsUserDTO> 
 	}
 
 	@Override
-	public void deleteById(UUID id) {
+	public void deleteById(Integer id) {
 		DmsUser user = checkPresent(id);
 		userRepository.removeAclEntries(user.getUsername());
 		super.deleteById(id);

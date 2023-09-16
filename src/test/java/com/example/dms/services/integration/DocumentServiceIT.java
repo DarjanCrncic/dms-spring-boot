@@ -3,7 +3,6 @@ package com.example.dms.services.integration;
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
-import com.example.dms.api.mappers.DocumentMapper;
 import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsFolder;
 import com.example.dms.domain.DmsType;
@@ -20,29 +19,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ContextConfiguration
-@WithMockUser(authorities = {"ROLE_ADMIN", "CREATE_PRIVILEGE", "VERSION_PRIVILEGE", "READ_PRIVILEGE",
-		"WRITE_PRIVILEGE", "DELETE_PRIVILEGE"})
+@WithUserDetails(value = "admin", userDetailsServiceBeanName = "dmsUserDetailsService")
 class DocumentServiceIT {
-
-	@Autowired
-	DocumentMapper documentMapper;
 
 	@Autowired
 	DocumentService documentService;
@@ -71,7 +60,7 @@ class DocumentServiceIT {
 		type = typeRepository.save(DmsType.builder().typeName(typeName).build());
 		folder = folderRepository.save(DmsFolder.builder().name("test").build());
 		newDocument = documentService.createDocument(
-				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").type(typeName).username("user").parentFolderId(folder.getId()).build());
+				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").type(typeName).parentFolderId(folder.getId()).build());
 	}
 
 	@AfterEach
@@ -90,6 +79,7 @@ class DocumentServiceIT {
 	@DisplayName("Test saving of a new document.")
 	void saveNewDocumentTest() {
 		DmsDocument foundDocument = documentRepository.findById(newDocument.getId()).orElse(null);
+		assert foundDocument != null;
 
 		assertEquals(newDocument.getObjectName(), foundDocument.getObjectName());
 		assertEquals(newDocument.getId(), foundDocument.getId());
@@ -101,6 +91,7 @@ class DocumentServiceIT {
 	@Transactional
 	void testTypeBinding() {
 		type = typeRepository.findByTypeName(typeName).orElse(null);
+		assert type != null;
 
 		assertEquals(type.getTypeName(), newDocument.getType());
 		assertEquals(type.getTypeName(), typeName);
@@ -112,17 +103,18 @@ class DocumentServiceIT {
 	@Transactional
 	void saveNewDocumentPersistenceTest() {
 		DmsUser creator = userRepository.findById(newDocument.getCreator().getId()).orElse(null);
+		assert creator != null;
+
 		assertEquals(1, creator.getDocuments().size());
 	}
 
 	@Test
-	@DisplayName("Test document versioning and previous version imutability.")
-		//TODO
+	@DisplayName("Test document versioning and previous version immutability.")
 	void testVersioning() {
 		newVersion = documentService.createNewVersion(newDocument.getId());
 		newDocument = documentService.findById(newDocument.getId());
 
-		assertEquals(2, newVersion.getVersion());
+		assertEquals("2", newVersion.getVersion());
 		assertEquals(newDocument.getObjectName(), newVersion.getObjectName());
 		assertTrue(newDocument.isImmutable());
 		assertFalse(newVersion.isImmutable());
@@ -130,17 +122,16 @@ class DocumentServiceIT {
 		assertEquals(newDocument.getId(), newDocument.getRootId());
 		assertEquals(newDocument.getId(), newVersion.getRootId());
 
-		UUID docId = newDocument.getId();
+		Integer docId = newDocument.getId();
 		assertThrows(BadRequestException.class, () -> documentService.createNewVersion(docId));
-		assertEquals(2, documentService.getAllVersions(newVersion.getId()).size());
+		assertEquals(2, documentService.getAllVersions(newVersion.getRootId()).size());
 	}
 
 	@Test
 	@DisplayName("Test modifying document with put HTTP request.")
-	@WithMockUser(username = "user", authorities = {"CREATE_PRIVILEGE", "READ_PRIVILEGE", "WRITE_PRIVILEGE"})
 	void testDocumentPut() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").description("updated")
-				.keywords(Arrays.asList(new String[]{"foo", "bar"})).build();
+				.keywords(Arrays.asList("foo", "bar")).build();
 		updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, false);
 
 		assertEquals(modifyDTO.getObjectName(), updatedDocument.getObjectName());
@@ -151,7 +142,6 @@ class DocumentServiceIT {
 
 	@Test
 	@DisplayName("Test modifying document with patch HTTP request.")
-	@WithMockUser(username = "user", authorities = {"CREATE_PRIVILEGE", "READ_PRIVILEGE", "WRITE_PRIVILEGE"})
 	void testDocumentPatch() {
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
@@ -164,9 +154,11 @@ class DocumentServiceIT {
 
 	@Test
 	void testEquals() {
-		DmsDocument doc1 = documentRepository.findById(newDocument.getId()).get();
-		DmsDocument doc2 = documentRepository.findById(newDocument.getId()).get();
+		DmsDocument doc1 = documentRepository.findById(newDocument.getId()).orElse(null);
+		DmsDocument doc2 = documentRepository.findById(newDocument.getId()).orElse(null);
 
-		assertTrue(doc1.equals(doc2));
+		assert doc1 != null;
+		assert doc2 != null;
+		assertEquals(doc1, doc2);
 	}
 }

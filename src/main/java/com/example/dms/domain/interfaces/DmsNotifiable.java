@@ -2,12 +2,10 @@ package com.example.dms.domain.interfaces;
 
 import com.example.dms.utils.TypeEnum;
 
-import java.util.UUID;
-
 public interface DmsNotifiable {
 
 	String getName();
-	UUID getLink();
+	Integer getLink();
 	String getLinkName();
 
 	TypeEnum getObjectType();

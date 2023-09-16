@@ -1,36 +1,19 @@
 package com.example.dms.api.controllers;
 
 import com.example.dms.api.dtos.SortDTO;
-import com.example.dms.api.dtos.document.CopyDocumentsDTO;
-import com.example.dms.api.dtos.document.DmsDocumentDTO;
-import com.example.dms.api.dtos.document.DocumentFileDTO;
-import com.example.dms.api.dtos.document.ModifyDocumentDTO;
-import com.example.dms.api.dtos.document.NewDocumentDTO;
-import com.example.dms.security.DmsUserDetails;
+import com.example.dms.api.dtos.document.*;
 import com.example.dms.services.ContentService;
 import com.example.dms.services.DocumentService;
 import com.example.dms.utils.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -43,9 +26,7 @@ public class DocumentController {
 
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
-	public DmsDocumentDTO createNewDocument(@Valid @RequestBody NewDocumentDTO newDocumentDTO,
-											@AuthenticationPrincipal DmsUserDetails userDetails) {
-		newDocumentDTO.setUsername(userDetails.getUsername());
+	public DmsDocumentDTO createNewDocument(@Valid @RequestBody NewDocumentDTO newDocumentDTO) {
 		return documentService.createDocument(newDocumentDTO);
 	}
 
@@ -56,16 +37,12 @@ public class DocumentController {
 
 	@PostMapping("/batch")
 	@ResponseStatus(value = HttpStatus.CREATED)
-	public List<DmsDocumentDTO> createNewDocumentInBatch(@Valid @RequestBody List<NewDocumentDTO> newDocumentDTOList,
-														 @AuthenticationPrincipal DmsUserDetails userDetails) {
-		return newDocumentDTOList.stream().map(documentDTO -> {
-			documentDTO.setUsername(userDetails.getUsername());
-			return documentService.createDocument(documentDTO);
-		}).collect(Collectors.toList());
+	public List<DmsDocumentDTO> createNewDocumentInBatch(@Valid @RequestBody List<NewDocumentDTO> newDocumentDTOList) {
+		return newDocumentDTOList.stream().map(documentService::createDocument).collect(Collectors.toList());
 	}
 
 	@PostMapping("/upload/{id}")
-	public DocumentFileDTO uploadDocumentContent(@PathVariable UUID id, @RequestBody MultipartFile file) {
+	public DocumentFileDTO uploadDocumentContent(@PathVariable Integer id, @RequestBody MultipartFile file) {
 		if (file == null) throw new BadRequestException("The file parameter in the request body is null.");
 		contentService.uploadFile(id, file);
 		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/documents/download"
@@ -75,34 +52,34 @@ public class DocumentController {
 	}
 
 	@GetMapping("/{id}")
-	public DmsDocumentDTO getDocumentById(@PathVariable UUID id) {
+	public DmsDocumentDTO getDocumentById(@PathVariable Integer id) {
 		return documentService.findById(id);
 	}
 
 	@GetMapping("/download/{id}")
-	public ResponseEntity<byte[]> downloadDocumentContent(@PathVariable UUID id) {
+	public ResponseEntity<byte[]> downloadDocumentContent(@PathVariable Integer id) {
 		return contentService.downloadContent(id);
 	}
 
 	@PutMapping("/{id}")
-	public DmsDocumentDTO updateDocumentPut(@PathVariable UUID id,
+	public DmsDocumentDTO updateDocumentPut(@PathVariable Integer id,
 											@RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
 		return documentService.updateDocument(id, modifyDocumentDTO, false);
 	}
 
 	@PatchMapping("/{id}")
-	public DmsDocumentDTO updateDocumentPatch(@PathVariable UUID id,
+	public DmsDocumentDTO updateDocumentPatch(@PathVariable Integer id,
 											  @RequestBody @Valid ModifyDocumentDTO modifyDocumentDTO) {
 		return documentService.updateDocument(id, modifyDocumentDTO, true);
 	}
 
 	@DeleteMapping("/{id}")
-	public void deleteDocumentById(@PathVariable UUID id) {
+	public void deleteDocumentById(@PathVariable Integer id) {
 		documentService.deleteById(id);
 	}
 
 	@DeleteMapping
-	public void deleteMultipleDocuments(@RequestParam List<UUID> ids) {
+	public void deleteMultipleDocuments(@RequestParam List<Integer> ids) {
 		ids.forEach(documentService::deleteById);
 	}
 
@@ -117,17 +94,17 @@ public class DocumentController {
 	}
 
 	@PostMapping("/version/{id}")
-	public DmsDocumentDTO versionDocument(@PathVariable UUID id) {
+	public DmsDocumentDTO versionDocument(@PathVariable Integer id) {
 		return documentService.createNewVersion(id);
 	}
 
 	@PostMapping("/branch/{id}")
-	public DmsDocumentDTO branchDocument(@PathVariable UUID id) {
+	public DmsDocumentDTO branchDocument(@PathVariable Integer id) {
 		return documentService.createNewBranch(id);
 	}
 
 	@GetMapping("/versions/{id}")
-	public List<DmsDocumentDTO> getAllVersions(@PathVariable UUID id) {
+	public List<DmsDocumentDTO> getAllVersions(@PathVariable Integer id) {
 		return documentService.getAllVersions(id);
 	}
 }

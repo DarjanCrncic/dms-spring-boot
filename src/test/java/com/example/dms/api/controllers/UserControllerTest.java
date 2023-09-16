@@ -22,7 +22,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -58,7 +57,7 @@ class UserControllerTest {
 	void setUp() {
 		validUser = DmsUser.builder().username("dcrncic").password("12345").firstName("Darjan").lastName("Crnčić")
 				.email("darjan.crncic@gmail.com").build();
-		validUser.setId(UUID.randomUUID());
+		validUser.setId(12345);
 
 		validUserDTO = DmsUserDTO.builder().id(validUser.getId()).username("dcrncic").firstName("Darjan")
 				.lastName("Crnčić").email("darjan.crncic@gmail.com").creationDate(LocalDateTime.now())
@@ -74,7 +73,7 @@ class UserControllerTest {
 		BDDMockito.given(userService.findById(Mockito.any())).willReturn(validUserDTO);
 
 		mockMvc.perform(get(BASE_URL + "/{id}", validUser.getId())).andExpect(status().isOk())
-				.andExpect(jsonPath("$.id", is(validUser.getId().toString())))
+				.andExpect(jsonPath("$.id", is(validUser.getId())))
 				.andExpect(jsonPath("$.username", is(validUser.getUsername())))
 				.andExpect(jsonPath("$.email", is(validUser.getEmail()))).andReturn();
 	}
@@ -83,7 +82,7 @@ class UserControllerTest {
 	void testGetUserByIdNotFound() throws Exception {
 		BDDMockito.given(userService.findById(Mockito.any())).willThrow(DmsNotFoundException.class);
 
-		mockMvc.perform(get(BASE_URL + "/{id}", UUID.randomUUID())).andExpect(status().isNotFound()).andReturn();
+		mockMvc.perform(get(BASE_URL + "/{id}", 3)).andExpect(status().isNotFound()).andReturn();
 	}
 
 	@Test
@@ -91,7 +90,8 @@ class UserControllerTest {
 		BDDMockito.given(userService.findByUsername(Mockito.any(String.class))).willReturn(validUserDTO);
 
 		mockMvc.perform(get(BASE_URL + "/search").param("username", validUser.getUsername()))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.id", is(validUser.getId().toString())))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id", is(validUser.getId())))
 				.andExpect(jsonPath("$.username", is(validUser.getUsername())))
 				.andExpect(jsonPath("$.email", is(validUser.getEmail()))).andReturn();
 	}
@@ -126,7 +126,7 @@ class UserControllerTest {
 		BDDMockito.given(userService.updateUser(Mockito.any(UpdateUserDTO.class), Mockito.any(), Mockito.anyBoolean()))
 				.willReturn(validUserDTO);
 
-		mockMvc.perform(put(BASE_URL + "/{id}", UUID.randomUUID()).content(Utils.stringify(newUserDTO))
+		mockMvc.perform(put(BASE_URL + "/{id}", 1).content(Utils.stringify(newUserDTO))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
@@ -135,7 +135,7 @@ class UserControllerTest {
 		BDDMockito.given(userService.updateUser(Mockito.any(UpdateUserDTO.class), Mockito.any(), Mockito.anyBoolean()))
 				.willReturn(validUserDTO);
 
-		mockMvc.perform(patch(BASE_URL + "/{id}", UUID.randomUUID()).content(Utils.stringify(newUserDTO))
+		mockMvc.perform(patch(BASE_URL + "/{id}", 1).content(Utils.stringify(newUserDTO))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 

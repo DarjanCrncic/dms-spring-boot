@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.UUID;
 
 public class DmsAclPermissionEvaluator extends AclPermissionEvaluator implements PermissionEvaluator{
 
@@ -39,7 +38,7 @@ public class DmsAclPermissionEvaluator extends AclPermissionEvaluator implements
 	
 	public boolean hasPermission(Collection<Object> targetDomainIds, String targetType, Object permission, Authentication authentication) {
 		for (Object targetDomainId : targetDomainIds) {
-			if (!hasPermission(authentication, (UUID) targetDomainId, targetType, permission))
+			if (!hasPermission(authentication, (Serializable) targetDomainId, targetType, permission))
 				return false;
 		}
 		return true;

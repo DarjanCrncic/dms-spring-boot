@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/groups")
@@ -36,12 +35,12 @@ public class GroupController {
 	}
 
 	@GetMapping("/{id}")
-	public DmsGroupDTO getGroupById(@PathVariable UUID id) {
+	public DmsGroupDTO getGroupById(@PathVariable Integer id) {
 		return groupService.findById(id);
 	}
 
 	@GetMapping("/members/{id}")
-	public Set<DmsUserDTO> getMembers(@PathVariable UUID id) {
+	public Set<DmsUserDTO> getMembers(@PathVariable Integer id) {
 		return groupService.findById(id).getMembers();
 	}
 
@@ -53,17 +52,17 @@ public class GroupController {
 
 
 	@PutMapping("/{id}")
-	public DmsGroupDTO updateGroup(@PathVariable UUID id, @RequestBody @Valid NewGroupDTO groupDTO) {
+	public DmsGroupDTO updateGroup(@PathVariable Integer id, @RequestBody @Valid NewGroupDTO groupDTO) {
 		return groupService.updateGroup(id, groupDTO);
 	}
 
 	@DeleteMapping("/{id}")
-	public void deleteGroupById(@PathVariable UUID id) {
+	public void deleteGroupById(@PathVariable Integer id) {
 		groupService.deleteById(id);
 	}
 
 	@PostMapping("/members/{id}")
-	public DmsGroupDTO addUsersToGroup(@PathVariable UUID id, @RequestBody List<UUID> idList) {
+	public DmsGroupDTO addUsersToGroup(@PathVariable Integer id, @RequestBody List<Integer> idList) {
 		return groupService.updateGroupMembers(id, idList);
 	}
 }

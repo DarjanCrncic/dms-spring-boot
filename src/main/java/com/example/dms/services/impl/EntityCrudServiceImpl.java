@@ -10,15 +10,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 @Transactional
 public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends BaseEntityDTO> {
 
-	JpaRepository<T, UUID> repository;
+	JpaRepository<T, Integer> repository;
 	MapperInterface<T, D> mapper;
 	DmsAclService aclService;
 	
-	protected EntityCrudServiceImpl(JpaRepository<T, UUID> repository, MapperInterface<T, D> mapper, DmsAclService aclService) {
+	protected EntityCrudServiceImpl(JpaRepository<T, Integer> repository, MapperInterface<T, D> mapper, DmsAclService aclService) {
 		super();
 		this.repository = repository;
 		this.mapper = mapper;
@@ -28,7 +27,7 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends Base
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ') "
 			+ "or hasPermission(#id,'com.example.dms.domain.DmsFolder','READ') "
 			+ "or hasAuthority('READ_PRIVILEGE')")
-	public D findById(UUID id) {
+	public D findById(Integer id) {
 		return mapper.entityToDto(checkPresent(id));
 	}
 
@@ -40,14 +39,14 @@ public abstract class EntityCrudServiceImpl<T extends BaseEntity, D extends Base
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','DELETE') "
 			+ "or hasPermission(#id,'com.example.dms.domain.DmsFolder','DELETE') " 
 			+ "or hasAuthority('DELETE_PRIVILEGE')")
-	public void deleteById(UUID id) {
+	public void deleteById(Integer id) {
 		aclService.removeEntriesOnDelete(checkPresent(id));
 		repository.deleteById(id);
 	}
 	
-	protected T checkPresent(UUID id) {
+	protected T checkPresent(Integer id) {
 		Optional<T> entity = repository.findById(id);
-		if (!entity.isPresent())
+		if (entity.isEmpty())
 			throw new DmsNotFoundException("The entity with given id: '" + id + "' does not exist.");
 		return entity.get();
 	}

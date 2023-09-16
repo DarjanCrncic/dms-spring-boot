@@ -4,25 +4,13 @@ import com.example.dms.domain.security.DmsPrivilege;
 import com.example.dms.domain.security.DmsRole;
 import com.example.dms.utils.Roles;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.*;
 import lombok.Builder.Default;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
@@ -98,7 +86,7 @@ public class DmsUser extends BaseEntity {
 			uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "role_id" }, name = "user_role_constraint"))
 	private Set<DmsRole> roles = new HashSet<>();
 
-	@OneToMany
+	@ManyToMany
 	@Fetch(FetchMode.SUBSELECT)
 	@Default
 	@JoinTable(

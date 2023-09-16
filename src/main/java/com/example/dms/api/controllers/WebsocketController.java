@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
 @RestController
 @RequiredArgsConstructor
 public class WebsocketController {
@@ -14,7 +12,7 @@ public class WebsocketController {
 	private final NotificationService notificationService;
 
 	@MessageMapping("/notifications/register")
-	public void greeting(String notificationId) throws Exception {
-		notificationService.markAsSeen(UUID.fromString(notificationId));
+	public void greeting(String notificationId) {
+		notificationService.markAsSeen(Integer.parseInt(notificationId));
 	}
 }

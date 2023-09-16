@@ -4,7 +4,9 @@ import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.domain.DmsDocument;
+import com.example.dms.domain.DmsFolder;
 import com.example.dms.repositories.DocumentRepository;
+import com.example.dms.repositories.FolderRepository;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.services.DocumentService;
 import org.junit.jupiter.api.AfterEach;
@@ -22,15 +24,14 @@ import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ContextConfiguration
-//@TestInstance(Lifecycle.PER_CLASS) // DEBUGGING WITH H2 
 class SecurityAclIT {
 
 	@Autowired
@@ -44,24 +45,24 @@ class SecurityAclIT {
 	
 	@Autowired
 	JdbcMutableAclService aclService;
-	
-//  DEBUGGING WITH H2 
-//	@Autowired
-//	DataSource dataSource;
-//	@BeforeAll
-//	public void initTest() throws SQLException {
-//	    Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082")
-//	    .start();
-//	}
-	
+
+	@Autowired
+	FolderRepository folderRepository;
+
 	DmsDocumentDTO newDocument;
 	DmsDocument doc;
-	private final String username = "testUser";
+	private final String username = "tester";
 	
 	@BeforeEach
 	void setUp() {
+		DmsFolder root = folderRepository.findByName("/").orElse(null);
+		assert root != null;
 		newDocument = documentService.createDocument(
-				NewDocumentDTO.builder().objectName("TestTest").description("Ovo je test u testu").username("user").type("document").build());
+				NewDocumentDTO.builder()
+						.objectName("TestTest")
+						.description("Ovo je test u testu")
+						.type("document")
+						.parentFolderId(root.getId()).build());
 		doc = documentRepository.findById(newDocument.getId()).orElse(null);
 	}
 	
@@ -81,61 +82,52 @@ class SecurityAclIT {
 		
 		assertEquals(modifyDTO.getObjectName(), updatedDocument.getObjectName());
 	}
-	
-	@Test
-	@WithMockUser(username = "user", roles = "USER", authorities = "CREATE_PRIVILEGE")
-	void testModifyWithAclInvalidUser() {
-		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
-		
-		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
-		assertEquals(modifyDTO.getObjectName(), updatedDocument.getObjectName());
-	}
-	
+
 	@Test
 	@WithMockUser(username = username, roles = "USER", authorities = {"CREATE_PRIVILEGE"})
 	void testModifyWithGrantedRights() {
-		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid(username)), Arrays.asList(BasePermission.WRITE));
+		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid(username)), List.of(BasePermission.WRITE));
+		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid(username)), List.of(BasePermission.WRITE));
 		
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
 		DmsDocumentDTO updatedDocument = documentService.updateDocument(newDocument.getId(), modifyDTO, true);
+
 		assertEquals(modifyDTO.getObjectName(), updatedDocument.getObjectName());
 	}
 	
 	@Test
 	@WithMockUser(username = username, roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithRevokedRights() {
-		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid(username)), Arrays.asList(BasePermission.WRITE));
-		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid(username)), Arrays.asList(BasePermission.WRITE));
+		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid(username)), List.of(BasePermission.WRITE));
 		
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
-		UUID docId = newDocument.getId();
+		Integer docId = newDocument.getId();
+
 		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(docId, modifyDTO, true));
 	}
 	
 	@Test
 	@WithMockUser(username = username, roles = "USER", authorities = "CREATE_PRIVILEGE")
 	void testModifyWithRevokedAllRights() {
-		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid(username)), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
 		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid(username)), null);
 		
 		ModifyDocumentDTO modifyDTO = ModifyDocumentDTO.builder().objectName("TestTestTest").build();
-		UUID docId = newDocument.getId();
+		Integer docId = newDocument.getId();
 		assertThrows(AccessDeniedException.class, () -> documentService.updateDocument(docId, modifyDTO, true));
 	}
 	@Test
 	@WithMockUser(username = username, authorities = {"ROLE_ADMIN", "CREATE_PRIVILEGE"})
-	void testDeleteingAcls() {
-		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid(username)), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
+	void testRemoveAclsManually() {
 		dmsAclService.revokeRightsOnObject(doc, (new PrincipalSid(username)), null);
 		
 		MutableAcl acl = (MutableAcl) aclService.readAclById(new ObjectIdentityImpl(doc));
-		assertEquals(4, acl.getEntries().size());
+		assertFalse(dmsAclService.hasRight(doc, username, List.of(BasePermission.WRITE)));
+		assertFalse(dmsAclService.hasRight(doc, username, List.of(BasePermission.READ)));
 	}
 	
 	@Test
 	@WithMockUser(username = username, authorities = {"ROLE_ADMIN", "CREATE_PRIVILEGE"})
-	void testDeleteingAclsOnDelete() {
-		dmsAclService.grantRightsOnObject(doc, (new PrincipalSid("testUser")), Arrays.asList(BasePermission.WRITE, BasePermission.READ));
+	void testRemoveAclsOnDelete() {
 		documentService.deleteById(doc.getId());
 		
 		assertThrows(NotFoundException.class, () -> aclService.readAclById(new ObjectIdentityImpl(doc)));

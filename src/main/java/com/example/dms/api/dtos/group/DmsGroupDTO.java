@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Data
 @Builder
@@ -19,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class DmsGroupDTO implements BaseEntityDTO {
 	
-	private UUID id;
+	private Integer id;
 	private LocalDateTime creationDate;
 	private LocalDateTime modifyDate;
 	

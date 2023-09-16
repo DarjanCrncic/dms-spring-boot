@@ -15,7 +15,6 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.CascadeType;
@@ -29,7 +28,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static com.example.dms.utils.Constants.MAX_LENGTH_32;
 import static com.example.dms.utils.Constants.MIN_LENGTH_4;
@@ -80,11 +78,9 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass, DmsAclNo
 	private DmsContent content;
 	
 	@Default
-	@Type(type = "uuid-char")
-	private UUID rootId = null;
+	private Integer rootId = null;
 	@Default
-	@Type(type = "uuid-char")
-	private UUID predecessorId = null;
+	private Integer predecessorId = null;
 	@Default
 	private boolean immutable = false;
 	@Default 
@@ -115,7 +111,7 @@ public class DmsDocument extends BaseEntity implements AclAllowedClass, DmsAclNo
 
 	public String getName() { return objectName; }
 
-	public UUID getLink() { return parentFolder.getId(); }
+	public Integer getLink() { return parentFolder.getId(); }
 	public String getLinkName() { return parentFolder.getName(); }
 
 	public AclAllowedClass getACLObjectForPermissions() { return this; }

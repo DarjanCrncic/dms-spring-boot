@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -18,12 +17,12 @@ import java.util.UUID;
 @Builder
 public class DmsFolderDTO implements BaseEntityDTO {
 
-	private UUID id;
+	private Integer id;
 	private LocalDateTime creationDate;
 	private LocalDateTime modifyDate;
 	
 	private String name;
-	private UUID parentFolderId;
+	private Integer parentFolderId;
 	@Default
-	private List<UUID> subfolders = new ArrayList<>();
+	private List<Integer> subfolders = new ArrayList<>();
 }

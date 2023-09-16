@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public class ContentServiceImpl implements ContentService {
 
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') || hasAuthority('WRITE_PRIVILEGE')")
-	public void uploadFile(UUID id, MultipartFile file) {
+	public void uploadFile(Integer id, MultipartFile file) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (doc.isImmutable()) {
 			throw new BadRequestException("Object is immutable and you cannot add content to it.");
@@ -57,7 +56,7 @@ public class ContentServiceImpl implements ContentService {
 
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
-	public ResponseEntity<byte[]> downloadContent(UUID id) {
+	public ResponseEntity<byte[]> downloadContent(Integer id) {
 		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		checkIsDocumentValidForDownload(document);
 		return ResponseEntity.ok()

@@ -5,18 +5,17 @@ import com.example.dms.api.dtos.folder.FolderTreeDTO;
 import com.example.dms.domain.DmsFolder;
 
 import java.util.List;
-import java.util.UUID;
 
-public interface FolderService extends CrudService<DmsFolder, DmsFolderDTO, UUID>{
+public interface FolderService extends CrudService<DmsFolder, DmsFolderDTO, Integer>{
 	
-	DmsFolderDTO updateFolder(UUID id, String path);
+	DmsFolderDTO updateFolder(Integer id, String path);
 
-	DmsFolderDTO moveFilesToFolder(UUID folderId, List<UUID> documentIdList);
+	DmsFolderDTO moveFilesToFolder(Integer folderId, List<Integer> documentIdList);
 
-	void deleteFolder(UUID id);
+	void deleteFolder(Integer id);
 
 	List<FolderTreeDTO> getFolderTreeNew();
 
-	DmsFolderDTO createFolder(String path, String username, UUID parentFolderId);
-	
+	DmsFolderDTO createFolder(String path, Integer parentFolderId);
+
 }

@@ -28,13 +28,13 @@ public class DataLoader implements ApplicationRunner {
 	private final PrivilegeRepository privilegeRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final TypeRepository typeRepository;
-	
+
     @Override
 	public void run(ApplicationArguments args) {
-    	
+
     	if (folderRepository.findByName("/").isEmpty())
     		folderRepository.save(DmsFolder.builder().name("/").build());
-    	
+
     	// create privileges
     	DmsPrivilege read = privilegeRepository.findByName(Privileges.READ_PRIVILEGE.name()).orElse(null);
     	if (read == null) {
@@ -60,39 +60,58 @@ public class DataLoader implements ApplicationRunner {
     	if (delete == null) {
     		delete = privilegeRepository.save(DmsPrivilege.builder().name(Privileges.DELETE_PRIVILEGE.name()).build());
     	}
-    	
+
     	// create roles
-    	DmsRole adminRole = null;
-    	if (roleRepository.findByName(Roles.ROLE_ADMIN.name()).isEmpty()) {
+    	DmsRole adminRole = roleRepository.findByName(Roles.ROLE_ADMIN.name()).orElse(null);
+    	if (adminRole == null) {
     		adminRole = roleRepository.save(DmsRole.builder().name(Roles.ROLE_ADMIN.name()).build());
     	}
-    	DmsRole userRole = null;
-    	if (roleRepository.findByName(Roles.ROLE_USER.name()).isEmpty()) {
+    	DmsRole userRole = roleRepository.findByName(Roles.ROLE_USER.name()).orElse(null);
+    	if (userRole == null) {
     		userRole = roleRepository.save(DmsRole.builder().name(Roles.ROLE_USER.name()).build());
     	}
-		assert userRole != null;
-		assert adminRole != null;
+
+		// create types
+		if (!typeRepository.existsByTypeName("document")) {
+			typeRepository.save(DmsType.builder().typeName("document").build());
+		}
 
 		// test and admin users
 		String dummyPassword = passwordEncoder.encode("12345");
-		DmsUser user = DmsUser.builder().username("user").password(dummyPassword).firstName("userF").lastName("userL").email("user.user@gmail.com")
-    			.roles(Utils.toSet(userRole)).privileges(Collections.emptySet()).build();
+		DmsUser user = DmsUser.builder()
+				.username("user")
+				.password(dummyPassword)
+				.firstName("userF")
+				.lastName("userL")
+				.email("user.user@gmail.com")
+    			.roles(Utils.toSet(userRole))
+				.privileges(Collections.emptySet()).build();
 		if (userRepository.findByUsername("user").isEmpty()) {
 			userRepository.save(user);
 		}
-		DmsUser test = DmsUser.builder().username("tester").password(dummyPassword).firstName("testF").lastName("testL").email("tester.tester@gmail.com")
-    			.roles(Utils.toSet(userRole)).privileges(Utils.toSet(read, write, create)).build();
+
+		DmsUser test = DmsUser.builder()
+				.username("tester")
+				.password(dummyPassword)
+				.firstName("testF")
+				.lastName("testL")
+				.email("tester.tester@gmail.com")
+    			.roles(Utils.toSet(userRole))
+				.privileges(Utils.toSet(read, write, create)).build();
 		if (userRepository.findByUsername("tester").isEmpty()) {
 			userRepository.save(test);
 		}
-		DmsUser admin = DmsUser.builder().username("admin").password(dummyPassword).firstName("adminF").lastName("adminL").email("admin.admin@gmail.com")
-    			.roles(Utils.toSet(adminRole)).privileges(Utils.toSet(read, write, create, version, administration, delete)).build();
+
+		DmsUser admin = DmsUser.builder()
+				.username("admin")
+				.password(dummyPassword)
+				.firstName("adminF")
+				.lastName("adminL")
+				.email("admin.admin@gmail.com")
+    			.roles(Utils.toSet(adminRole))
+				.privileges(Utils.toSet(read, write, create, version, administration, delete)).build();
     	if (userRepository.findByUsername("admin").isEmpty()) {
     		userRepository.save(admin);
-    	} 
-    	
-    	if (!typeRepository.existsByTypeName("document")) {
-    		typeRepository.save(DmsType.builder().typeName("document").build());
     	}
     }
 }

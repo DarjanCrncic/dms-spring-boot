@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -22,5 +21,5 @@ public class NewFolderDTO {
 	String name;
 	
 	@NotNull
-	UUID parentFolderId;
+	Integer parentFolderId;
 }

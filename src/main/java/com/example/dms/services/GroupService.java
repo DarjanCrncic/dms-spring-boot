@@ -7,17 +7,16 @@ import com.example.dms.domain.DmsGroup;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.UUID;
 
-public interface GroupService extends CrudService<DmsGroup, DmsGroupDTO, UUID>{
+public interface GroupService extends CrudService<DmsGroup, DmsGroupDTO, Integer>{
 
 	DmsGroupDTO createGroup(@Valid NewGroupDTO groupDTO);
 
-	DmsGroupDTO addUserToGroup(UUID groupId, UUID userId);
+	DmsGroupDTO addUserToGroup(Integer groupId, Integer userId);
 
-	DmsGroupDTO updateGroupMembers(UUID groupId, List<UUID> userList);
+	DmsGroupDTO updateGroupMembers(Integer groupId, List<Integer> userList);
 
-	DmsGroupDTO updateGroup(UUID id, NewGroupDTO groupDTO);
+	DmsGroupDTO updateGroup(Integer id, NewGroupDTO groupDTO);
 
 	List<DmsGroupDTO> searchAll(String search, SortDTO sort);
 }

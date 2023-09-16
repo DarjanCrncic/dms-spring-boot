@@ -5,17 +5,10 @@ import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.ModifyDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.mappers.DocumentMapper;
-import com.example.dms.domain.DmsContent;
-import com.example.dms.domain.DmsDocument;
-import com.example.dms.domain.DmsFolder;
-import com.example.dms.domain.DmsType;
-import com.example.dms.domain.DmsUser;
-import com.example.dms.repositories.ContentRepository;
-import com.example.dms.repositories.DocumentRepository;
-import com.example.dms.repositories.FolderRepository;
-import com.example.dms.repositories.TypeRepository;
-import com.example.dms.repositories.UserRepository;
+import com.example.dms.domain.*;
+import com.example.dms.repositories.*;
 import com.example.dms.security.configuration.acl.CustomBasePermission;
+import com.example.dms.services.AuthenticationUtil;
 import com.example.dms.services.DmsAclService;
 import com.example.dms.services.DocumentService;
 import com.example.dms.services.NotificationService;
@@ -36,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,10 +42,12 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	private final ContentRepository contentRepository;
 	private final FolderRepository folderRepository;
 	private final NotificationService notificationService;
+	private final AuthenticationUtil authUtil;
 
 	public DocumentServiceImpl(UserRepository userRepository, DocumentRepository documentRepository,
 							   DocumentMapper documentMapper, TypeRepository typeRepository, DmsAclService aclService,
-							   ContentRepository contentRepository, FolderRepository folderRepository, NotificationService notificationService) {
+							   ContentRepository contentRepository, FolderRepository folderRepository,
+							   NotificationService notificationService, AuthenticationUtil authUtil) {
 		super(documentRepository, documentMapper, aclService);
 		this.userRepository = userRepository;
 		this.documentRepository = documentRepository;
@@ -62,6 +56,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		this.contentRepository = contentRepository;
 		this.folderRepository = folderRepository;
 		this.notificationService = notificationService;
+		this.authUtil = authUtil;
 	}
 
 	@Override
@@ -77,12 +72,12 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 		DmsType type = typeRepository.findByTypeName(newDocumentDTO.getType())
 				.orElseThrow(() -> new DmsNotFoundException("Given type does not exist."));
-		DmsUser creator = userRepository.findByUsername(newDocumentDTO.getUsername())
+		DmsUser creator = userRepository.findByUsername(authUtil.getUserName())
 				.orElseThrow(() -> new DmsNotFoundException("Invalid user."));
 		DmsFolder folder = folderRepository.findById(newDocumentDTO.getParentFolderId())
 				.orElseThrow(() -> new DmsNotFoundException("Invalid parent folder."));
 
-		if (!folder.getName().equals("/") && !super.aclService.hasRight(folder, newDocumentDTO.getUsername(), List.of(BasePermission.CREATE))) {
+		if (!folder.getName().equals("/") && !super.aclService.hasRight(folder, authUtil.getUserName(), List.of(BasePermission.CREATE))) {
 			throw new NotPermitedException("Insufficient permissions for creating a document in this folder.");
 		}
 
@@ -104,7 +99,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') || hasAuthority('WRITE_PRIVILEGE')")
-	public DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
+	public DmsDocumentDTO updateDocument(Integer id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 
 		if (doc.isImmutable()) {
@@ -126,7 +121,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','VERSION') || hasAuthority('VERSION_PRIVILEGE')")
-	public DmsDocumentDTO createNewVersion(UUID id) {
+	public DmsDocumentDTO createNewVersion(Integer id) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (doc.isImmutable()) {
 			throw new BadRequestException("This version of the document is immutable and cannot be versioned. "
@@ -148,7 +143,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','VERSION') || hasAuthority('VERSION_PRIVILEGE')")
-	public DmsDocumentDTO createNewBranch(UUID id) {
+	public DmsDocumentDTO createNewBranch(Integer id) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (doc.isBranched()) {
 			throw new BadRequestException("This version of the document already has a branch.");
@@ -169,7 +164,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
-	public List<DmsDocumentDTO> getAllVersions(UUID id) {
+	public List<DmsDocumentDTO> getAllVersions(Integer id) {
 		return documentMapper.entityListToDtoList(documentRepository.findAllByRootId(id));
 	}
 
@@ -200,10 +195,10 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','CREATE') "
 			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication) "
 			+ "|| hasAuthority('WRITE_PRIVILEGE') && hasAuthority('CREATE_PRIVILEGE')")
-	public List<DmsDocumentDTO> copyDocuments(UUID folderId, List<UUID> documentIdList) {
+	public List<DmsDocumentDTO> copyDocuments(Integer folderId, List<Integer> documentIdList) {
 		DmsFolder folder = folderRepository.findById(folderId).orElseThrow(
 				() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));
-		List<UUID> existingDocs = folder.getDocuments().stream().map(DmsDocument::getId).collect(Collectors.toList());
+		List<Integer> existingDocs = folder.getDocuments().stream().map(DmsDocument::getId).collect(Collectors.toList());
 
 		List<DmsDocument> documents = documentRepository.findAllById(documentIdList);
 		List<DmsDocument> retVal = new ArrayList<>();
@@ -237,7 +232,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','CREATE') "
 			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication) "
 			+ "|| hasAuthority('WRITE_PRIVILEGE') && hasAuthority('CREATE_PRIVILEGE')")
-	public List<DmsDocumentDTO> cutDocuments(UUID folderId, List<UUID> documentIdList) {
+	public List<DmsDocumentDTO> cutDocuments(Integer folderId, List<Integer> documentIdList) {
 		DmsFolder folder = folderRepository.findById(folderId).orElseThrow(
 				() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));
 
@@ -255,7 +250,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','DELETE') "
 			+ "or hasAuthority('DELETE_PRIVILEGE')")
-	public void deleteById(UUID id) {
+	public void deleteById(Integer id) {
 		DmsDocument toDelete = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (toDelete.isImmutable()) {
 			throw new BadRequestException("Document cannot be deleted since it is immutable.");

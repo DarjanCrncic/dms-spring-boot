@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -20,7 +19,7 @@ import java.util.UUID;
 @Builder
 public class DmsDocumentDTO implements BaseEntityDTO {
 
-	private UUID id;
+	private Integer id;
 	private LocalDateTime creationDate;
 	private LocalDateTime modifyDate;
 
@@ -30,12 +29,12 @@ public class DmsDocumentDTO implements BaseEntityDTO {
 	private String type;
 	@Default
 	private List<String> keywords = new ArrayList<>();
-	private UUID parentFolderId;
+	private Integer parentFolderId;
 	
 	private DmsContentDTO content;
 	
-	private UUID rootId;
-	private UUID predecessorId;
+	private Integer rootId;
+	private Integer predecessorId;
 	private boolean immutable;
 	private String version;
 	private boolean branched;

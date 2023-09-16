@@ -12,10 +12,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<DmsUser, UUID>{
+public interface UserRepository extends JpaRepository<DmsUser, Integer>{
 
 	Optional<DmsUser> findByUsername(String username);
 
@@ -23,7 +22,7 @@ public interface UserRepository extends JpaRepository<DmsUser, UUID>{
 
 	List<DmsUser> findAll(Specification<DmsUser> parse, Sort toSort);
 
-	List<DmsUser> findAllByIdIn(Collection<UUID> ids);
+	List<DmsUser> findAllByIdIn(Collection<Integer> ids);
 
 	@Modifying
 	@Query(nativeQuery = true, value = "UPDATE ACL_SID SET sid = ?2 WHERE sid = ?1")

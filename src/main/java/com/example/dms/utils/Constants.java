@@ -7,4 +7,6 @@ public class Constants {
 	public static final int MAX_LENGTH_32 = 32;
 	public static final String FOLDER_NAME_REGEX = "^\\w+$|^\\/$";
 
+	public static final String ROOT = "/";
+
 }

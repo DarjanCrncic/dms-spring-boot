@@ -10,7 +10,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -21,7 +20,7 @@ import java.util.UUID;
 public class DmsNotification extends BaseEntity {
 
 	private String message;
-	private UUID linkTo;
+	private Integer linkTo;
 	private boolean seen = false;
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

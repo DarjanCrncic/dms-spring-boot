@@ -5,12 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 @Repository
-public interface DocumentRepository extends JpaRepository<DmsDocument, UUID>, JpaSpecificationExecutor<DmsDocument>{
+public interface DocumentRepository extends JpaRepository<DmsDocument, Integer>, JpaSpecificationExecutor<DmsDocument>{
 
-	List<DmsDocument> findAllByRootId(UUID id);
+	List<DmsDocument> findAllByRootId(Integer id);
 
+	Collection<Object> findByParentFolderId(Integer id);
 }

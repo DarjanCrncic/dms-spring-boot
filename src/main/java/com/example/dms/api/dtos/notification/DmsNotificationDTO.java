@@ -4,15 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
 public class DmsNotificationDTO {
-	private UUID id;
+	private Integer id;
 	private LocalDateTime creationDate;
 	private String message;
-	private UUID linkTo;
+	private Integer linkTo;
 	private boolean seen = false;
 	private String recipient;
 }

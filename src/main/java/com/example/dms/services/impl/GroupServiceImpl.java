@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -46,16 +45,19 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 	}
 
 	@Override
-	public DmsGroupDTO addUserToGroup(UUID groupId, UUID userId) {
-		DmsGroup group = groupRepository.findById(groupId).orElseThrow(() -> new DmsNotFoundException("Group with specified id was not found."));
-		DmsUser user = userRepository.findById(userId).orElseThrow(() -> new DmsNotFoundException("User with specified id was not found."));
+	public DmsGroupDTO addUserToGroup(Integer groupId, Integer userId) {
+		DmsGroup group = groupRepository.findById(groupId).orElseThrow(() ->
+				new DmsNotFoundException("Group with specified id was not found."));
+		DmsUser user = userRepository.findById(userId).orElseThrow(() ->
+				new DmsNotFoundException("User with specified id was not found."));
 		group.getMembers().add(user);
 		return save(group);
 	}
 
 	@Override
-	public DmsGroupDTO updateGroupMembers(UUID groupId, List<UUID> userIdList) {
-		DmsGroup group = groupRepository.findById(groupId).orElseThrow(() -> new DmsNotFoundException("Group with specified id was not found."));
+	public DmsGroupDTO updateGroupMembers(Integer groupId, List<Integer> userIdList) {
+		DmsGroup group = groupRepository.findById(groupId).orElseThrow(() ->
+				new DmsNotFoundException("Group with specified id was not found."));
 		List<DmsUser> users = userRepository.findAllByIdIn(userIdList);
 		if (users.size() != userIdList.size()) {
 			throw new DmsNotFoundException("Invalid user id list provided.");
@@ -71,7 +73,7 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 	}
 
 	@Override
-	public DmsGroupDTO updateGroup(UUID id, NewGroupDTO groupDTO) {
+	public DmsGroupDTO updateGroup(Integer id, NewGroupDTO groupDTO) {
 		DmsGroup existingGroup = groupRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		checkGroup(groupDTO.getGroupName(), groupDTO.getIdentifier(), existingGroup.getId());
 		if (!existingGroup.getIdentifier().equals(groupDTO.getIdentifier())) {
@@ -81,7 +83,7 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 		return save(existingGroup);
 	}
 
-	private void checkGroup(String groupName, String identifier, UUID groupId) {
+	private void checkGroup(String groupName, String identifier, Integer groupId) {
 		Optional<DmsGroup> existingGroupName = groupRepository.findByGroupName(groupName);
 		Optional<DmsGroup> existingGroupIdentifier = groupRepository.findByGroupName(identifier);
 
@@ -107,7 +109,7 @@ public class GroupServiceImpl extends EntityCrudServiceImpl<DmsGroup, DmsGroupDT
 	}
 
 	@Override
-	public void deleteById(UUID id) {
+	public void deleteById(Integer id) {
 		DmsGroup group = checkPresent(id);
 		groupRepository.removeAclEntries(group.getIdentifier());
 		super.deleteById(id);

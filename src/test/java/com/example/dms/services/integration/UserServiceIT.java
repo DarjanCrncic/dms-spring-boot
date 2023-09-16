@@ -3,7 +3,6 @@ package com.example.dms.services.integration;
 import com.example.dms.api.dtos.user.DmsUserDTO;
 import com.example.dms.api.dtos.user.NewUserDTO;
 import com.example.dms.api.dtos.user.UpdateUserDTO;
-import com.example.dms.api.mappers.UserMapper;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.UserService;
@@ -21,17 +20,13 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ContextConfiguration
 @WithMockUser(authorities = {"READ_PRIVILEGE", "ROLE_ADMIN", "ROLE_USER"})
 class UserServiceIT {
-
-	@Autowired
-	UserMapper userMapper;
 
 	@Autowired
 	UserService userService;
@@ -69,8 +64,8 @@ class UserServiceIT {
 	@Test
 	@DisplayName("Test updating users with HTTP PUT request.")
 	void userUpdateTestPut() {
-		DmsUserDTO updatedUser = userService.updateUser(new UpdateUserDTO("testuser2", "Darjana", "Crnčića", "test" +
-				".user@gmaila.com", "ROLE_USER", List.of("READ_PRIVILEGE"), true, null), user.getId(), false);
+		DmsUserDTO updatedUser = userService.updateUser(new UpdateUserDTO("testuser2", "Darjana", "Crnčića",
+				"test.user@gmaila.com", "ROLE_USER", List.of("READ_PRIVILEGE"), true, null), user.getId(), false);
 
 		assertEquals(user.getId(), updatedUser.getId());
 		assertEquals("test.user@gmaila.com", updatedUser.getEmail());
@@ -108,10 +103,16 @@ class UserServiceIT {
 
 	@Test
 	void testEquals() {
-		DmsUser test = userRepository.findByUsername(user.getUsername()).get();
-		assertTrue(test.equals(userRepository.findByEmail(user.getEmail()).get()));
+		DmsUser byUsername = userRepository.findByUsername(user.getUsername()).orElse(null);
+		assert byUsername != null;
 
-		DmsUser test2 = userRepository.findByUsername("user").get();
-		assertFalse(test.equals(test2));
+		DmsUser byEmail = userRepository.findByEmail(user.getEmail()).orElse(null);
+		assert byEmail != null;
+
+		assertEquals(byUsername, byEmail);
+
+		DmsUser test2 = userRepository.findByUsername("user").orElse(null);
+		assert test2 != null;
+		assertNotEquals(byUsername, test2);
 	}
 }

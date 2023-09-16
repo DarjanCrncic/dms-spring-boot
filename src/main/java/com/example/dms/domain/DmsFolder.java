@@ -6,24 +6,13 @@ import com.example.dms.utils.Constants;
 import com.example.dms.utils.TypeEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -70,11 +59,15 @@ public class DmsFolder extends BaseEntity implements AclAllowedClass, DmsAclNoti
 
 	public String getName() { return name; }
 
-	public UUID getLink() { return parentFolder.getId(); }
+	public Integer getLink() { return parentFolder.getId(); }
 
 	public String getLinkName() { return parentFolder.getName(); }
 
 	public AclAllowedClass getACLObjectForPermissions() { return parentFolder; }
 
 	public TypeEnum getObjectType() { return TypeEnum.FOLDER; }
+
+	public boolean isRoot() {
+		return Constants.ROOT.equals(name);
+	}
 }

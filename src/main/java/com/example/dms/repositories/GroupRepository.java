@@ -9,9 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
-public interface GroupRepository extends JpaRepository<DmsGroup, UUID>{
+public interface GroupRepository extends JpaRepository<DmsGroup, Integer>{
 
 	Optional<DmsGroup> findByGroupName(String groupName);
 

@@ -12,22 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
-import org.springframework.security.acls.model.AccessControlEntry;
-import org.springframework.security.acls.model.MutableAcl;
-import org.springframework.security.acls.model.NotFoundException;
-import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Permission;
-import org.springframework.security.acls.model.Sid;
+import org.springframework.security.acls.model.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,7 +49,8 @@ public class DmsAclServiceImpl implements DmsAclService {
 
 	@Override
 	public <T extends AclAllowedClass> void grantRightsOnObject(T object, Sid sid, Collection<Permission> permissions) {
-		if (isUserAdmin(((PrincipalSid) sid).getPrincipal())) return;
+		String username = ((PrincipalSid) sid).getPrincipal();
+		if (isUserAdmin(username)) return;
 		ObjectIdentity oi = new ObjectIdentityImpl(object);
 		MutableAcl acl;
 		try {
@@ -67,10 +58,14 @@ public class DmsAclServiceImpl implements DmsAclService {
 		} catch (NotFoundException nfe) {
 			acl = aclService.createAcl(oi);
 		}
-		log.debug("granting '{}' rights on object (" + object.getClass() + "): {}", ((PrincipalSid) sid).getPrincipal(),
+		log.debug("granting '{}' rights on object (" + object.getClass() + "): {}", username,
 				Permissions.getByMasks(permissions.stream().map(Permission::getMask).collect(Collectors.toList())));
 
 		for (Permission permission : permissions) {
+			if (checkGranted(acl, sid, permission)) {
+				log.warn("permission already granted, username: {}, permission: {}", username, Permissions.getByMask(permission.getMask()));
+				continue;
+			}
 			acl.insertAce(acl.getEntries().size(), permission, sid, true);
 		}
 		aclService.updateAcl(acl);
@@ -136,6 +131,10 @@ public class DmsAclServiceImpl implements DmsAclService {
 			return false;
 		}
 		return checkGranted(acl, sid, permissions);
+	}
+
+	private boolean checkGranted(MutableAcl acl, Sid sid, Permission permission) {
+		return checkGranted(acl, sid, List.of(permission));
 	}
 
 	private boolean checkGranted(MutableAcl acl, Sid sid, Collection<Permission> permissions) {

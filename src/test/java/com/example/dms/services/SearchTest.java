@@ -9,7 +9,8 @@ public class SearchTest {
 
 	@Test
 	void testSearch() {
-		String search = "parentFolder:013a8144-85cc-4dcb-b484-60cef134d564,(immutable:false~(objectName:se~creator:se~type:se~description:se))";
+		String search = "parentFolder~eq~013a8144-85cc-4dcb-b484-60cef134d564~and~" +
+				"(immutable~eq~false~and~(objectName~like~se~or~creator~like~se~or~type~like~se~or~description~like~se))";
 
 		SpecificationBuilder<DmsDocument> specBuilder = new SpecificationBuilder<>(new DocumentSpecProvider());
 		specBuilder.parse(search);

@@ -1,6 +1,5 @@
 package com.example.dms.services.search;
 
-import com.example.dms.utils.exceptions.BadRequestException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -12,15 +11,19 @@ import java.util.regex.Pattern;
 
 @Log4j2
 public class SpecificationBuilder<T> {
-	
-	public static final String OR_OPERATOR = "~";
-	public static final String AND_OPERATOR = ",";
-	public static final String searchRegex = "(\\w+)(:|<|>|!|<=|>=)([\\w|\\-|\\/]+)";
-	public static final String numRegex = "(\\d)([,|~]?)";
 
-	Map<String, String> map = new LinkedHashMap<>();
-	Map<String, SearchCriteria> criteriaMap = new HashMap<>();
-	Map<String, Specification<T>> specMap = new LinkedHashMap<>();
+	public static final String OR_OPERATOR = "or";
+	public static final String AND_OPERATOR = "and";
+	public static final String SEPARATOR = "~";
+	public static final String searchRegex = "(\\b(?!and|or|AND|OR\\b)[\\w\\.]+)~(\\w+)~([\\w|\\-|\\/|\\,|\\.]+)";
+	public static final String numRegex = "(\\d+)~?(\\b(and|or|AND|OR\\b))?";
+	public static final String complexNumExpression = "(\\d+)~(\\b(and|or|AND|OR\\b))~(\\d+)";
+	public static final String extraParenthesesRegex = "\\((\\d+)\\)";
+
+
+	Map<Integer, String> parsedSearchMap = new LinkedHashMap<>(); // stores string subcomponents of the search
+	Map<Integer, SearchCriteria> criteriaMap = new HashMap<>(); // stores search criteria objects
+	Map<Integer, Specification<T>> specMap = new LinkedHashMap<>(); // stores generated specifications
 
 
 	private final Providable<T> specProvider;
@@ -30,45 +33,60 @@ public class SpecificationBuilder<T> {
 	}
 
 	public Specification<T> parse(String search) {
-		long numOfLB = search.chars().filter(ch -> ch == '(').count();
-		long numOfRB = search.chars().filter(ch -> ch == ')').count();
-		if (numOfLB != numOfRB) throw new BadRequestException("Search string invalid, parenthesis not matching.");
+		String parsingResult = parseSearchString(search);
+		return buildSpecFromSymbolicString(parsingResult);
+	}
 
+	protected String parseSearchString(String search) {
 		Pattern pattern = Pattern.compile(searchRegex);
 		Matcher matcher = pattern.matcher(search);
 		Integer counter = 1;
 
 		// find all strings that match search criteria
 		while(matcher.find()) {
-			map.put(counter.toString(), matcher.group(1) + matcher.group(2) + matcher.group(3));
-			criteriaMap.put(counter.toString(), new SearchCriteria(matcher.group(1), matcher.group(2), matcher.group(3)));
+			parsedSearchMap.put(counter, matcher.group(1) + SEPARATOR + matcher.group(2) + SEPARATOR + matcher.group(3));
+			criteriaMap.put(counter, new SearchCriteria(matcher.group(1), matcher.group(2), matcher.group(3)));
 			counter++;
 		}
 		// replace all criteria in the search with respective numeric keys
-		for (String key: map.keySet()) {
-			search = search.replace(map.get(key), key);
+		for (Integer key: parsedSearchMap.keySet()) {
+			search = search.replace(parsedSearchMap.get(key), key.toString());
 		}
-		log.info(search);
+		search = search.replaceAll(extraParenthesesRegex, "$1");
+		log.info("symbolic search after parsing: {}", search);
 
+		long parenthesisCount = validateAndCountParenthesis(search);
+		log.info("parenthesis count: {}", parenthesisCount);
 		// find all substrings in brackets, recursively replace all substrings with other symbolic search strings
-		while(search.contains("(") || search.contains(")")) {
+		while(parenthesisCount-- > 0) {
 			String found = findDeepestBracket(search);
-			map.put(counter.toString(), found.substring(1, found.length()-1));
+			parsedSearchMap.put(counter, found.substring(1, found.length()-1));
 			search = search.replace(found, counter.toString());
 			counter++;
 		}
+		log.info("search after parenthesis replacement: {}", search);
+		log.info("number of total search subcomponents found: {}", counter - 1);
 
 		// build specifications from all keys in map
-		for (String key: map.keySet()) {
-			String val = map.get(key);
-			if (val.matches(searchRegex)) {
-				specMap.put(key, specProvider.getNewInstance(criteriaMap.get(key)));
-			} else {
+		for (Integer key: parsedSearchMap.keySet()) {
+			String val = parsedSearchMap.get(key);
+			if (val.matches(complexNumExpression) || criteriaMap.get(key) == null) {
 				specMap.put(key, buildSpecFromSymbolicString(val));
+			} else {
+				specMap.put(key, specProvider.getNewInstance(criteriaMap.get(key)));
 			}
 		}
 
-		return buildSpecFromSymbolicString(search);
+		return search;
+	}
+
+	private long validateAndCountParenthesis(String search) {
+		long numOfLB = search.chars().filter(ch -> ch == '(').count();
+		long numOfRB = search.chars().filter(ch -> ch == ')').count();
+		if (numOfLB != numOfRB) {
+			throw new IllegalArgumentException("Invalid search string: parentheses not matching.");
+		}
+		return numOfRB;
 	}
 
 	private Specification<T> buildSpecFromSymbolicString(String val) {
@@ -78,17 +96,21 @@ public class SpecificationBuilder<T> {
 		Specification<T> result = null;
 		String operation = "";
 		while (matcherNum.find()) {
-			String index = matcherNum.group(1);
-			if (result == null) {
-				result = Specification.where(specMap.get(index));
-			} else {
-				if (operation.equalsIgnoreCase(AND_OPERATOR)) {
-					result = Specification.where(result).and(specMap.get(index));
+			Integer index = Integer.valueOf(matcherNum.group(1));
+			if (specMap.containsKey(index)) { // Check if index exists in the map
+				if (result == null) {
+					result = Specification.where(specMap.get(index));
 				} else {
-					result = Specification.where(result).or(specMap.get(index));
+					if (operation.equalsIgnoreCase(AND_OPERATOR)) {
+						result = Specification.where(result).and(specMap.get(index));
+					} else if (operation.equalsIgnoreCase(OR_OPERATOR)) {
+						result = Specification.where(result).or(specMap.get(index));
+					}
 				}
+				operation = matcherNum.group(2);
+			} else {
+				throw new IllegalArgumentException("Invalid symbolic string, index " + index + " not found in map.");
 			}
-			operation = matcherNum.group(2);
 		}
 		return result;
 	}

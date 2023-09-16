@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/administration")
@@ -24,22 +23,22 @@ public class AdministrationController {
 	private final AdministrationService administrationService;
 
 	@PostMapping("/documents/grant/{id}")
-	public List<GrantDTO> grantPermissionsDocuments(@RequestBody List<GrantDTO> grantDTOs, @PathVariable UUID id) {
+	public List<GrantDTO> grantPermissionsDocuments(@RequestBody List<GrantDTO> grantDTOs, @PathVariable Integer id) {
 		return administrationService.grantRightsForDocument(grantDTOs, id);
 	}
 	
 	@PostMapping("/folders/grant/{id}")
-	public List<GrantDTO> grantPermissionsFolders(@RequestBody List<GrantDTO> grantDTOs, @PathVariable UUID id) {
+	public List<GrantDTO> grantPermissionsFolders(@RequestBody List<GrantDTO> grantDTOs, @PathVariable Integer id) {
 		return administrationService.grantRightsForFolder(grantDTOs, id);
 	}
 	
 	@GetMapping("/documents/{id}")
-	public List<GrantDTO> getPermissionsForDocument(@PathVariable UUID id) {
+	public List<GrantDTO> getPermissionsForDocument(@PathVariable Integer id) {
 		return administrationService.getRightsForDocument(id);
 	}
 	
 	@GetMapping("/folders/{id}")
-	public List<GrantDTO> getPermissionsForFolder(@PathVariable UUID id) {
+	public List<GrantDTO> getPermissionsForFolder(@PathVariable Integer id) {
 		return administrationService.getRightsForFolder(id);
 	}
 

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,7 +69,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','ADMINISTRATION') || hasAuthority('ADMINISTRATION_PRIVILEGE')")
-	public List<GrantDTO> grantRightsForDocument(List<GrantDTO> dtos, UUID id) {
+	public List<GrantDTO> grantRightsForDocument(List<GrantDTO> dtos, Integer id) {
 		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		List<GrantDTO> granted = this.grantRightsToSid(dtos, document);
 		notificationService.createAclNotification(document, ActionEnum.ADMINISTRATE);
@@ -79,7 +78,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 
 	@Override
 	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','ADMINISTRATION') || hasAuthority('ADMINISTRATION_PRIVILEGE')")
-	public List<GrantDTO> grantRightsForFolder(List<GrantDTO> dtos, UUID id) {
+	public List<GrantDTO> grantRightsForFolder(List<GrantDTO> dtos, Integer id) {
 		DmsFolder folder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		List<GrantDTO> granted = this.grantRightsToSid(dtos, folder);
 		notificationService.createAclNotification(folder, ActionEnum.ADMINISTRATE);
@@ -88,14 +87,14 @@ public class AdministrationServiceImpl implements AdministrationService {
 
 	@Override
 	@PreAuthorize("hasAuthority('ROLE_USER')")
-	public List<GrantDTO> getRightsForDocument(UUID id) {
+	public List<GrantDTO> getRightsForDocument(Integer id) {
 		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		return aclService.getRights(document);
 	}
 
 	@Override
 	@PreAuthorize("hasAuthority('ROLE_USER')")
-	public List<GrantDTO> getRightsForFolder(UUID id) {
+	public List<GrantDTO> getRightsForFolder(Integer id) {
 		DmsFolder folder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		return aclService.getRights(folder);
 	}

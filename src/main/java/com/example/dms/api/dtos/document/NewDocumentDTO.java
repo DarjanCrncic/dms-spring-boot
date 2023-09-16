@@ -8,7 +8,6 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @Builder
@@ -25,7 +24,5 @@ public class NewDocumentDTO {
 	private String type;
 	
 	@NotNull
-	private UUID parentFolderId;
-	
-	private String username;
+	private Integer parentFolderId;
 }

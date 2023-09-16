@@ -5,9 +5,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.UUID;
 
-public interface NotificationRepository extends JpaRepository<DmsNotification, UUID> {
-	List<DmsNotification> findAllByRecipientIdIn(List<UUID> arrayList, Sort sort);
-	void deleteAllByRecipientIdIn(List<UUID> singletonList);
+public interface NotificationRepository extends JpaRepository<DmsNotification, Integer> {
+	List<DmsNotification> findAllByRecipientIdIn(List<Integer> arrayList, Sort sort);
+	void deleteAllByRecipientIdIn(List<Integer> singletonList);
 }

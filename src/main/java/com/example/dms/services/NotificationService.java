@@ -5,18 +5,17 @@ import com.example.dms.domain.interfaces.DmsAclNotifiable;
 import com.example.dms.utils.ActionEnum;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface NotificationService {
-	DmsNotification findById(UUID id);
+	DmsNotification findById(Integer id);
 
 	DmsNotification save(DmsNotification notification);
 
-	List<DmsNotification> getAllForUser(UUID userId);
+	List<DmsNotification> getAllForUser(Integer userId);
 
-	void deleteAllForUser(UUID userId);
+	void deleteAllForUser(Integer userId);
 
-	DmsNotification markAsSeen(UUID id);
+	DmsNotification markAsSeen(Integer id);
 
 	void createAclNotification(DmsAclNotifiable object, ActionEnum action);
 }

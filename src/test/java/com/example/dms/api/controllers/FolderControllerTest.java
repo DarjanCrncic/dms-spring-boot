@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.doNothing;
@@ -60,12 +59,12 @@ class FolderControllerTest {
 	void setUp() {
 		validUser = DmsUser.builder().username("dcrncic").password("12345").firstName("Darjan").lastName("Crnčić")
 				.email("darjan.crncic@gmail.com").build();
-		validUser.setId(UUID.randomUUID());
+		validUser.setId(1);
 
 		rootFolderDTO = DmsFolderDTO.builder().name("/").parentFolderId(null).build();
 		validFolderDTO = DmsFolderDTO.builder().name("test").build();
 
-		folderList = new ArrayList<DmsFolderDTO>();
+		folderList = new ArrayList<>();
 		folderList.add(rootFolderDTO);
 		folderList.add(validFolderDTO);
 	}
@@ -79,12 +78,12 @@ class FolderControllerTest {
 
 	@Test
 	void testFindById() throws Exception {
-		BDDMockito.given(folderService.findById(Mockito.any(UUID.class))).willReturn(validFolderDTO);
+		BDDMockito.given(folderService.findById(Mockito.any(Integer.class))).willReturn(validFolderDTO);
 
-		mockMvc.perform(get(BASE_URL + "/{id}", UUID.randomUUID())).andExpect(status().isOk())
+		mockMvc.perform(get(BASE_URL + "/{id}", 1)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.name", is(validFolderDTO.getName())))
-				.andExpect(jsonPath("$.subfolders").isArray()).andExpect(jsonPath("$.parent_folder").isString());
-
+				.andExpect(jsonPath("$.subfolders").isArray())
+				.andExpect(jsonPath("$.parent_folder_id").hasJsonPath());
 	}
 
 	// TODO
@@ -100,29 +99,30 @@ class FolderControllerTest {
 
 	@Test
 	void testUpdateFolder() throws Exception {
-		BDDMockito.given(folderService.updateFolder(Mockito.any(UUID.class), Mockito.anyString()))
+		BDDMockito.given(folderService.updateFolder(Mockito.any(Integer.class), Mockito.anyString()))
 				.willReturn(validFolderDTO);
 
-		mockMvc.perform(put(BASE_URL + "/{id}", UUID.randomUUID())
+		mockMvc.perform(put(BASE_URL + "/{id}", 1)
 				.content(Utils.stringify(NewFolderDTO.builder().name("test").build()))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.name", is(validFolderDTO.getName())))
-				.andExpect(jsonPath("$.subfolders").isArray()).andExpect(jsonPath("$.parent_folder").isString());
+				.andExpect(jsonPath("$.subfolders").isArray())
+				.andExpect(jsonPath("$.parent_folder_id").hasJsonPath());
 	}
 
 	@Test
 	void deleteById() throws Exception {
-		doNothing().when(folderService).deleteById(Mockito.any(UUID.class));
+		doNothing().when(folderService).deleteById(Mockito.any(Integer.class));
 
-		mockMvc.perform(delete(BASE_URL + "/{id}", UUID.randomUUID())).andExpect(status().isOk());
+		mockMvc.perform(delete(BASE_URL + "/{id}", 1)).andExpect(status().isOk());
 	}
 
 	@Test
 	void moveFilesToFolder() throws Exception {
-		BDDMockito.given(folderService.moveFilesToFolder(Mockito.any(UUID.class), Mockito.anyList()))
+		BDDMockito.given(folderService.moveFilesToFolder(Mockito.any(Integer.class), Mockito.anyList()))
 				.willReturn(rootFolderDTO);
 
-		mockMvc.perform(post(BASE_URL + "/move/{id}", UUID.randomUUID()).content(Utils.stringify(new ArrayList<>()))
+		mockMvc.perform(post(BASE_URL + "/move/{id}", 1).content(Utils.stringify(new ArrayList<>()))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 

@@ -49,9 +49,9 @@ class SecurityIT {
 
 	@Test
 	@WithMockUser(username = "testuser", roles = {"ADMIN"})
-	void testSecurityWithMockUserRple() {
-		user = userService.createUser(new NewUserDTO("testuser", "12345", "test", "test", "testtest.test@gmail.com",
-				"ROLE_USER", List.of("READ_PRIVILEGE")));
+	void testSecurityWithMockUserRole() {
+		user = userService.createUser(new NewUserDTO(
+				"testuser", "12345", "test", "test", "testtest.test@gmail.com", "ROLE_USER", List.of("READ_PRIVILEGE")));
 		userService.deleteById(user.getId());
 
 		assertTrue(userRepository.findByUsername("test").isEmpty());

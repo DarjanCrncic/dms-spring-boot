@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -51,9 +50,9 @@ class GroupServiceIT {
 		user1 = userService.createUser(new NewUserDTO("testuser", "12345", "Darjan", "Crnčić", "test.user@gmail.com",
 				"ROLE_USER",
 				new ArrayList<>()));
-		user2 = userService.createUser(new NewUserDTO("testuser2", "12345", "Darjan", "Crnčić", "test2.user@gmail.com"
-				, "ROLE_USER", new ArrayList<>()));
-		newGroupDTO = NewGroupDTO.builder().groupName("grupa").description("testna grupa").build();
+		user2 = userService.createUser(new NewUserDTO("testuser2", "12345", "Darjan", "Crnčić", "test2.user@gmail.com",
+				"ROLE_USER", new ArrayList<>()));
+		newGroupDTO = NewGroupDTO.builder().groupName("GROUP").identifier("GROUP").description("test group").build();
 		savedGroup = groupService.createGroup(newGroupDTO);
 	}
 
@@ -90,7 +89,7 @@ class GroupServiceIT {
 	@DisplayName("Test adding multiple users to group.")
 	@Transactional
 	void addMultipleUsersToGroup() {
-		List<UUID> userList = Arrays.asList(new UUID[]{user1.getId(), user2.getId()});
+		List<Integer> userList = Arrays.asList(user1.getId(), user2.getId());
 		savedGroup = groupService.updateGroupMembers(savedGroup.getId(), userList);
 
 		assertEquals(2, savedGroup.getMembers().size());

@@ -8,7 +8,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
-import java.util.UUID;
 
 @Mapper(uses = DocumentMapper.class)
 public interface FolderMapper extends MapperInterface<DmsFolder, DmsFolderDTO>  {
@@ -19,9 +18,9 @@ public interface FolderMapper extends MapperInterface<DmsFolder, DmsFolderDTO>  
 	@Mapping(source = "parentFolder.id", target = "parentFolderId")
 	DmsFolderDTO entityToDto(DmsFolder folder);
 	
-	List<UUID> foldersToIds(List<DmsFolder> folders);
+	List<Integer> foldersToIds(List<DmsFolder> folders);
 	
-	default UUID folderToId(DmsFolder folder) {
+	default Integer folderToId(DmsFolder folder) {
 		return folder.getId();
 	}
 	

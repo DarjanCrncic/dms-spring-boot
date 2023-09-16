@@ -3,6 +3,7 @@ package com.example.dms.services.impl;
 import com.example.dms.domain.DmsNotification;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.domain.interfaces.DmsAclNotifiable;
+import com.example.dms.domain.security.AclAllowedClass;
 import com.example.dms.repositories.NotificationRepository;
 import com.example.dms.repositories.UserRepository;
 import com.example.dms.services.DmsAclService;
@@ -14,21 +15,16 @@ import com.example.dms.utils.NotificationUtils;
 import com.example.dms.utils.Roles;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toCollection;
-
+@Log4j2
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -40,7 +36,7 @@ public class NotificationServiceImpl implements NotificationService {
 	private final DmsAclService aclService;
 
 	@Override
-	public DmsNotification findById(UUID id) {
+	public DmsNotification findById(Integer id) {
 		return notificationRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 	}
 
@@ -51,18 +47,18 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
-	public List<DmsNotification> getAllForUser(UUID userId) {
+	public List<DmsNotification> getAllForUser(Integer userId) {
 		Sort sort = Sort.by(Sort.Direction.DESC, "creationDate");
 		return notificationRepository.findAllByRecipientIdIn(Collections.singletonList(userId), sort);
 	}
 
 	@Override
-	public void deleteAllForUser(UUID userId) {
+	public void deleteAllForUser(Integer userId) {
 		notificationRepository.deleteAllByRecipientIdIn(Collections.singletonList(userId));
 	}
 
 	@Override
-	public DmsNotification markAsSeen(UUID id) {
+	public DmsNotification markAsSeen(Integer id) {
 		DmsNotification notification = this.findById(id);
 		notification.setSeen(true);
 		return notificationRepository.save(notification);
@@ -71,7 +67,13 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	public void createAclNotification(DmsAclNotifiable object, ActionEnum action) {
 		List<DmsUser> recipients = userRepository.findByRoleName(Roles.ROLE_ADMIN.name());
-		Set<String> usernamesAndIdentifiers = aclService.getRecipients(object.getACLObjectForPermissions());
+
+		AclAllowedClass objectForNotification = object.getACLObjectForPermissions();
+		if (objectForNotification == null) {
+			log.warn("No recipients to inform, object for notification not found.");
+			return;
+		}
+		Set<String> usernamesAndIdentifiers = aclService.getRecipients(objectForNotification);
 
 		recipients.addAll(userRepository.findAllByUsernameInOrGroupsIdentifierIn(usernamesAndIdentifiers, usernamesAndIdentifiers));
 		List<DmsUser> uniqueRecipients = recipients.stream()

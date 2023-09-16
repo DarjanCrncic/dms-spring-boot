@@ -17,8 +17,7 @@ public interface DmsAclService {
 
 	<T extends AclAllowedClass> void grantRightsOnObject(T object, Sid sid, Collection<Permission> permissions);
 
-	<T extends AclAllowedClass> void grantRightsOnObject(T object, String username,
-			Collection<Permission> permissions);
+	<T extends AclAllowedClass> void grantRightsOnObject(T object, String username, Collection<Permission> permissions);
 
 	<T extends AclAllowedClass> boolean hasRight(T object, String username, Collection<Permission> permissions);
 

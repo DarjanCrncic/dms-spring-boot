@@ -1,6 +1,7 @@
 package com.example.dms.security.configuration.acl;
 
-import com.example.dms.security.DmsUserDetails;
+import com.example.dms.utils.UserDetailsUtil;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.hierarchicalroles.NullRoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
@@ -16,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Log4j2
 public class CustomSidRetrievalStrategyImpl implements SidRetrievalStrategy {
 
 	private RoleHierarchy roleHierarchy = new NullRoleHierarchy();
@@ -37,8 +39,9 @@ public class CustomSidRetrievalStrategyImpl implements SidRetrievalStrategy {
 		for (GrantedAuthority authority : authorities) {
 			sids.add(new GrantedAuthoritySid(authority));
 		}
-
-		List<Sid> groupSids = ((DmsUserDetails) authentication.getPrincipal()).getGroupIdentifiers().stream()
+		List<Sid> groupSids = UserDetailsUtil.extractDetailsFromPrincipal(authentication.getPrincipal(), authorities)
+				.getGroupIdentifiers()
+				.stream()
 				.map(PrincipalSid::new).collect(Collectors.toList());
 		sids.addAll(groupSids);
 

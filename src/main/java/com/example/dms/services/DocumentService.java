@@ -7,23 +7,22 @@ import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.domain.DmsDocument;
 
 import java.util.List;
-import java.util.UUID;
 
-public interface DocumentService extends CrudService<DmsDocument, DmsDocumentDTO, UUID>{
+public interface DocumentService extends CrudService<DmsDocument, DmsDocumentDTO, Integer>{
 
 	DmsDocumentDTO createDocument(NewDocumentDTO newDocumentDTO);
 
-	DmsDocumentDTO createNewVersion(UUID id);
+	DmsDocumentDTO createNewVersion(Integer id);
 
-	DmsDocumentDTO createNewBranch(UUID id);
+	DmsDocumentDTO createNewBranch(Integer id);
 
-	List<DmsDocumentDTO> getAllVersions(UUID id);
+	List<DmsDocumentDTO> getAllVersions(Integer id);
 
-	DmsDocumentDTO updateDocument(UUID id, ModifyDocumentDTO modifyDocumentDTO, boolean patch);
+	DmsDocumentDTO updateDocument(Integer id, ModifyDocumentDTO modifyDocumentDTO, boolean patch);
 
 	List<DmsDocumentDTO> searchAll(String search, SortDTO sort);
 
-	List<DmsDocumentDTO> copyDocuments(UUID folderId, List<UUID> documentIdList);
+	List<DmsDocumentDTO> copyDocuments(Integer folderId, List<Integer> documentIdList);
 
-	List<DmsDocumentDTO> cutDocuments(UUID folderId, List<UUID> documents);
+	List<DmsDocumentDTO> cutDocuments(Integer folderId, List<Integer> documents);
 }

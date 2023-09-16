@@ -7,9 +7,8 @@ import com.example.dms.api.dtos.user.UpdateUserDTO;
 import com.example.dms.domain.DmsUser;
 
 import java.util.List;
-import java.util.UUID;
 
-public interface UserService extends CrudService<DmsUser, DmsUserDTO, UUID>{
+public interface UserService extends CrudService<DmsUser, DmsUserDTO, Integer>{
 
 	DmsUserDTO findByUsername(String username);
 
@@ -17,7 +16,7 @@ public interface UserService extends CrudService<DmsUser, DmsUserDTO, UUID>{
 
 	DmsUserDTO createUser(NewUserDTO userDTO);
 
-	DmsUserDTO updateUser(UpdateUserDTO userDTO, UUID id, boolean patch);
+	DmsUserDTO updateUser(UpdateUserDTO userDTO, Integer id, boolean patch);
 
 	List<DmsUserDTO> searchAll(String search, SortDTO sort);
 }
