@@ -59,6 +59,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public DmsNotification markAsSeen(Integer id) {
+		log.info("Marking notification as seen: {}", id);
 		DmsNotification notification = this.findById(id);
 		notification.setSeen(true);
 		return notificationRepository.save(notification);

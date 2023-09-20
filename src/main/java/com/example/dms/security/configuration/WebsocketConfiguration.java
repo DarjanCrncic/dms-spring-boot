@@ -38,13 +38,13 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/documents", "/folders", "/notifications");
+		config.enableSimpleBroker("/documents", "/folders");
 		config.setApplicationDestinationPrefixes("/dms");
 	}
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/dms-websocket")
+		registry.addEndpoint("dms-websocket", "/notifications")
 				.setAllowedOrigins(allowedCorsOrigins.split(","));
 	}
 
