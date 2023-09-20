@@ -6,18 +6,15 @@ import com.example.dms.services.AdministrationService;
 import com.example.dms.utils.Privileges;
 import com.example.dms.utils.Roles;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/administration")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_USER')")
 public class AdministrationController {
 	
 	private final AdministrationService administrationService;

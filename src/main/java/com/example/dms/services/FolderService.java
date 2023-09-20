@@ -2,6 +2,7 @@ package com.example.dms.services;
 
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.dtos.folder.FolderTreeDTO;
+import com.example.dms.api.dtos.folder.NewFolderDTO;
 import com.example.dms.domain.DmsFolder;
 
 import java.util.List;
@@ -16,6 +17,6 @@ public interface FolderService extends CrudService<DmsFolder, DmsFolderDTO, Inte
 
 	List<FolderTreeDTO> getFolderTreeNew();
 
-	DmsFolderDTO createFolder(String path, Integer parentFolderId);
+	DmsFolderDTO createFolder(NewFolderDTO newFolderDTO);
 
 }

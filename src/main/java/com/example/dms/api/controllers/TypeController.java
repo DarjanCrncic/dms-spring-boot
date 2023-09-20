@@ -4,11 +4,8 @@ import com.example.dms.api.dtos.type.DmsTypeDTO;
 import com.example.dms.api.dtos.type.NewTypeDTO;
 import com.example.dms.services.TypeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -16,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/types")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_USER')")
 public class TypeController {
 
 	private final TypeService typeService;

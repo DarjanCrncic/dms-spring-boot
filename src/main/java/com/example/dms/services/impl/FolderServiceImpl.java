@@ -2,6 +2,7 @@ package com.example.dms.services.impl;
 
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
 import com.example.dms.api.dtos.folder.FolderTreeDTO;
+import com.example.dms.api.dtos.folder.NewFolderDTO;
 import com.example.dms.api.mappers.FolderMapper;
 import com.example.dms.domain.DmsDocument;
 import com.example.dms.domain.DmsFolder;
@@ -47,30 +48,31 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsFolder','READ') || hasAuthority('READ_PRIVILEGE') || filterObject.name == '/'")
+	@PostFilter("hasAuthority('READ_PRIVILEGE') || filterObject.name == '/' || hasPermission(filterObject.id,'com.example.dms.domain.DmsFolder','READ')")
 	public List<DmsFolderDTO> findAll() {
 		return folderMapper.entityListToDtoList(folderRepository.findAll());
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsFolder','READ') || hasAuthority('READ_PRIVILEGE') || filterObject.name == '/'")
+	@PostFilter("hasAuthority('READ_PRIVILEGE') || filterObject.name == '/' || hasPermission(filterObject.id,'com.example.dms.domain.DmsFolder','READ')")
 	public List<FolderTreeDTO> getFolderTreeNew() {
 		return folderMapper.dmsFolderListToFolderTreeList(folderRepository.findAll());
 	}
 
 	@Override
-	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
-	public DmsFolderDTO createFolder(String name, Integer parentFolderId) {
-		DmsFolder parentFolder = folderRepository.findById(parentFolderId)
+	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE') || #newFolderDTO.rootFolder == true || " +
+			"hasPermission(#newFolderDTO.parentFolderId,'com.example.dms.domain.DmsFolder','CREATE')")
+	public DmsFolderDTO createFolder(NewFolderDTO newFolderDTO) {
+		DmsFolder parentFolder = folderRepository.findById(newFolderDTO.getParentFolderId())
 				.orElseThrow(DmsNotFoundException::new);
-		checkConstraints(name, parentFolderId);
+		checkConstraints(newFolderDTO.getName(), newFolderDTO.getParentFolderId());
 		
 		if (!parentFolder.getName().equals("/") && !super.aclService.hasRight(parentFolder, authUtil.getUserName(), List.of(BasePermission.CREATE))) {
 			throw new NotPermitedException("User: " + authUtil.getUserName()
 					+ " has insufficient permissions for creating a folder at this path.");
 		}
 
-		DmsFolder newFolder = DmsFolder.builder().name(name).build();
+		DmsFolder newFolder = DmsFolder.builder().name(newFolderDTO.getName()).build();
 		newFolder.addParentFolder(parentFolder);
 		newFolder = folderRepository.save(newFolder);
 
@@ -81,7 +83,7 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','WRITE') || hasAuthority('WRITE_PRIVILEGE')")
+	@PreAuthorize("hasAuthority('WRITE_PRIVILEGE') || hasPermission(#id,'com.example.dms.domain.DmsFolder','WRITE')")
 	public DmsFolderDTO updateFolder(Integer id, String newName) {
 		DmsFolder oldFolder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		checkConstraints(newName, oldFolder.getParentFolder().getId());
@@ -101,9 +103,11 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 	}
 	
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','DELETE') || hasAuthority('DELETE_PRIVILEGE')")
+	@PreAuthorize("hasAuthority('DELETE_PRIVILEGE') || hasPermission(#id,'com.example.dms.domain.DmsFolder','DELETE')")
 	public void deleteFolder(Integer id) {
 		DmsFolder folder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
+		if (folder.isRoot()) throw new RuntimeException("You are not allowed to delete the root folder!");
+
 		folder.getSubfolders().forEach(sub -> deleteFolder(sub.getId()));
 		folder.getDocuments().forEach(doc -> documentService.deleteById(doc.getId()));
 		this.notificationService.createAclNotification(folder, ActionEnum.DELETE);
@@ -112,22 +116,20 @@ public class FolderServiceImpl extends EntityCrudServiceImpl<DmsFolder, DmsFolde
 
 	// TODO: still not used, needs a check
 	@Override
-	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','WRITE') "
-			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication) "
-			+ "|| hasAuthority('WRITE_PRIVILEGE')")
+	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','CREATE') && "
+			+ "@permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','CREATE',authentication) || "
+			+ "hasAuthority('CREATE_PRIVILEGE')")
 	public DmsFolderDTO moveFilesToFolder(Integer folderId, List<Integer> documentIdList) {
 		DmsFolder folder = folderRepository.findById(folderId).orElseThrow(
 				() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));
 		for (Integer documentId : documentIdList) {
 			DmsDocument doc = documentRepository.findById(documentId)
-					.orElseThrow(() -> new BadRequestException("Ivalid document id: " + documentId + "."));
+					.orElseThrow(() -> new BadRequestException("Invalid document id: " + documentId + "."));
 			folder.addDocument(doc);
 			folder = folderRepository.save(folder);
 		}
 		return folderMapper.entityToDto(folder);
 	}
-
-	
 
 	// TODO: move subfolder to other folder
 	// TODO: copy folder to another folder

@@ -25,4 +25,6 @@ public class NewDocumentDTO {
 	
 	@NotNull
 	private Integer parentFolderId;
+
+	private boolean rootFolder;
 }

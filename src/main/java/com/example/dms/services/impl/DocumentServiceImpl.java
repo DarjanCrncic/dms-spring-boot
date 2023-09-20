@@ -60,13 +60,14 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
+	@PostFilter("hasAuthority('READ_PRIVILEGE') || hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ')")
 	public List<DmsDocumentDTO> findAll() {
 		return documentMapper.entityListToDtoList(documentRepository.findAll());
 	}
 
 	@Override
-	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE')")
+	@PreAuthorize("hasAuthority('CREATE_PRIVILEGE') || #newDocumentDTO.rootFolder == true || " +
+			"hasPermission(#newDocumentDTO.parentFolderId,'com.example.dms.domain.DmsFolder','CREATE')")
 	public DmsDocumentDTO createDocument(NewDocumentDTO newDocumentDTO) {
 		DmsDocument newDocumentObject = documentMapper.newDocumentDTOToDocument(newDocumentDTO);
 
@@ -89,16 +90,24 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 		newDocumentObject.setRootId(newDocumentObject.getId());
 		newDocumentObject.setPredecessorId(newDocumentObject.getId());
 
-		super.aclService.grantRightsOnObject(newDocumentObject, creator.getUsername(), Arrays.asList(
-				BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE, BasePermission.ADMINISTRATION,
-				CustomBasePermission.VERSION));
+		grantCreatorRights(newDocumentObject, creator.getUsername());
 
 		notificationService.createAclNotification(newDocumentObject, ActionEnum.CREATE);
 		return save(newDocumentObject);
 	}
 
+	private void grantCreatorRights(DmsDocument newDocumentObject, String username) {
+		super.aclService.grantRightsOnObject(newDocumentObject, username, Arrays.asList(
+				BasePermission.READ,
+				BasePermission.WRITE,
+				BasePermission.DELETE,
+				BasePermission.CREATE,
+				BasePermission.ADMINISTRATION,
+				CustomBasePermission.VERSION));
+	}
+
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE') || hasAuthority('WRITE_PRIVILEGE')")
+	@PreAuthorize("hasAuthority('WRITE_PRIVILEGE') || hasPermission(#id,'com.example.dms.domain.DmsDocument','WRITE')")
 	public DmsDocumentDTO updateDocument(Integer id, ModifyDocumentDTO modifyDocumentDTO, boolean patch) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 
@@ -120,7 +129,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','VERSION') || hasAuthority('VERSION_PRIVILEGE')")
+	@PreAuthorize("hasAuthority('VERSION_PRIVILEGE') || hasPermission(#id,'com.example.dms.domain.DmsDocument','VERSION')")
 	public DmsDocumentDTO createNewVersion(Integer id) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (doc.isImmutable()) {
@@ -142,7 +151,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','VERSION') || hasAuthority('VERSION_PRIVILEGE')")
+	@PreAuthorize("hasAuthority('VERSION_PRIVILEGE') || hasPermission(#id,'com.example.dms.domain.DmsDocument','VERSION')")
 	public DmsDocumentDTO createNewBranch(Integer id) {
 		DmsDocument doc = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (doc.isBranched()) {
@@ -163,7 +172,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
+	@PostFilter("hasAuthority('READ_PRIVILEGE') || hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ')")
 	public List<DmsDocumentDTO> getAllVersions(Integer id) {
 		return documentMapper.entityListToDtoList(documentRepository.findAllByRootId(id));
 	}
@@ -181,7 +190,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PostFilter("hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ') || hasAuthority('READ_PRIVILEGE')")
+	@PostFilter("hasAuthority('READ_PRIVILEGE') || hasPermission(filterObject.id,'com.example.dms.domain.DmsDocument','READ')")
 	public List<DmsDocumentDTO> searchAll(String search, SortDTO sort) {
 		if (search != null) {
 			SpecificationBuilder<DmsDocument> builder = new SpecificationBuilder<>(new DocumentSpecProvider());
@@ -193,8 +202,8 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','CREATE') "
-			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication) "
-			+ "|| hasAuthority('WRITE_PRIVILEGE') && hasAuthority('CREATE_PRIVILEGE')")
+			+ "&& @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','CREATE',authentication) "
+			+ "|| hasAuthority('CREATE_PRIVILEGE')")
 	public List<DmsDocumentDTO> copyDocuments(Integer folderId, List<Integer> documentIdList) {
 		DmsFolder folder = folderRepository.findById(folderId).orElseThrow(
 				() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));
@@ -215,6 +224,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 			copy.setRootId(copy.getId());
 			copy = documentRepository.save(copy);
 			aclService.copyRightsToAnotherEntity(doc, copy);
+			grantCreatorRights(copy, authUtil.getUserName());
 
 			if (doc.getContent() != null) {
 				DmsContent copyContent = copyContent(doc.getContent());
@@ -230,8 +240,8 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 
 	@Override
 	@PreAuthorize("hasPermission(#folderId,'com.example.dms.domain.DmsFolder','CREATE') "
-			+ "and @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','WRITE',authentication) "
-			+ "|| hasAuthority('WRITE_PRIVILEGE') && hasAuthority('CREATE_PRIVILEGE')")
+			+ "&& @permissionEvaluator.hasPermission(#documentIdList,'com.example.dms.domain.DmsDocument','CREATE',authentication) "
+			+ "|| hasAuthority('CREATE_PRIVILEGE')")
 	public List<DmsDocumentDTO> cutDocuments(Integer folderId, List<Integer> documentIdList) {
 		DmsFolder folder = folderRepository.findById(folderId).orElseThrow(
 				() -> new DmsNotFoundException("Folder with specified id: " + folderId + " could not be found."));
@@ -248,8 +258,7 @@ public class DocumentServiceImpl extends EntityCrudServiceImpl<DmsDocument, DmsD
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','DELETE') "
-			+ "or hasAuthority('DELETE_PRIVILEGE')")
+	@PreAuthorize("hasAuthority('DELETE_PRIVILEGE') || hasPermission(#id,'com.example.dms.domain.DmsDocument','DELETE')")
 	public void deleteById(Integer id) {
 		DmsDocument toDelete = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		if (toDelete.isImmutable()) {

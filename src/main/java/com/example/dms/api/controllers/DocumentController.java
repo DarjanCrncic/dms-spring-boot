@@ -8,6 +8,7 @@ import com.example.dms.utils.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/documents")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_USER')")
 public class DocumentController {
 
 	private final DocumentService documentService;

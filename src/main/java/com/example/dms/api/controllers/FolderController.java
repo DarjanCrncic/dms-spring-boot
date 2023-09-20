@@ -7,6 +7,7 @@ import com.example.dms.api.dtos.folder.UpdateFolderDTO;
 import com.example.dms.services.FolderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/folders")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_USER')")
 public class FolderController {
 
 	private final FolderService folderService;
@@ -37,7 +39,7 @@ public class FolderController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public DmsFolderDTO createNewFolder(@RequestBody @Valid NewFolderDTO newFolderDTO) {
-		return folderService.createFolder(newFolderDTO.getName(), newFolderDTO.getParentFolderId());
+		return folderService.createFolder(newFolderDTO);
 	}
 
 	@PutMapping("/{id}")

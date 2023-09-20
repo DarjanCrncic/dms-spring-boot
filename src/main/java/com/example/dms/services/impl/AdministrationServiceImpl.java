@@ -68,7 +68,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsDocument','ADMINISTRATION') || hasAuthority('ADMINISTRATION_PRIVILEGE')")
+	@PreAuthorize("hasAuthority('ADMINISTRATION_PRIVILEGE') || hasPermission(#id,'com.example.dms.domain.DmsDocument','ADMINISTRATION')")
 	public List<GrantDTO> grantRightsForDocument(List<GrantDTO> dtos, Integer id) {
 		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		List<GrantDTO> granted = this.grantRightsToSid(dtos, document);
@@ -77,7 +77,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#id,'com.example.dms.domain.DmsFolder','ADMINISTRATION') || hasAuthority('ADMINISTRATION_PRIVILEGE')")
+	@PreAuthorize("hasAuthority('ADMINISTRATION_PRIVILEGE') || hasPermission(#id,'com.example.dms.domain.DmsFolder','ADMINISTRATION')")
 	public List<GrantDTO> grantRightsForFolder(List<GrantDTO> dtos, Integer id) {
 		DmsFolder folder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		List<GrantDTO> granted = this.grantRightsToSid(dtos, folder);

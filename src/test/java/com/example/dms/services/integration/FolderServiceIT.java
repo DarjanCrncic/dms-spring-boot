@@ -3,6 +3,7 @@ package com.example.dms.services.integration;
 import com.example.dms.api.dtos.document.DmsDocumentDTO;
 import com.example.dms.api.dtos.document.NewDocumentDTO;
 import com.example.dms.api.dtos.folder.DmsFolderDTO;
+import com.example.dms.api.dtos.folder.NewFolderDTO;
 import com.example.dms.domain.DmsFolder;
 import com.example.dms.domain.DmsUser;
 import com.example.dms.repositories.DocumentRepository;
@@ -59,8 +60,8 @@ class FolderServiceIT {
 		root = folderRepository.findByName("/").orElse(null);
 		assert root != null;
 
-		folder = folderService.createFolder("test", root.getId());
-		subFolder = folderService.createFolder("inside", folder.getId());
+		folder = folderService.createFolder(NewFolderDTO.builder().name("test").parentFolderId(root.getId()).rootFolder(true).build());
+		subFolder = folderService.createFolder(NewFolderDTO.builder().name("inside").parentFolderId(folder.getId()).rootFolder(false).build());
 		folderObject = folderRepository.findById(folder.getId()).orElse(null);
 		newDocument = documentService.createDocument(NewDocumentDTO.builder().objectName("TestTest")
 				.description("Ovo je test u testu").parentFolderId(folderObject.getId()).type("document").build());

@@ -67,12 +67,12 @@ public class ContentServiceImpl implements ContentService {
 				.body(document.getContent().getContent());
 	}
 
-	@Override
-	@PreAuthorize("hasPermission(#document,'READ')")
-	public boolean checkIsDocumentValidForDownload(DmsDocument document) {
-		if (document.getContent() == null || document.getContent().getContentType() == null
-				|| document.getContent().getOriginalFileName() == null || document.getContent().getContentSize() == 0)
+	private void checkIsDocumentValidForDownload(DmsDocument document) {
+		if (document.getContent() == null ||
+				document.getContent().getContentType() == null ||
+				document.getContent().getOriginalFileName() == null ||
+				document.getContent().getContentSize() == 0) {
 			throw new InternalException("Document has corrupted (or no) content, download unavailable.");
-		return true;
+		}
 	}
 }
