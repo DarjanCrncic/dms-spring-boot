@@ -11,8 +11,10 @@ import com.example.dms.services.DmsAclService;
 import com.example.dms.services.NotificationService;
 import com.example.dms.utils.ActionEnum;
 import com.example.dms.utils.Permissions;
+import com.example.dms.utils.Utils;
 import com.example.dms.utils.exceptions.DmsNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +26,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.example.dms.utils.Permissions.READ;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Log4j2
 public class AdministrationServiceImpl implements AdministrationService {
 
 	private final DmsAclService aclService;
@@ -72,6 +77,12 @@ public class AdministrationServiceImpl implements AdministrationService {
 	public List<GrantDTO> grantRightsForDocument(List<GrantDTO> dtos, Integer id) {
 		DmsDocument document = documentRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		List<GrantDTO> granted = this.grantRightsToSid(dtos, document);
+
+		List<GrantDTO> readDtos = dtos.stream()
+				.map(dto -> new GrantDTO(dto.getUsername(), Utils.toSet(READ.name())))
+				.collect(Collectors.toList());
+		this.grantReadRightsToAllParentFolders(readDtos, document.getParentFolder());
+
 		notificationService.createAclNotification(document, ActionEnum.ADMINISTRATE);
 		return granted;
 	}
@@ -81,6 +92,12 @@ public class AdministrationServiceImpl implements AdministrationService {
 	public List<GrantDTO> grantRightsForFolder(List<GrantDTO> dtos, Integer id) {
 		DmsFolder folder = folderRepository.findById(id).orElseThrow(DmsNotFoundException::new);
 		List<GrantDTO> granted = this.grantRightsToSid(dtos, folder);
+
+		List<GrantDTO> readDtos = dtos.stream()
+				.map(dto -> new GrantDTO(dto.getUsername(), Utils.toSet(READ.name())))
+				.collect(Collectors.toList());
+		this.grantReadRightsToAllParentFolders(readDtos, folder.getParentFolder());
+
 		notificationService.createAclNotification(folder, ActionEnum.ADMINISTRATE);
 		return granted;
 	}
@@ -101,5 +118,13 @@ public class AdministrationServiceImpl implements AdministrationService {
 
 	private Map<String, Set<String>> grantDTOToMap(List<GrantDTO> dtos) {
 		return dtos.stream().collect(Collectors.toMap(GrantDTO::getUsername, GrantDTO::getPermissions));
+	}
+
+	private void grantReadRightsToAllParentFolders(List<GrantDTO> dtos, DmsFolder parentFolder) {
+		if (!parentFolder.isRoot()) {
+			log.info("Granting READ to parent folder: {}", parentFolder.getName());
+			this.grantRightsToSid(dtos, parentFolder);
+			grantReadRightsToAllParentFolders(dtos, parentFolder.getParentFolder());
+		}
 	}
 }
