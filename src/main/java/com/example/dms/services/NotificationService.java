@@ -18,4 +18,6 @@ public interface NotificationService {
 	DmsNotification markAsSeen(Integer id);
 
 	void createAclNotification(DmsAclNotifiable object, ActionEnum action);
+
+	void deleteById(Integer id);
 }

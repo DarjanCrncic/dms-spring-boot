@@ -90,4 +90,9 @@ public class NotificationServiceImpl implements NotificationService {
 			save(notification);
 		});
 	}
+
+	@Override
+	public void deleteById(Integer id) {
+		this.notificationRepository.deleteById(id);
+	}
 }
